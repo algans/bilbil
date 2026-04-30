@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bilbil — Player Live Flow (7 state)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .display { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .phone-frame { width: 340px; height: 680px; }
+    @keyframes pulse-dot { 0%, 100% { transform: scale(1); opacity: 1 } 50% { transform: scale(1.4); opacity: 0.5 } }
+    .pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+    @keyframes confetti-fall { from { transform: translateY(-100px) rotate(0) } to { transform: translateY(700px) rotate(360deg) } }
+    .confetti-piece { animation: confetti-fall 3s linear infinite; }
+  </style>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      brand: { DEFAULT: '#7C3AED', dark: '#6D28D9', light: '#A78BFA' },
+      accent: { DEFAULT: '#F59E0B', dark: '#D97706' },
+      'a-red': '#EF4444', 'a-blue': '#3B82F6', 'a-yellow': '#F59E0B', 'a-green': '#10B981',
+    }}}}
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-900">
+
+  <!-- Header -->
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="flex items-center gap-3 mb-2">
+      <a href="index.html" class="text-sm text-brand hover:underline">← Hub</a>
+      <span class="text-slate-300">/</span>
+      <a href="01-design-system.html" class="text-sm text-slate-500 hover:text-slate-900">Design System</a>
+      <span class="text-slate-300">/</span>
+      <a href="02-player-question.html" class="text-sm text-slate-500 hover:text-slate-900">Question Open (Varyant B)</a>
+    </div>
+    <h1 class="display text-3xl md:text-4xl mb-2">Player Live Flow · Kalan 7 State</h1>
+    <p class="text-slate-600 max-w-3xl">Onaylanan <strong>Varyant B</strong> (light tema, şekil+metin, timer ring) dilinde Player'ın yaşadığı tüm akış. Akış sırasıyla: Nickname → Lobby → Question Open <em>(referans)</em> → Answer Submitted → Reveal → Mid-game Rank → Final Result → Error States.</p>
+  </div>
+
+  <!-- Flow strip -->
+  <div class="max-w-7xl mx-auto px-6 pb-20">
+
+    <!-- ROW 1: Entry → Lobby → Question (reference) -->
+    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 mt-2">Akış 1/4 · Giriş ve Bekleme</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+
+      <!-- 21. Nickname Giriş -->
+      <div>
+        <div class="mb-3">
+          <span class="text-xs font-bold text-brand">21</span>
+          <h3 class="text-lg font-bold">Nickname Giriş</h3>
+          <p class="text-sm text-slate-600">PIN doğrulandı, oyuncu adını belirler.</p>
+        </div>
+        <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-white rounded-[28px] overflow-hidden h-full flex flex-col">
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+            <!-- Top: brand + PIN -->
+            <div class="px-5 pt-3 pb-2 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-1.5">
+                <div class="w-6 h-6 rounded bg-brand flex items-center justify-center text-white font-bold text-xs">B</div>
+                <span class="font-bold">Bilbil</span>
+              </div>
+              <span class="text-slate-500 font-mono">PIN 738291</span>
+            </div>
+            <!-- Body -->
+            <div class="flex-1 flex flex-col justify-center px-6">
+              <p class="display text-3xl text-center mb-2">Adın ne?</p>
+              <p class="text-sm text-slate-500 text-center mb-8">Diğer oyuncular bu isimle görecek</p>
+              <input type="text" value="Mehmet" class="w-full text-center text-2xl font-bold border-2 border-slate-200 rounded-2xl py-4 focus:border-brand focus:outline-none">
+              <p class="text-xs text-slate-400 text-center mt-2">Maks 16 karakter</p>
+            </div>
+            <!-- CTA -->
+            <div class="px-5 pb-8">
+              <button class="w-full bg-brand text-white font-bold uppercase tracking-wider py-4 rounded-2xl shadow-lg shadow-brand/30 active:scale-95 transition">Katıl</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 22. Lobby -->
+      <div>
+        <div class="mb-3">
+          <span class="text-xs font-bold text-brand">22</span>
+          <h3 class="text-lg font-bold">Lobby (oyuncu tarafı)</h3>
+          <p class="text-sm text-slate-600">Host'un başlatmasını bekliyor.</p>
+        </div>
+        <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-white rounded-[28px] overflow-hidden h-full flex flex-col">
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+            <div class="px-5 pt-3 pb-2 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-1.5">
+                <div class="w-6 h-6 rounded bg-brand flex items-center justify-center text-white font-bold text-xs">B</div>
+                <span class="font-bold">Bilbil</span>
+              </div>
+              <span class="text-slate-500 font-mono">PIN 738291</span>
+            </div>
+            <!-- Body -->
+            <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+              <!-- Pulsing brand circle -->
+              <div class="relative w-20 h-20 mb-6">
+                <div class="absolute inset-0 rounded-full bg-brand/20 pulse-dot"></div>
+                <div class="absolute inset-2 rounded-full bg-brand flex items-center justify-center text-white font-bold text-2xl">M</div>
+              </div>
+              <p class="display text-2xl mb-1">Hazırsın Mehmet!</p>
+              <p class="text-sm text-slate-500 mb-6">Soru gelmesini bekliyoruz...</p>
+              <!-- Other players -->
+              <div class="bg-slate-50 rounded-2xl p-4 w-full">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Diğer Oyuncular · 7</p>
+                <div class="flex flex-wrap gap-1.5 justify-center">
+                  <span class="bg-white border border-slate-200 px-2.5 py-1 rounded-full text-xs font-medium">Ayşe</span>
+                  <span class="bg-white border border-slate-200 px-2.5 py-1 rounded-full text-xs font-medium">Zeynep</span>
+                  <span class="bg-white border border-slate-200 px-2.5 py-1 rounded-full text-xs font-medium">Emre</span>
+                  <span class="bg-white border border-slate-200 px-2.5 py-1 rounded-full text-xs font-medium">Selin</span>
+                  <span class="bg-white border border-slate-200 px-2.5 py-1 rounded-full text-xs font-medium">Burak</span>
+                  <span class="bg-white border border-slate-200 px-2.5 py-1 rounded-full text-xs font-medium">+2</span>
+                </div>
+              </div>
+            </div>
+            <!-- Hint -->
+            <div class="px-5 pb-8">
+              <p class="text-center text-xs text-slate-400">💡 Hızlı doğru cevap = daha çok puan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 23. Question Open (Reference, link to other file) -->
+      <div>
+        <div class="mb-3">
+          <span class="text-xs font-bold text-emerald-600">23 ✓</span>
+          <h3 class="text-lg font-bold">Question Open</h3>
+          <p class="text-sm text-slate-600"><a href="02-player-question.html" class="text-brand hover:underline">→ 02-player-question.html (Varyant B)</a></p>
+        </div>
+        <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame mx-auto opacity-60">
+          <div class="bg-white rounded-[28px] overflow-hidden h-full flex flex-col">
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+            <div class="px-4 pt-2 pb-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="relative w-12 h-12">
+                  <svg class="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
+                    <circle cx="18" cy="18" r="15" fill="none" stroke="#e2e8f0" stroke-width="3"/>
+                    <circle cx="18" cy="18" r="15" fill="none" stroke="#7C3AED" stroke-width="3" stroke-dasharray="94" stroke-dashoffset="33" stroke-linecap="round"/>
+                  </svg>
+                  <span class="absolute inset-0 flex items-center justify-center text-sm font-bold">13</span>
+                </div>
+                <div><p class="text-xs text-slate-500 font-medium">Soru</p><p class="text-sm font-bold">3/10</p></div>
+              </div>
+              <div class="text-right"><p class="text-xs text-slate-500 font-medium">Mehmet</p><p class="text-sm font-bold text-brand">1.240</p></div>
+            </div>
+            <div class="px-5 py-2"><p class="display text-base leading-snug">Türkiye'nin en uzun nehri?</p></div>
+            <div class="flex-1 grid grid-cols-2 gap-2 p-3">
+              <button class="bg-a-red rounded-xl text-white font-bold flex flex-col items-center justify-center gap-1 py-2"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="white"><path d="M12 3 L22 21 L2 21 Z"/></svg><span class="text-xs">Kızılırmak</span></button>
+              <button class="bg-a-blue rounded-xl text-white font-bold flex flex-col items-center justify-center gap-1 py-2"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="white"><path d="M12 2 L22 12 L12 22 L2 12 Z"/></svg><span class="text-xs">Sakarya</span></button>
+              <button class="bg-a-yellow rounded-xl text-white font-bold flex flex-col items-center justify-center gap-1 py-2"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="9"/></svg><span class="text-xs">Yeşilırmak</span></button>
+              <button class="bg-a-green rounded-xl text-white font-bold flex flex-col items-center justify-center gap-1 py-2"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="1"/></svg><span class="text-xs">Fırat</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 2: Answer Submitted → Reveal Doğru → Reveal Yanlış -->
+    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 mt-2">Akış 2/4 · Cevap ve Geri Bildirim</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+
+      <!-- 24. Answer Submitted -->
+      <div>
+        <div class="mb-3">
+          <span class="text-xs font-bold text-brand">24</span>
+          <h3 class="text-lg font-bold">Answer Submitted</h3>
+          <p class="text-sm text-slate-600">Cevap kilitlendi, sonucu beklerken.</p>
+        </div>
+        <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-white rounded-[28px] overflow-hidden h-full flex flex-col">
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+            <div class="px-4 pt-2 pb-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="relative w-10 h-10">
+                  <svg class="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
+                    <circle cx="18" cy="18" r="15" fill="none" stroke="#e2e8f0" stroke-width="3"/>
+                    <circle cx="18" cy="18" r="15" fill="none" stroke="#94a3b8" stroke-width="3" stroke-dasharray="94" stroke-dashoffset="56" stroke-linecap="round"/>
+                  </svg>
+                  <span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-500">7</span>
+                </div>
+                <p class="text-xs font-semibold text-slate-500">Soru 3/10</p>
+              </div>
+              <p class="text-sm font-bold text-brand">1.240</p>
+            </div>
+
+            <!-- Big check + selection feedback -->
+            <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+              <!-- Selected option color circle -->
+              <div class="w-28 h-28 rounded-full bg-a-blue flex items-center justify-center mb-6 shadow-xl pulse-dot">
+                <!-- icon: check -->
+                <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <p class="display text-2xl mb-1">Cevabın alındı</p>
+              <p class="text-sm text-slate-500 mb-6">Diğerleri bekleniyor</p>
+              <!-- Mini progress -->
+              <div class="bg-slate-50 rounded-xl px-4 py-3 w-full">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-semibold text-slate-500">Cevaplayan</span>
+                  <span class="text-xs font-bold">5 / 8</span>
+                </div>
+                <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-brand rounded-full" style="width: 62.5%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="px-5 pb-6"><p class="text-center text-xs text-slate-400">Doğru cevap birazdan açıklanacak</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 25a. Reveal — Doğru -->
+      <div>
+        <div class="mb-3">
+          <span class="text-xs font-bold text-emerald-600">25a</span>
+          <h3 class="text-lg font-bold">Reveal · Doğru</h3>
+          <p class="text-sm text-slate-600">Yeşil pulse + skor.</p>
+        </div>
+        <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-emerald-50 rounded-[28px] overflow-hidden h-full flex flex-col">
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+            <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+              <div class="w-32 h-32 rounded-full bg-a-green flex items-center justify-center mb-6 shadow-2xl">
+                <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <p class="display text-4xl text-emerald-700 mb-2">Doğru!</p>
+              <div class="bg-white border-2 border-emerald-300 rounded-2xl px-6 py-3 mb-4 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kazanılan puan</p>
+                <p class="display text-3xl text-a-green">+850</p>
+              </div>
+              <p class="text-sm text-slate-600 mb-1">Toplam puanın</p>
+              <p class="display text-2xl text-brand">2.090</p>
+            </div>
+            <div class="px-5 pb-6">
+              <div class="bg-white border border-emerald-200 rounded-xl px-4 py-3 flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-slate-500">Şu an</p>
+                  <p class="font-bold">2. sıradasın</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-xs text-slate-500">1.'den</p>
+                  <p class="font-bold text-amber-600">-220</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 25b. Reveal — Yanlış -->
+      <div>
+        <div class="mb-3">
+          <span class="text-xs font-bold text-red-600">25b</span>
+          <h3 class="text-lg font-bold">Reveal · Yanlış</h3>
+          <p class="text-sm text-slate-600">Centilmen ton, doğru cevap görsel olarak gösterilir.</p>
+        </div>
+        <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-rose-50 rounded-[28px] overflow-hidden h-full flex flex-col">
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+            <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+              <div class="w-32 h-32 rounded-full bg-a-red flex items-center justify-center mb-6 shadow-2xl">
+                <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" stroke-width="3.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+              </div>
+              <p class="display text-3xl text-rose-700 mb-3">Yanlış</p>
+              <p class="text-sm text-slate-600 mb-2">Doğru cevap:</p>
+              <!-- Correct option pill (color + shape + text) -->
+              <div class="bg-a-green text-white rounded-2xl px-5 py-3 flex items-center gap-3 mb-4 shadow-lg">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+                <span class="font-bold text-lg">Fırat</span>
+              </div>
+              <p class="text-sm text-slate-500">Bu sorudan 0 puan</p>
+            </div>
+            <div class="px-5 pb-6">
+              <div class="bg-white border border-rose-200 rounded-xl px-4 py-3 flex items-center justify-between">
+                <div>
+                  <p class="text-xs text-slate-500">Sıralama</p>
+                  <p class="font-bold">3. sıradasın</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-xs text-slate-500">Toplam</p>
+                  <p class="font-bold">1.240</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 3: Mid-game Rank → Final Kazandı → Final Kazanmadı -->
+    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 mt-2">Akış 3/4 · Sıralama ve Final</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+
+      <!-- 26. Mid-game Rank -->
+      <div>
+        <div class="mb-3">
+          <span class="text-xs font-bold text-brand">26</span>
+          <h3 class="text-lg font-bold">Mid-game Rank</h3>
+          <p class="text-sm text-slate-600">İki soru arasında: durduğun yer.</p>
+        </div>
+        <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-gradient-to-b from-brand to-brand-dark rounded-[28px] overflow-hidden h-full flex flex-col text-white">
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+            <div class="px-5 pt-2 pb-3 flex items-center justify-between text-xs">
+              <span class="font-semibold text-white/70">Soru 5/10 bitti</span>
+              <span class="font-semibold text-white/70">Mehmet</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+              <p class="text-sm uppercase tracking-wider text-white/70 mb-2">Şu an</p>
+              <p class="display text-7xl mb-2 leading-none">2.</p>
+              <p class="text-lg mb-8">sıradasın</p>
+              <p class="display text-4xl text-accent">2.090</p>
+              <p class="text-sm text-white/70 mb-6">puan</p>
+              <!-- Diff -->
+              <div class="grid grid-cols-2 gap-3 w-full">
+                <div class="bg-white/10 backdrop-blur rounded-xl px-3 py-3 text-center">
+                  <p class="text-xs text-white/70">1.'den</p>
+                  <p class="font-bold text-amber-300">-220</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-xl px-3 py-3 text-center">
+                  <p class="text-xs text-white/70">3.'ye</p>
+                  <p class="font-bold text-emerald-300">+340</p>
+                </div>
+              </div>
+            </div>
+            <div class="px-5 pb-6 text-center"><p class="text-xs text-white/60">Sonraki soru için hazırlan...</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 27a. Final — Kazandı -->
+      <div>
+        <div class="mb-3">
+          <span class="text-xs font-bold text-amber-600">27a</span>
+          <h3 class="text-lg font-bold">Final · Şampiyon</h3>
+          <p class="text-sm text-slate-600">Konfeti + madalya.</p>
+        </div>
+        <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-gradient-to-b from-amber-400 via-orange-500 to-rose-500 rounded-[28px] overflow-hidden h-full flex flex-col text-white relative">
+            <!-- Confetti pieces -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+              <div class="confetti-piece absolute top-0 left-[10%] w-2 h-2 bg-yellow-300" style="animation-delay: 0s"></div>
+              <div class="confetti-piece absolute top-0 left-[30%] w-2 h-3 bg-pink-300" style="animation-delay: 0.5s"></div>
+              <div class="confetti-piece absolute top-0 left-[55%] w-3 h-2 bg-emerald-300" style="animation-delay: 1s"></div>
+              <div class="confetti-piece absolute top-0 left-[75%] w-2 h-2 bg-blue-300" style="animation-delay: 1.5s"></div>
+              <div class="confetti-piece absolute top-0 left-[90%] w-2 h-3 bg-violet-300" style="animation-delay: 0.3s"></div>
+            </div>
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+            <div class="flex-1 flex flex-col items-center justify-center px-6 text-center relative z-10">
+              <!-- Trophy SVG -->
+              <svg class="w-24 h-24 text-white drop-shadow-lg mb-4" fill="currentColor" viewBox="0 0 24 24"><path d="M5 4h14v3a4 4 0 0 1-4 4h-1.5a4.5 4.5 0 0 1-3 0H9a4 4 0 0 1-4-4V4Zm-2 0h2v3a6 6 0 0 0 6 6v3H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-3a6 6 0 0 0 6-6V4h2v3a8 8 0 0 1-7 7.94V18h2a3 3 0 0 1 3 3v1H7v-1a3 3 0 0 1 3-3h2v-3.06A8 8 0 0 1 5 7V4H3a1 1 0 0 1 0-2h18a1 1 0 0 1 0 2h-2"/></svg>
+              <p class="display text-5xl mb-1">1. oldun!</p>
+              <p class="text-sm text-white/90 mb-6">Şampiyon Mehmet 🎉</p>
+              <div class="bg-white/20 backdrop-blur rounded-2xl px-6 py-3 mb-6 border border-white/30">
+                <p class="text-xs uppercase tracking-wider text-white/80">Toplam puan</p>
+                <p class="display text-4xl">8.420</p>
+              </div>
+              <div class="grid grid-cols-3 gap-2 w-full text-xs">
+                <div class="bg-white/15 rounded-lg py-2"><p class="text-white/70">Doğru</p><p class="font-bold text-base">9/10</p></div>
+                <div class="bg-white/15 rounded-lg py-2"><p class="text-white/70">Ortalama</p><p class="font-bold text-base">2.4s</p></div>
+                <div class="bg-white/15 rounded-lg py-2"><p class="text-white/70">Seri</p><p class="font-bold text-base">7</p></div>
+              </div>
+            </div>
+            <div class="px-5 pb-6 relative z-10">
+              <button class="w-full bg-white text-rose-600 font-bold uppercase tracking-wider py-3 rounded-2xl shadow-lg active:scale-95 transition">Tekrar Oyna</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 27b. Final — Kazanmadı -->
+      <div>
+        <div class="mb-3">
+          <span class="text-xs font-bold text-slate-600">27b</span>
+          <h3 class="text-lg font-bold">Final · Centilmen</h3>
+          <p class="text-sm text-slate-600">Kazanmadıysa: sakin ama olumlu.</p>
+        </div>
+        <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-white rounded-[28px] overflow-hidden h-full flex flex-col">
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+            <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+              <div class="w-20 h-20 rounded-full bg-brand/10 flex items-center justify-center mb-4">
+                <span class="display text-3xl text-brand">5.</span>
+              </div>
+              <p class="display text-3xl mb-2">İyi oyundu, Mehmet</p>
+              <p class="text-sm text-slate-500 mb-6">8 oyuncu arasında <strong>5.</strong> oldun</p>
+              <div class="bg-slate-50 rounded-2xl px-6 py-4 mb-6 w-full">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-1">Toplam puan</p>
+                <p class="display text-3xl text-brand">4.280</p>
+              </div>
+              <div class="grid grid-cols-3 gap-2 w-full text-xs mb-2">
+                <div class="bg-slate-50 rounded-lg py-2"><p class="text-slate-500">Doğru</p><p class="font-bold text-base">6/10</p></div>
+                <div class="bg-slate-50 rounded-lg py-2"><p class="text-slate-500">Ortalama</p><p class="font-bold text-base">3.8s</p></div>
+                <div class="bg-slate-50 rounded-lg py-2"><p class="text-slate-500">Seri</p><p class="font-bold text-base">3</p></div>
+              </div>
+              <p class="text-xs text-slate-400 mt-2">Şampiyon: <strong>Ayşe (8.420)</strong></p>
+            </div>
+            <div class="px-5 pb-6 space-y-2">
+              <button class="w-full bg-brand text-white font-bold uppercase tracking-wider py-3 rounded-2xl shadow-md active:scale-95 transition">Tekrar Oyna</button>
+              <button class="w-full bg-white text-slate-700 border border-slate-200 font-medium py-3 rounded-2xl active:scale-95 transition">Sonuçları Paylaş</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 4: Error states -->
+    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 mt-2">Akış 4/4 · Hata Durumları</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+
+      <!-- 28a. Oda dolu -->
+      <div>
+        <div class="mb-2"><span class="text-xs font-bold text-rose-600">28a</span><h3 class="text-sm font-bold">Oda Dolu</h3></div>
+        <div class="bg-black rounded-2xl p-2 shadow-lg" style="width: 220px; height: 440px;">
+          <div class="bg-white rounded-xl overflow-hidden h-full flex flex-col">
+            <div class="h-5 flex items-center justify-center"><div class="w-12 h-3 bg-black rounded-full"></div></div>
+            <div class="flex-1 flex flex-col items-center justify-center px-4 text-center">
+              <div class="w-14 h-14 rounded-full bg-rose-100 flex items-center justify-center mb-3">
+                <svg class="w-8 h-8 text-rose-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3.75m-9-3.75h.008v.008H9V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 3.75h.008v.008H9v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM9 16.5h.008v.008H9V16.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM12 16.5h.008v.008H12V16.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+              </div>
+              <p class="font-bold mb-1">Oda dolu</p>
+              <p class="text-xs text-slate-500">Bu oyunda 50 oyuncu sınırına ulaşıldı</p>
+            </div>
+            <div class="px-3 pb-4"><button class="w-full bg-slate-900 text-white text-xs font-bold py-2.5 rounded-xl">Geri Dön</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 28b. Host disconnect -->
+      <div>
+        <div class="mb-2"><span class="text-xs font-bold text-amber-600">28b</span><h3 class="text-sm font-bold">Host Ayrıldı</h3></div>
+        <div class="bg-black rounded-2xl p-2 shadow-lg" style="width: 220px; height: 440px;">
+          <div class="bg-white rounded-xl overflow-hidden h-full flex flex-col">
+            <div class="h-5 flex items-center justify-center"><div class="w-12 h-3 bg-black rounded-full"></div></div>
+            <div class="flex-1 flex flex-col items-center justify-center px-4 text-center">
+              <div class="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mb-3">
+                <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>
+              </div>
+              <p class="font-bold mb-1">Oyun bitirildi</p>
+              <p class="text-xs text-slate-500 mb-3">Host bağlantıyı kesti</p>
+              <p class="text-xs bg-slate-50 rounded-lg px-3 py-2 text-slate-600">Skorun kaydedildi: <strong>1.240</strong></p>
+            </div>
+            <div class="px-3 pb-4"><button class="w-full bg-slate-900 text-white text-xs font-bold py-2.5 rounded-xl">Ana Sayfa</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 28c. Reconnecting banner -->
+      <div>
+        <div class="mb-2"><span class="text-xs font-bold text-blue-600">28c</span><h3 class="text-sm font-bold">Tekrar Bağlanılıyor</h3></div>
+        <div class="bg-black rounded-2xl p-2 shadow-lg" style="width: 220px; height: 440px;">
+          <div class="bg-white rounded-xl overflow-hidden h-full flex flex-col">
+            <div class="h-5 flex items-center justify-center"><div class="w-12 h-3 bg-black rounded-full"></div></div>
+            <!-- Top banner -->
+            <div class="bg-amber-500 text-white px-3 py-2 text-xs flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-white pulse-dot"></div>
+              <span class="font-semibold">Tekrar bağlanılıyor...</span>
+            </div>
+            <!-- Faded normal content -->
+            <div class="flex-1 flex flex-col items-center justify-center px-4 text-center opacity-50">
+              <div class="w-12 h-12 rounded-full bg-brand mb-3"></div>
+              <p class="text-sm font-bold">Mehmet</p>
+              <p class="text-xs text-slate-500">Soru 3/10</p>
+            </div>
+            <div class="px-3 pb-4 opacity-50"><div class="w-full bg-slate-100 rounded-xl h-12"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 28d. Geçersiz PIN -->
+      <div>
+        <div class="mb-2"><span class="text-xs font-bold text-rose-600">28d</span><h3 class="text-sm font-bold">Geçersiz PIN</h3></div>
+        <div class="bg-black rounded-2xl p-2 shadow-lg" style="width: 220px; height: 440px;">
+          <div class="bg-white rounded-xl overflow-hidden h-full flex flex-col">
+            <div class="h-5 flex items-center justify-center"><div class="w-12 h-3 bg-black rounded-full"></div></div>
+            <div class="px-4 pt-3 pb-2 flex items-center gap-1.5">
+              <div class="w-5 h-5 rounded bg-brand flex items-center justify-center text-white font-bold text-xs">B</div>
+              <span class="font-bold text-xs">Bilbil</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center justify-center px-4 text-center">
+              <p class="display text-base mb-2">PIN gir</p>
+              <input value="123456" class="w-full text-center text-2xl font-bold border-2 border-rose-500 rounded-xl py-3 bg-rose-50 mb-2" readonly>
+              <p class="text-xs text-rose-600 font-medium">Bu PIN ile aktif oyun yok</p>
+            </div>
+            <div class="px-3 pb-4"><button class="w-full bg-brand text-white text-xs font-bold py-2.5 rounded-xl">Tekrar Dene</button></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Notes for next steps -->
+    <div class="rounded-xl bg-white border-2 border-violet-200 p-6">
+      <h3 class="display text-lg mb-3 flex items-center gap-2">📋 Bu Akıştaki Tasarım Kararları</h3>
+      <ul class="text-sm text-slate-700 space-y-1.5 list-disc list-inside">
+        <li><strong>Lobby'de pulsing dot + kullanıcı inisyali</strong> — host'un çağrı için "hayatta" sinyali, "bağlantı koptu mu?" anksiyetesini önler</li>
+        <li><strong>Answer Submitted'da seçilen şıkkın renk halkası</strong> — oyuncu "ne seçtim?" diye düşünmesin, görsel hatırlatma</li>
+        <li><strong>Reveal'da renk + şekil + metin üçlü kodlama</strong> — yanlış cevap durumunda doğruyu açıkça gösterir, renk körü erişilebilirlik</li>
+        <li><strong>Mid-game Rank'te "1.'den -X" / "3.'ye +Y" delta</strong> — kullanıcıya rekabetçi tansiyon sunar</li>
+        <li><strong>Final Kazandı vs Kazanmadı için ayrı tasarım</strong> — kazanan için coşku, kazanmayan için centilmen — Final Kazanmadı'da şampiyonu da gösterir (toplulukçu tutum)</li>
+        <li><strong>Hata durumları küçük ve net</strong> — bir buton, bir mesaj, dramatize değil pragmatik</li>
+      </ul>
+    </div>
+
+  </div>
+</body>
+</html>

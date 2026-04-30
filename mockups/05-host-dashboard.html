@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bilbil — Host Dashboard (7 ekran)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .display { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .browser-frame { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+  </style>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      brand: { DEFAULT: '#7C3AED', dark: '#6D28D9', light: '#A78BFA' },
+      accent: { DEFAULT: '#F59E0B', dark: '#D97706' },
+      'a-red': '#EF4444', 'a-blue': '#3B82F6', 'a-yellow': '#F59E0B', 'a-green': '#10B981',
+    }}}}
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-900">
+
+  <!-- Header -->
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="flex items-center gap-3 mb-2">
+      <a href="index.html" class="text-sm text-brand hover:underline">← Hub</a>
+      <span class="text-slate-300">/</span>
+      <a href="01-design-system.html" class="text-sm text-slate-500 hover:text-slate-900">Design System</a>
+    </div>
+    <h1 class="display text-3xl md:text-4xl mb-2">Host Dashboard · 7 Ekran (Clean Panel)</h1>
+    <p class="text-slate-600 max-w-3xl">Host'un quiz oluşturma/yönetme/analiz tarafı. Hibrit yaklaşımın <strong>clean panel</strong> dünyası: monokrom + brand accent, profesyonel, sakin. Quiz creation için 2 varyant; diğerleri tek pas.</p>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 pb-20 space-y-12">
+
+    <!-- =========================================== -->
+    <!-- 14. NAVBAR (layout) -->
+    <!-- =========================================== -->
+    <div>
+      <div class="mb-3 flex items-baseline gap-3">
+        <span class="text-xs font-bold text-brand bg-brand/10 px-2 py-1 rounded">14</span>
+        <h2 class="text-xl font-bold">Navbar (Layout)</h2>
+        <span class="text-xs text-slate-500">tüm host sayfalarında ortak</span>
+      </div>
+      <div class="rounded-xl overflow-hidden browser-frame bg-white">
+        <header class="border-b border-slate-200 bg-white">
+          <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+            <div class="flex items-center gap-8">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-brand flex items-center justify-center text-white font-bold">B</div>
+                <span class="font-bold">Bilbil</span>
+              </div>
+              <nav class="flex items-center gap-1">
+                <a class="px-3 py-1.5 text-sm font-medium text-slate-900 bg-slate-100 rounded-md">Quiz'lerim</a>
+                <a class="px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-md">Geçmiş</a>
+              </nav>
+            </div>
+            <div class="flex items-center gap-3">
+              <button class="text-sm font-medium text-brand hover:bg-brand/5 px-3 py-1.5 rounded-md">+ Yeni Quiz</button>
+              <div class="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-slate-100 cursor-pointer">
+                <div class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold">SA</div>
+                <span class="text-sm font-medium">Sefer Algan</span>
+                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- 8. DASHBOARD (boş + dolu) -->
+    <!-- =========================================== -->
+    <div>
+      <div class="mb-3 flex items-baseline gap-3">
+        <span class="text-xs font-bold text-brand bg-brand/10 px-2 py-1 rounded">8</span>
+        <h2 class="text-xl font-bold">Dashboard · /dashboard</h2>
+        <span class="text-xs text-slate-500">boş + dolu varyantlar</span>
+      </div>
+      <div class="grid lg:grid-cols-2 gap-6">
+
+        <!-- 8a. Empty state -->
+        <div>
+          <p class="text-sm font-semibold text-slate-500 mb-2 uppercase tracking-wider">8a · Boş (yeni hesap)</p>
+          <div class="rounded-xl overflow-hidden browser-frame bg-white">
+            <header class="border-b border-slate-200 px-5 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded bg-brand text-white font-bold flex items-center justify-center text-sm">B</div>
+                <span class="font-bold text-sm">Bilbil</span>
+              </div>
+              <div class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold">SA</div>
+            </header>
+            <div class="p-12 flex flex-col items-center justify-center text-center min-h-[400px]">
+              <!-- Illustration: stylized quiz card stack -->
+              <svg class="w-32 h-32 mb-6 text-brand/30" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 64 64">
+                <rect x="14" y="20" width="36" height="32" rx="3" fill="currentColor" opacity="0.2"/>
+                <rect x="10" y="14" width="36" height="32" rx="3" fill="currentColor" opacity="0.4"/>
+                <rect x="6" y="8" width="36" height="32" rx="3" fill="white" stroke="currentColor"/>
+                <line x1="12" y1="16" x2="32" y2="16" stroke-linecap="round"/>
+                <line x1="12" y1="22" x2="28" y2="22" stroke-linecap="round" opacity="0.5"/>
+                <circle cx="14" cy="32" r="2"/>
+                <line x1="20" y1="32" x2="34" y2="32" stroke-linecap="round" opacity="0.5"/>
+              </svg>
+              <p class="display text-2xl mb-2">Henüz quiz oluşturmadın</p>
+              <p class="text-sm text-slate-600 max-w-sm mb-6">İlk quiz'ini birkaç dakikada hazırla, oyuncularını PIN ile davet et</p>
+              <button class="bg-brand text-white font-medium px-6 py-2.5 rounded-md hover:bg-brand-dark transition shadow-sm">+ İlk Quiz'imi Oluştur</button>
+              <a class="text-sm text-brand mt-3 hover:underline">Ya da örnek bir quiz'le başla →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8b. Filled -->
+        <div>
+          <p class="text-sm font-semibold text-slate-500 mb-2 uppercase tracking-wider">8b · Dolu (3+ quiz)</p>
+          <div class="rounded-xl overflow-hidden browser-frame bg-white">
+            <header class="border-b border-slate-200 px-5 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded bg-brand text-white font-bold flex items-center justify-center text-sm">B</div>
+                <span class="font-bold text-sm">Bilbil</span>
+              </div>
+              <div class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold">SA</div>
+            </header>
+            <div class="p-5">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="display text-xl">Quiz'lerim</h3>
+                  <p class="text-xs text-slate-500">3 quiz · 5 oyun oynandı</p>
+                </div>
+                <button class="bg-brand text-white font-medium px-4 py-2 rounded-md text-sm hover:bg-brand-dark transition">+ Yeni Quiz</button>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <!-- Card 1 -->
+                <div class="rounded-lg border border-slate-200 p-4 hover:shadow-md hover:border-brand/30 transition">
+                  <div class="flex items-start justify-between mb-2">
+                    <span class="text-xs font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded">12 soru</span>
+                    <button class="text-slate-400 -mt-1">⋯</button>
+                  </div>
+                  <p class="font-semibold text-sm">Türkiye Coğrafyası</p>
+                  <p class="text-xs text-slate-500 mt-0.5">Son: 3 gün önce · 24 oyuncu</p>
+                  <button class="w-full bg-brand text-white text-xs font-medium py-1.5 rounded mt-3">Başlat</button>
+                </div>
+                <!-- Card 2 -->
+                <div class="rounded-lg border border-slate-200 p-4 hover:shadow-md hover:border-brand/30 transition">
+                  <div class="flex items-start justify-between mb-2">
+                    <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">Taslak</span>
+                    <button class="text-slate-400 -mt-1">⋯</button>
+                  </div>
+                  <p class="font-semibold text-sm">90'lar Pop Müzik</p>
+                  <p class="text-xs text-slate-500 mt-0.5">Henüz oynanmadı · 8 soru</p>
+                  <button class="w-full border border-slate-300 text-xs font-medium py-1.5 rounded mt-3">Düzenle</button>
+                </div>
+                <!-- Card 3 -->
+                <div class="rounded-lg border border-slate-200 p-4 hover:shadow-md hover:border-brand/30 transition">
+                  <div class="flex items-start justify-between mb-2">
+                    <span class="text-xs font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded">10 soru</span>
+                    <button class="text-slate-400 -mt-1">⋯</button>
+                  </div>
+                  <p class="font-semibold text-sm">Atatürk İlkeleri</p>
+                  <p class="text-xs text-slate-500 mt-0.5">Son: 1 hafta önce · 18 oyuncu</p>
+                  <button class="w-full bg-brand text-white text-xs font-medium py-1.5 rounded mt-3">Başlat</button>
+                </div>
+                <!-- New card -->
+                <div class="rounded-lg border-2 border-dashed border-slate-300 p-4 flex flex-col items-center justify-center text-center hover:border-brand/40 hover:bg-brand/5 cursor-pointer transition">
+                  <span class="text-2xl text-slate-400 mb-1">+</span>
+                  <p class="text-sm font-medium text-slate-700">Yeni Quiz</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- 9. QUIZ CREATION (2 variants) -->
+    <!-- =========================================== -->
+    <div>
+      <div class="mb-3 flex items-baseline gap-3">
+        <span class="text-xs font-bold text-brand bg-brand/10 px-2 py-1 rounded">9</span>
+        <h2 class="text-xl font-bold">Yeni Quiz · /quizzes/new</h2>
+        <span class="text-xs text-slate-500">2 varyant — kullanıcı seçecek</span>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+
+        <!-- VARIANT A: Long form -->
+        <div>
+          <div class="mb-2">
+            <span class="bg-brand/10 text-brand text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Varyant A · Öneri</span>
+            <h3 class="text-lg font-bold mt-2">Long Form · Drag-Drop</h3>
+            <p class="text-sm text-slate-600">Tüm sorular tek sayfada açık, drag handle ile sıralanır. Hızlı toplu görüş, scroll var.</p>
+          </div>
+          <div class="rounded-xl overflow-hidden browser-frame bg-slate-50">
+            <header class="border-b border-slate-200 px-5 py-3 bg-white flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded bg-brand text-white font-bold flex items-center justify-center text-sm">B</div>
+                <span class="font-bold text-sm">Bilbil</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="text-sm text-slate-600 px-3 py-1.5">İptal</button>
+                <button class="bg-brand text-white text-sm font-medium px-4 py-1.5 rounded-md">Yayınla</button>
+              </div>
+            </header>
+            <div class="p-5 space-y-4">
+              <!-- Title section -->
+              <div class="bg-white rounded-lg border border-slate-200 p-4 space-y-3">
+                <div>
+                  <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Quiz Başlığı</label>
+                  <input class="w-full text-lg font-semibold border-0 px-0 py-1 focus:outline-none focus:ring-0 placeholder:text-slate-400" placeholder="Örn. Türkiye Coğrafyası" value="Türkiye Coğrafyası">
+                </div>
+                <div>
+                  <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Açıklama (opsiyonel)</label>
+                  <input class="w-full text-sm text-slate-700 border-0 px-0 py-0.5 focus:outline-none placeholder:text-slate-400" value="Şehirler, nehirler, dağlar — temel coğrafya bilgisi">
+                </div>
+              </div>
+              <!-- Question 1 -->
+              <div class="bg-white rounded-lg border border-slate-200 p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-2 text-slate-400 cursor-grab">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="7" cy="5" r="1.5"/><circle cx="13" cy="5" r="1.5"/><circle cx="7" cy="10" r="1.5"/><circle cx="13" cy="10" r="1.5"/><circle cx="7" cy="15" r="1.5"/><circle cx="13" cy="15" r="1.5"/></svg>
+                    <span class="text-xs font-semibold text-slate-500">SORU 1</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <select class="text-xs border border-slate-200 rounded px-2 py-1"><option>20s</option></select>
+                    <button class="text-slate-400 hover:text-rose-600 text-sm">🗑</button>
+                  </div>
+                </div>
+                <input class="w-full text-base font-medium border-b border-slate-200 px-0 py-1 mb-3 focus:outline-none focus:border-brand" placeholder="Soru metni..." value="Türkiye'nin en uzun nehri hangisidir?">
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="bg-a-red/10 border border-a-red/30 rounded-lg p-2 flex items-center gap-2">
+                    <input type="radio" name="q1" class="accent-a-red">
+                    <svg class="w-4 h-4 text-a-red flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 L22 21 L2 21 Z"/></svg>
+                    <input class="bg-transparent flex-1 text-sm focus:outline-none" placeholder="Şık 1" value="Kızılırmak">
+                  </div>
+                  <div class="bg-a-blue/10 border border-a-blue/30 rounded-lg p-2 flex items-center gap-2">
+                    <input type="radio" name="q1" class="accent-a-blue">
+                    <svg class="w-4 h-4 text-a-blue flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L22 12 L12 22 L2 12 Z"/></svg>
+                    <input class="bg-transparent flex-1 text-sm focus:outline-none" placeholder="Şık 2" value="Sakarya">
+                  </div>
+                  <div class="bg-a-yellow/10 border border-a-yellow/30 rounded-lg p-2 flex items-center gap-2">
+                    <input type="radio" name="q1" class="accent-a-yellow">
+                    <svg class="w-4 h-4 text-a-yellow flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/></svg>
+                    <input class="bg-transparent flex-1 text-sm focus:outline-none" placeholder="Şık 3" value="Yeşilırmak">
+                  </div>
+                  <div class="bg-a-green/10 border-2 border-a-green rounded-lg p-2 flex items-center gap-2">
+                    <input type="radio" name="q1" class="accent-a-green" checked>
+                    <svg class="w-4 h-4 text-a-green flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+                    <input class="bg-transparent flex-1 text-sm focus:outline-none font-semibold" placeholder="Şık 4" value="Fırat">
+                  </div>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">✓ Doğru cevabı işaretledin</p>
+              </div>
+              <!-- Question 2 (collapsed preview) -->
+              <div class="bg-white rounded-lg border border-slate-200 p-4 opacity-70">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-slate-400 cursor-grab">⋮⋮</span>
+                    <span class="text-xs font-semibold text-slate-500">SORU 2</span>
+                    <span class="text-sm">Türkiye'nin başkenti nedir?</span>
+                  </div>
+                  <span class="text-xs text-slate-400">20s</span>
+                </div>
+              </div>
+              <!-- Add new -->
+              <button class="w-full border-2 border-dashed border-slate-300 hover:border-brand/40 hover:bg-brand/5 text-slate-500 hover:text-brand py-3 rounded-lg text-sm font-medium transition">+ Soru Ekle</button>
+            </div>
+          </div>
+          <div class="mt-3 text-xs text-slate-600 space-y-1">
+            <p><strong class="text-emerald-700">+</strong> Toplu görüş kolay, kopyala-yapıştır akışı hızlı</p>
+            <p><strong class="text-emerald-700">+</strong> Drag-drop ile sıralama net</p>
+            <p><strong class="text-amber-700">~</strong> 20+ soruda scroll uzar, navigasyon zor</p>
+          </div>
+        </div>
+
+        <!-- VARIANT B: Sidebar + main editor -->
+        <div>
+          <div class="mb-2">
+            <span class="bg-amber-100 text-amber-700 text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Varyant B</span>
+            <h3 class="text-lg font-bold mt-2">Sidebar Liste + Tek Editör</h3>
+            <p class="text-sm text-slate-600">Sol sidebar'da soru thumbnails, sağda aktif soru editörü. Notion benzeri.</p>
+          </div>
+          <div class="rounded-xl overflow-hidden browser-frame bg-white">
+            <header class="border-b border-slate-200 px-5 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-7 h-7 rounded bg-brand text-white font-bold flex items-center justify-center text-sm">B</div>
+                <input class="font-semibold text-sm border-0 focus:outline-none" value="Türkiye Coğrafyası">
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="text-sm text-slate-600">İptal</button>
+                <button class="bg-brand text-white text-sm font-medium px-4 py-1.5 rounded-md">Yayınla</button>
+              </div>
+            </header>
+            <div class="grid grid-cols-12 min-h-[440px]">
+              <!-- Sidebar -->
+              <div class="col-span-4 border-r border-slate-200 bg-slate-50 p-3 space-y-1.5 text-sm">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2 mb-2">Sorular · 4</p>
+                <div class="bg-white border-l-2 border-brand rounded-r-md px-3 py-2 cursor-pointer">
+                  <p class="text-xs text-slate-500 font-mono">01</p>
+                  <p class="font-medium truncate">Türkiye'nin en uzun nehri?</p>
+                </div>
+                <div class="hover:bg-white px-3 py-2 rounded-md cursor-pointer">
+                  <p class="text-xs text-slate-500 font-mono">02</p>
+                  <p class="text-slate-700 truncate">Türkiye'nin başkenti nedir?</p>
+                </div>
+                <div class="hover:bg-white px-3 py-2 rounded-md cursor-pointer">
+                  <p class="text-xs text-slate-500 font-mono">03</p>
+                  <p class="text-slate-700 truncate">En yüksek dağ hangisidir?</p>
+                </div>
+                <div class="hover:bg-white px-3 py-2 rounded-md cursor-pointer">
+                  <p class="text-xs text-slate-500 font-mono">04</p>
+                  <p class="text-slate-700 truncate">Hangisi Karadeniz şehri?</p>
+                </div>
+                <button class="w-full mt-3 border border-dashed border-slate-300 hover:border-brand text-slate-500 py-2 rounded-md text-sm">+ Soru Ekle</button>
+              </div>
+              <!-- Editor -->
+              <div class="col-span-8 p-5">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Soru 1 / 4</span>
+                  <select class="text-xs border border-slate-200 rounded px-2 py-1"><option>20 saniye</option></select>
+                </div>
+                <textarea class="w-full text-lg font-medium border-b border-slate-200 px-0 py-2 mb-4 focus:outline-none focus:border-brand resize-none" rows="2">Türkiye'nin en uzun nehri hangisidir?</textarea>
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Şıklar (doğru cevabı işaretle)</p>
+                <div class="space-y-2">
+                  <div class="bg-a-red/10 border border-a-red/30 rounded-lg p-2.5 flex items-center gap-2">
+                    <input type="radio" name="q1b">
+                    <svg class="w-4 h-4 text-a-red" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 L22 21 L2 21 Z"/></svg>
+                    <input class="bg-transparent flex-1 text-sm focus:outline-none" value="Kızılırmak">
+                  </div>
+                  <div class="bg-a-blue/10 border border-a-blue/30 rounded-lg p-2.5 flex items-center gap-2">
+                    <input type="radio" name="q1b">
+                    <svg class="w-4 h-4 text-a-blue" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L22 12 L12 22 L2 12 Z"/></svg>
+                    <input class="bg-transparent flex-1 text-sm focus:outline-none" value="Sakarya">
+                  </div>
+                  <div class="bg-a-yellow/10 border border-a-yellow/30 rounded-lg p-2.5 flex items-center gap-2">
+                    <input type="radio" name="q1b">
+                    <svg class="w-4 h-4 text-a-yellow" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/></svg>
+                    <input class="bg-transparent flex-1 text-sm focus:outline-none" value="Yeşilırmak">
+                  </div>
+                  <div class="bg-a-green/10 border-2 border-a-green rounded-lg p-2.5 flex items-center gap-2">
+                    <input type="radio" name="q1b" checked>
+                    <svg class="w-4 h-4 text-a-green" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+                    <input class="bg-transparent flex-1 text-sm focus:outline-none font-semibold" value="Fırat">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 text-xs text-slate-600 space-y-1">
+            <p><strong class="text-emerald-700">+</strong> 20+ soruda navigasyon kolay (sidebar'dan zıpla)</p>
+            <p><strong class="text-emerald-700">+</strong> Tek soru odaklı, dikkat dağılmaz</p>
+            <p><strong class="text-amber-700">~</strong> Drag sıralama daha az görünür (sidebar'da küçük)</p>
+            <p><strong class="text-amber-700">~</strong> Mobil/tablet'te sidebar collapse gerekir, ekstra iş</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- 10. QUIZ PREVIEW + START -->
+    <!-- =========================================== -->
+    <div>
+      <div class="mb-3 flex items-baseline gap-3">
+        <span class="text-xs font-bold text-brand bg-brand/10 px-2 py-1 rounded">10</span>
+        <h2 class="text-xl font-bold">Quiz Önizleme · /quizzes/[id]</h2>
+      </div>
+      <div class="rounded-xl overflow-hidden browser-frame bg-slate-50">
+        <header class="border-b border-slate-200 px-5 py-3 bg-white flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded bg-brand text-white font-bold flex items-center justify-center text-sm">B</div>
+            <span class="font-bold text-sm">Bilbil</span>
+          </div>
+          <a class="text-sm text-slate-600">← Quiz'lerim</a>
+        </header>
+        <div class="grid lg:grid-cols-3 gap-6 p-6">
+          <!-- Left: meta + CTA -->
+          <div class="lg:col-span-1 space-y-4">
+            <div>
+              <span class="text-xs font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded">12 soru</span>
+              <h2 class="display text-3xl mt-2">Türkiye Coğrafyası</h2>
+              <p class="text-sm text-slate-600 mt-1">Şehirler, nehirler, dağlar — temel coğrafya bilgisi</p>
+            </div>
+            <div class="bg-white rounded-lg border border-slate-200 p-4 text-sm space-y-2">
+              <div class="flex items-center justify-between"><span class="text-slate-500">Soru sayısı</span><span class="font-semibold">12</span></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Toplam süre</span><span class="font-semibold">~ 4 dk</span></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Son oynanma</span><span class="font-semibold">3 gün önce</span></div>
+              <div class="flex items-center justify-between"><span class="text-slate-500">Toplam oyuncu</span><span class="font-semibold">24</span></div>
+            </div>
+            <button class="w-full bg-brand text-white font-bold uppercase tracking-wider py-4 rounded-xl shadow-lg shadow-brand/30 hover:bg-brand-dark transition">▶ Oyunu Başlat</button>
+            <button class="w-full border border-slate-300 text-sm font-medium py-2 rounded-md hover:bg-white">Düzenle</button>
+          </div>
+          <!-- Right: question previews -->
+          <div class="lg:col-span-2 space-y-2">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Sorular</p>
+            <div class="bg-white rounded-lg border border-slate-200 p-3 flex items-start gap-3">
+              <span class="text-xs font-mono text-slate-400 mt-0.5">01</span>
+              <div class="flex-1">
+                <p class="text-sm font-medium">Türkiye'nin en uzun nehri hangisidir?</p>
+                <p class="text-xs text-slate-500 mt-0.5">4 şık · 20s</p>
+              </div>
+            </div>
+            <div class="bg-white rounded-lg border border-slate-200 p-3 flex items-start gap-3">
+              <span class="text-xs font-mono text-slate-400 mt-0.5">02</span>
+              <div class="flex-1">
+                <p class="text-sm font-medium">Türkiye'nin başkenti nedir?</p>
+                <p class="text-xs text-slate-500 mt-0.5">4 şık · 15s</p>
+              </div>
+            </div>
+            <div class="bg-white rounded-lg border border-slate-200 p-3 flex items-start gap-3">
+              <span class="text-xs font-mono text-slate-400 mt-0.5">03</span>
+              <div class="flex-1">
+                <p class="text-sm font-medium">Türkiye'nin en yüksek dağı hangisidir?</p>
+                <p class="text-xs text-slate-500 mt-0.5">4 şık · 20s</p>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 italic text-center pt-2">+ 9 soru daha</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- 11. QUIZ EDIT (referans, creation gibi) -->
+    <!-- =========================================== -->
+    <div>
+      <div class="mb-3 flex items-baseline gap-3">
+        <span class="text-xs font-bold text-brand bg-brand/10 px-2 py-1 rounded">11</span>
+        <h2 class="text-xl font-bold">Quiz Düzenle · /quizzes/[id]/edit</h2>
+        <span class="text-xs text-slate-500">Creation ile aynı form, mevcut veri yüklü</span>
+      </div>
+      <div class="bg-white rounded-lg border border-slate-200 p-4 text-sm text-slate-700">
+        <p class="mb-2">Düzenleme ekranı = Quiz Creation (Varyant A veya B — kullanıcının seçimine göre) + iki ek:</p>
+        <ul class="list-disc list-inside space-y-1 text-slate-600">
+          <li>Tüm alanlar mevcut quiz verisiyle doldurulmuş</li>
+          <li>Sayfa altında <strong class="text-rose-600">"Quiz'i Sil"</strong> tehlikeli aksiyon (confirm dialog ile)</li>
+          <li>Üstte "Kaydet" butonu (otomatik kayıt yerine açık aksiyon — yanlışlıkla yayınlamayı önler)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- 12. HISTORY -->
+    <!-- =========================================== -->
+    <div>
+      <div class="mb-3 flex items-baseline gap-3">
+        <span class="text-xs font-bold text-brand bg-brand/10 px-2 py-1 rounded">12</span>
+        <h2 class="text-xl font-bold">Geçmiş Oyunlar · /history</h2>
+      </div>
+      <div class="rounded-xl overflow-hidden browser-frame bg-white">
+        <header class="border-b border-slate-200 px-5 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded bg-brand text-white font-bold flex items-center justify-center text-sm">B</div>
+            <span class="font-bold text-sm">Bilbil</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <input class="text-sm border border-slate-200 rounded-md px-3 py-1.5 w-48" placeholder="Quiz adında ara...">
+            <select class="text-sm border border-slate-200 rounded-md px-2 py-1.5">
+              <option>Tüm oyunlar</option><option>Tamamlanan</option><option>Yarıda kalan</option>
+            </select>
+          </div>
+        </header>
+        <div class="p-5">
+          <h3 class="display text-xl mb-4">Geçmiş Oyunlar · 5</h3>
+          <table class="w-full text-sm">
+            <thead class="text-xs uppercase tracking-wider text-slate-500 border-b border-slate-200">
+              <tr>
+                <th class="text-left py-2 pr-4 font-semibold">Quiz</th>
+                <th class="text-left py-2 pr-4 font-semibold">PIN</th>
+                <th class="text-left py-2 pr-4 font-semibold">Oyuncu</th>
+                <th class="text-left py-2 pr-4 font-semibold">Tarih</th>
+                <th class="text-left py-2 pr-4 font-semibold">Şampiyon</th>
+                <th class="text-left py-2 pr-4 font-semibold">Durum</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr class="hover:bg-slate-50 cursor-pointer">
+                <td class="py-3 pr-4 font-medium">Türkiye Coğrafyası</td>
+                <td class="py-3 pr-4 font-mono text-slate-600">738291</td>
+                <td class="py-3 pr-4">8</td>
+                <td class="py-3 pr-4 text-slate-500">3 gün önce</td>
+                <td class="py-3 pr-4 font-medium">🥇 Ayşe (8.420)</td>
+                <td class="py-3 pr-4"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-semibold">Tamamlandı</span></td>
+                <td class="py-3"><a class="text-brand hover:underline text-xs font-medium">Detay →</a></td>
+              </tr>
+              <tr class="hover:bg-slate-50 cursor-pointer">
+                <td class="py-3 pr-4 font-medium">Atatürk İlkeleri</td>
+                <td class="py-3 pr-4 font-mono text-slate-600">204876</td>
+                <td class="py-3 pr-4">12</td>
+                <td class="py-3 pr-4 text-slate-500">5 gün önce</td>
+                <td class="py-3 pr-4 font-medium">🥇 Mehmet (7.120)</td>
+                <td class="py-3 pr-4"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-semibold">Tamamlandı</span></td>
+                <td class="py-3"><a class="text-brand hover:underline text-xs font-medium">Detay →</a></td>
+              </tr>
+              <tr class="hover:bg-slate-50 cursor-pointer">
+                <td class="py-3 pr-4 font-medium">Türkiye Coğrafyası</td>
+                <td class="py-3 pr-4 font-mono text-slate-600">561023</td>
+                <td class="py-3 pr-4">5</td>
+                <td class="py-3 pr-4 text-slate-500">1 hafta önce</td>
+                <td class="py-3 pr-4 text-slate-500">— (yarıda)</td>
+                <td class="py-3 pr-4"><span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-xs font-semibold">Yarıda</span></td>
+                <td class="py-3"><a class="text-brand hover:underline text-xs font-medium">Detay →</a></td>
+              </tr>
+              <tr class="hover:bg-slate-50 cursor-pointer">
+                <td class="py-3 pr-4 font-medium">Atatürk İlkeleri</td>
+                <td class="py-3 pr-4 font-mono text-slate-600">893745</td>
+                <td class="py-3 pr-4">6</td>
+                <td class="py-3 pr-4 text-slate-500">2 hafta önce</td>
+                <td class="py-3 pr-4 font-medium">🥇 Zeynep (5.880)</td>
+                <td class="py-3 pr-4"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-semibold">Tamamlandı</span></td>
+                <td class="py-3"><a class="text-brand hover:underline text-xs font-medium">Detay →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- 13. ANALYTICS -->
+    <!-- =========================================== -->
+    <div>
+      <div class="mb-3 flex items-baseline gap-3">
+        <span class="text-xs font-bold text-brand bg-brand/10 px-2 py-1 rounded">13</span>
+        <h2 class="text-xl font-bold">Oyun Analitiği · /history/[sessionId]</h2>
+      </div>
+      <div class="rounded-xl overflow-hidden browser-frame bg-slate-50">
+        <header class="border-b border-slate-200 px-5 py-3 bg-white flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded bg-brand text-white font-bold flex items-center justify-center text-sm">B</div>
+            <span class="font-bold text-sm">Bilbil</span>
+          </div>
+          <a class="text-sm text-slate-600">← Geçmiş</a>
+        </header>
+        <div class="p-6 space-y-5">
+          <!-- Header -->
+          <div>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Oyun · 3 Mart 2026</p>
+            <h2 class="display text-2xl">Türkiye Coğrafyası</h2>
+            <p class="text-sm text-slate-600">PIN 738291 · 8 oyuncu · 12 soru · ~ 4 dk</p>
+          </div>
+          <!-- Summary cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="bg-white rounded-lg border border-slate-200 p-4">
+              <p class="text-xs text-slate-500 uppercase tracking-wider">Oyuncu</p>
+              <p class="display text-2xl mt-1">8</p>
+            </div>
+            <div class="bg-white rounded-lg border border-slate-200 p-4">
+              <p class="text-xs text-slate-500 uppercase tracking-wider">Doğruluk</p>
+              <p class="display text-2xl mt-1 text-emerald-600">73%</p>
+            </div>
+            <div class="bg-white rounded-lg border border-slate-200 p-4">
+              <p class="text-xs text-slate-500 uppercase tracking-wider">Ort. cevap süresi</p>
+              <p class="display text-2xl mt-1">4.2s</p>
+            </div>
+            <div class="bg-white rounded-lg border border-slate-200 p-4">
+              <p class="text-xs text-slate-500 uppercase tracking-wider">En zor soru</p>
+              <p class="text-sm font-semibold mt-1 truncate">En yüksek dağ?</p>
+              <p class="text-xs text-rose-600 font-bold">38% doğru</p>
+            </div>
+          </div>
+          <!-- Per-question accuracy bar chart -->
+          <div class="bg-white rounded-lg border border-slate-200 p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold">Soru Bazlı Doğruluk</h3>
+              <p class="text-xs text-slate-500">8 oyuncu × 12 soru</p>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-mono text-slate-500 w-6">01</span>
+                <p class="text-xs flex-1 truncate text-slate-700">Türkiye'nin en uzun nehri?</p>
+                <div class="w-32 h-3 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width: 50%"></div></div>
+                <span class="text-xs font-bold w-10 text-right">4/8</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-mono text-slate-500 w-6">02</span>
+                <p class="text-xs flex-1 truncate text-slate-700">Türkiye'nin başkenti?</p>
+                <div class="w-32 h-3 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width: 100%"></div></div>
+                <span class="text-xs font-bold w-10 text-right">8/8</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-mono text-slate-500 w-6">03</span>
+                <p class="text-xs flex-1 truncate text-slate-700">En yüksek dağ?</p>
+                <div class="w-32 h-3 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-rose-500" style="width: 38%"></div></div>
+                <span class="text-xs font-bold w-10 text-right text-rose-600">3/8</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-mono text-slate-500 w-6">04</span>
+                <p class="text-xs flex-1 truncate text-slate-700">Karadeniz şehri hangisi?</p>
+                <div class="w-32 h-3 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500" style="width: 88%"></div></div>
+                <span class="text-xs font-bold w-10 text-right">7/8</span>
+              </div>
+              <p class="text-xs text-slate-400 italic text-center pt-1">+ 8 soru daha</p>
+            </div>
+          </div>
+          <!-- Final leaderboard -->
+          <div class="bg-white rounded-lg border border-slate-200 p-5">
+            <h3 class="font-semibold mb-3">Final Sıralama</h3>
+            <div class="space-y-1.5 text-sm">
+              <div class="flex items-center gap-3 bg-amber-50 rounded-md p-2">
+                <span class="display text-lg w-6 text-center text-amber-700">1</span>
+                <div class="w-7 h-7 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center text-xs font-bold">A</div>
+                <span class="font-semibold flex-1">Ayşe</span>
+                <span class="text-xs text-slate-500">9/10 doğru · 2.4s ort</span>
+                <span class="font-bold">8.420</span>
+              </div>
+              <div class="flex items-center gap-3 bg-slate-50 rounded-md p-2">
+                <span class="display text-lg w-6 text-center text-slate-600">2</span>
+                <div class="w-7 h-7 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold">M</div>
+                <span class="font-semibold flex-1">Mehmet</span>
+                <span class="text-xs text-slate-500">8/10 doğru · 3.1s ort</span>
+                <span class="font-bold">7.840</span>
+              </div>
+              <div class="flex items-center gap-3 bg-orange-50 rounded-md p-2">
+                <span class="display text-lg w-6 text-center text-orange-700">3</span>
+                <div class="w-7 h-7 rounded-full bg-orange-200 text-orange-800 flex items-center justify-center text-xs font-bold">Z</div>
+                <span class="font-semibold flex-1">Zeynep</span>
+                <span class="text-xs text-slate-500">7/10 doğru · 3.8s ort</span>
+                <span class="font-bold">6.350</span>
+              </div>
+              <p class="text-xs text-slate-400 italic text-center pt-1">+ 5 oyuncu daha</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="rounded-xl bg-white border-2 border-violet-200 p-6">
+      <h3 class="display text-lg mb-3">📋 Host Dashboard Tasarım Kararları</h3>
+      <ul class="text-sm text-slate-700 space-y-1.5 list-disc list-inside">
+        <li><strong>Empty state'te illustrasyon + örnek quiz CTA</strong> — yeni kullanıcıların ilk adım engelini düşürür</li>
+        <li><strong>Quiz Creation 2 varyant</strong> — A: 1-15 soruluk hızlı quizler için, B: uzun quizler için. Kullanıcı seçimi sonrası Faz 1'de implementasyon</li>
+        <li><strong>Renk + şekil kodu form'da da uygulanmış</strong> — host quiz oluştururken bile son kullanıcı deneyimini görür (consistency)</li>
+        <li><strong>Doğru cevap işaretliyse görsel feedback</strong> (border + "✓ Doğru cevabı işaretledin") — validation passive değil active</li>
+        <li><strong>Preview sayfası 2 sütun</strong> — sol meta+CTA, sağ soru thumbnails. "Oyun Başlat" butonu en görünür eylem</li>
+        <li><strong>History tablo formu</strong> — kompakt, sortable, "yarıda kalan" badge ile partial games görünür</li>
+        <li><strong>Analytics özet kartları + bar grafiği + leaderboard</strong> — eğitmen "hangi soru zordu?" cevabını anında alır</li>
+      </ul>
+    </div>
+
+  </div>
+
+</body>
+</html>

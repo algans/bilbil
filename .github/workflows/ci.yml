@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Bu workflow yalnızca güvenli, internal değişkenler kullanır.
+# github.event.* gibi user-controlled inputs kullanılmıyor.
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: bilbil
+          POSTGRES_PASSWORD: bilbil_dev
+          POSTGRES_DB: bilbil
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bilbil"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://bilbil:bilbil_dev@localhost:5432/bilbil?schema=public
+      AUTH_SECRET: ci-test-secret-not-for-production
+      NEXTAUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run db:generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build

@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bilbil — Player Soru Ekranı (3 Varyant)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .display { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .phone-frame { width: 360px; height: 720px; }
+    /* Animations preview */
+    @keyframes shimmer { 0%, 100% { opacity: 1 } 50% { opacity: 0.6 } }
+    .shimmer { animation: shimmer 1.6s ease-in-out infinite; }
+    @keyframes pulse-soft { 0%, 100% { transform: scale(1) } 50% { transform: scale(1.03) } }
+    .pulse-soft { animation: pulse-soft 1.4s ease-in-out infinite; }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          brand: { DEFAULT: '#7C3AED', dark: '#6D28D9', deep: '#4C1D95' },
+          accent: '#F59E0B',
+          'a-red': '#EF4444', 'a-blue': '#3B82F6', 'a-yellow': '#F59E0B', 'a-green': '#10B981',
+        },
+      }}
+    }
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-900">
+
+  <!-- Header -->
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="flex items-center gap-3 mb-2">
+      <a href="index.html" class="text-sm text-brand hover:underline">← Mockup hub</a>
+      <span class="text-slate-300">/</span>
+      <a href="01-design-system.html" class="text-sm text-slate-500 hover:text-slate-900">Design System</a>
+    </div>
+    <h1 class="display text-3xl md:text-4xl mb-2">Player · Soru Ekranı</h1>
+    <p class="text-slate-600 max-w-3xl">Oyuncunun en çok zaman geçirdiği ekran. Mobile-first. Üç tasarım kararı arasındaki en büyük fark: <strong>ne kadar bilgi gösterilsin</strong> — hız vs güven dengesi.</p>
+    <div class="mt-3 inline-flex items-center gap-2 text-xs text-slate-500 bg-white border border-slate-200 rounded-full px-3 py-1">
+      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+      Gösterilen state: <strong>QUESTION_OPEN</strong> · oyuncu henüz cevap vermedi · timer aktif
+    </div>
+  </div>
+
+  <!-- Variants Grid -->
+  <div class="max-w-7xl mx-auto px-6 pb-20">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-6">
+
+      <!-- ========================================== -->
+      <!-- VARYANT A — Minimalist (Kahoot Original) -->
+      <!-- ========================================== -->
+      <div>
+        <div class="mb-3">
+          <span class="bg-brand/10 text-brand text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Varyant A</span>
+          <h2 class="text-xl font-bold mt-2">Minimalist · Sembol-only</h2>
+          <p class="text-sm text-slate-600">Kahoot purist felsefe. Hızlı tap, minimum cognitive load.</p>
+        </div>
+
+        <!-- Phone -->
+        <div class="bg-black rounded-[40px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-brand-deep rounded-[32px] overflow-hidden h-full flex flex-col text-white">
+            <!-- Notch sim -->
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+
+            <!-- Timer bar (minimal) -->
+            <div class="px-4 mb-4">
+              <div class="h-1.5 bg-white/15 rounded-full overflow-hidden">
+                <div class="h-full bg-accent rounded-full" style="width: 65%"></div>
+              </div>
+            </div>
+
+            <!-- Question -->
+            <div class="px-6 mb-2 text-center">
+              <p class="text-xs uppercase tracking-wider text-white/60 font-semibold mb-2">Soru 3 / 10</p>
+              <p class="text-lg font-semibold leading-snug">Aşağıdakilerden hangisi Türkiye'nin en uzun nehridir?</p>
+            </div>
+
+            <!-- 4 button grid (symbol only) -->
+            <div class="flex-1 grid grid-cols-2 gap-3 p-4 mt-2">
+              <button class="bg-a-red rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition">
+                <svg class="w-16 h-16" viewBox="0 0 24 24" fill="white"><path d="M12 3 L22 21 L2 21 Z"/></svg>
+              </button>
+              <button class="bg-a-blue rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition">
+                <svg class="w-16 h-16" viewBox="0 0 24 24" fill="white"><path d="M12 2 L22 12 L12 22 L2 12 Z"/></svg>
+              </button>
+              <button class="bg-a-yellow rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition">
+                <svg class="w-16 h-16" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="9"/></svg>
+              </button>
+              <button class="bg-a-green rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition">
+                <svg class="w-16 h-16" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+              </button>
+            </div>
+
+            <!-- Bottom strip -->
+            <div class="px-4 pb-6 flex items-center justify-between text-xs text-white/70">
+              <span>Mehmet</span>
+              <span class="text-white/40">Dokunarak cevapla</span>
+              <span class="font-semibold text-accent">1240</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pros / Cons -->
+        <div class="mt-4 space-y-2 text-sm">
+          <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+            <p class="font-semibold text-emerald-800 text-xs uppercase tracking-wider mb-1">✓ Güçlü</p>
+            <ul class="text-emerald-900 space-y-0.5">
+              <li>• En hızlı tap (cevap metni yok, sembol/renkten)</li>
+              <li>• Büyük ekrana bakıp telefondan tap modeline ideal</li>
+              <li>• Görsel sade, dramatic mor zemin</li>
+            </ul>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <p class="font-semibold text-amber-800 text-xs uppercase tracking-wider mb-1">⚠ Zayıf</p>
+            <ul class="text-amber-900 space-y-0.5">
+              <li>• Cevap metni yok → büyük ekran şart, tek başına oynanmaz</li>
+              <li>• Süre sayısı görünmez (sadece bar) — bilinçli minimalizm ama bazı kullanıcı stres olur</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- VARYANT B — Dengeli (Modern Game Standard) -->
+      <!-- ========================================== -->
+      <div>
+        <div class="mb-3">
+          <span class="bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Varyant B · Öneri</span>
+          <h2 class="text-xl font-bold mt-2">Dengeli · Şekil + Metin</h2>
+          <p class="text-sm text-slate-600">Modern oyun standardı. Cevaplar buton üzerinde, büyük ekrana bağımlılık az.</p>
+        </div>
+
+        <!-- Phone -->
+        <div class="bg-black rounded-[40px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-white rounded-[32px] overflow-hidden h-full flex flex-col">
+            <!-- Notch sim -->
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+
+            <!-- Top bar: timer ring + score + Q idx -->
+            <div class="px-4 pt-2 pb-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <!-- Timer ring -->
+                <div class="relative w-12 h-12">
+                  <svg class="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
+                    <circle cx="18" cy="18" r="15" fill="none" stroke="#e2e8f0" stroke-width="3"/>
+                    <circle cx="18" cy="18" r="15" fill="none" stroke="#7C3AED" stroke-width="3" stroke-dasharray="94" stroke-dashoffset="33" stroke-linecap="round"/>
+                  </svg>
+                  <span class="absolute inset-0 flex items-center justify-center text-sm font-bold">13</span>
+                </div>
+                <div>
+                  <p class="text-xs text-slate-500 font-medium">Soru</p>
+                  <p class="text-sm font-bold">3 / 10</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-xs text-slate-500 font-medium">Mehmet</p>
+                <p class="text-sm font-bold text-brand">1.240 puan</p>
+              </div>
+            </div>
+
+            <!-- Question -->
+            <div class="px-5 py-3">
+              <p class="display text-xl leading-snug text-slate-900">Aşağıdakilerden hangisi Türkiye'nin <span class="text-brand">en uzun</span> nehridir?</p>
+            </div>
+
+            <!-- 4 button grid: shape + text -->
+            <div class="flex-1 grid grid-cols-2 gap-2.5 p-4">
+              <button class="bg-a-red rounded-2xl text-white font-bold flex flex-col items-center justify-center gap-1 shadow-lg active:scale-95 transition py-4">
+                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="white"><path d="M12 3 L22 21 L2 21 Z"/></svg>
+                <span class="text-base">Kızılırmak</span>
+              </button>
+              <button class="bg-a-blue rounded-2xl text-white font-bold flex flex-col items-center justify-center gap-1 shadow-lg active:scale-95 transition py-4">
+                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="white"><path d="M12 2 L22 12 L12 22 L2 12 Z"/></svg>
+                <span class="text-base">Sakarya</span>
+              </button>
+              <button class="bg-a-yellow rounded-2xl text-white font-bold flex flex-col items-center justify-center gap-1 shadow-lg active:scale-95 transition py-4">
+                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="9"/></svg>
+                <span class="text-base">Yeşilırmak</span>
+              </button>
+              <button class="bg-a-green rounded-2xl text-white font-bold flex flex-col items-center justify-center gap-1 shadow-lg active:scale-95 transition py-4">
+                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+                <span class="text-base">Fırat</span>
+              </button>
+            </div>
+
+            <!-- Bottom hint -->
+            <div class="px-4 pb-6 text-center">
+              <p class="text-xs text-slate-500">Bir cevap seç · değiştirilemez</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pros / Cons -->
+        <div class="mt-4 space-y-2 text-sm">
+          <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+            <p class="font-semibold text-emerald-800 text-xs uppercase tracking-wider mb-1">✓ Güçlü</p>
+            <ul class="text-emerald-900 space-y-0.5">
+              <li>• Cevaplar buton üzerinde — büyük ekran olmasa da oynanabilir</li>
+              <li>• Timer ring + sayı (görsel + numerik geri bildirim)</li>
+              <li>• Skor görünür → motivasyon</li>
+              <li>• Light tema, gündüz okumaya ideal</li>
+            </ul>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <p class="font-semibold text-amber-800 text-xs uppercase tracking-wider mb-1">⚠ Zayıf</p>
+            <ul class="text-amber-900 space-y-0.5">
+              <li>• Uzun cevap metinlerinde 2 satıra dökülür</li>
+              <li>• Kahoot'un saf "minimalist drama" hissini kaybeder</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- VARYANT C — Tek-elle (Thumb-zone) -->
+      <!-- ========================================== -->
+      <div>
+        <div class="mb-3">
+          <span class="bg-amber-100 text-amber-700 text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Varyant C</span>
+          <h2 class="text-xl font-bold mt-2">Tek-elle · Dikey 4×1</h2>
+          <p class="text-sm text-slate-600">Uzun cevaplar için ideal. Başparmak alt yarıda kalır, erişim rahat.</p>
+        </div>
+
+        <!-- Phone -->
+        <div class="bg-black rounded-[40px] p-3 shadow-2xl phone-frame mx-auto">
+          <div class="bg-slate-900 rounded-[32px] overflow-hidden h-full flex flex-col text-white">
+            <!-- Notch sim -->
+            <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+
+            <!-- Compact top: timer + Q + score in one strip -->
+            <div class="px-4 pt-2 pb-3 flex items-center justify-between text-xs">
+              <span class="font-semibold text-white/60">Soru 3/10</span>
+              <span class="font-bold text-accent text-base">⏱ 13s</span>
+              <span class="font-semibold text-white/60">Mehmet · 1240</span>
+            </div>
+
+            <!-- Question (top third) -->
+            <div class="px-5 py-3 border-b border-white/10">
+              <p class="display text-lg leading-snug text-white">Türkiye'nin en uzun nehri hangisidir?</p>
+            </div>
+
+            <!-- 4 buttons stacked vertically (thumb-zone friendly) -->
+            <div class="flex-1 flex flex-col gap-2.5 p-4 justify-end pb-6">
+              <button class="bg-a-red rounded-2xl text-white font-bold flex items-center gap-3 px-5 py-4 shadow-lg active:scale-[0.98] transition">
+                <svg class="w-7 h-7 flex-shrink-0" viewBox="0 0 24 24" fill="white"><path d="M12 3 L22 21 L2 21 Z"/></svg>
+                <span class="text-left text-base">Kızılırmak</span>
+              </button>
+              <button class="bg-a-blue rounded-2xl text-white font-bold flex items-center gap-3 px-5 py-4 shadow-lg active:scale-[0.98] transition">
+                <svg class="w-7 h-7 flex-shrink-0" viewBox="0 0 24 24" fill="white"><path d="M12 2 L22 12 L12 22 L2 12 Z"/></svg>
+                <span class="text-left text-base">Sakarya</span>
+              </button>
+              <button class="bg-a-yellow rounded-2xl text-white font-bold flex items-center gap-3 px-5 py-4 shadow-lg active:scale-[0.98] transition">
+                <svg class="w-7 h-7 flex-shrink-0" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="9"/></svg>
+                <span class="text-left text-base">Yeşilırmak</span>
+              </button>
+              <button class="bg-a-green rounded-2xl text-white font-bold flex items-center gap-3 px-5 py-4 shadow-lg active:scale-[0.98] transition">
+                <svg class="w-7 h-7 flex-shrink-0" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+                <span class="text-left text-base">Fırat</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pros / Cons -->
+        <div class="mt-4 space-y-2 text-sm">
+          <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+            <p class="font-semibold text-emerald-800 text-xs uppercase tracking-wider mb-1">✓ Güçlü</p>
+            <ul class="text-emerald-900 space-y-0.5">
+              <li>• Tek başparmakla erişim rahat (butonlar alt yarıda)</li>
+              <li>• Uzun cevap metinleri sığar (tek satır + ellipsis yok)</li>
+              <li>• Dark tema → AMOLED bataryadan tasarruf, gece dostu</li>
+            </ul>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <p class="font-semibold text-amber-800 text-xs uppercase tracking-wider mb-1">⚠ Zayıf</p>
+            <ul class="text-amber-900 space-y-0.5">
+              <li>• Renk kodlama gücü zayıflar (yan yana değil)</li>
+              <li>• Kahoot'un "yarış paneli" hissini kaybeder, sıralı liste hissi verir</li>
+              <li>• Yatay (landscape) cihazlarda boşluk kalır</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Comparison summary -->
+    <div class="mt-12 rounded-xl bg-white border border-slate-200 p-6">
+      <h3 class="display text-lg mb-4">Hızlı Karşılaştırma</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-slate-200">
+              <th class="text-left py-2 pr-4 font-semibold text-slate-600">Kriter</th>
+              <th class="text-center py-2 px-3 font-semibold">A · Minimalist</th>
+              <th class="text-center py-2 px-3 font-semibold">B · Dengeli</th>
+              <th class="text-center py-2 px-3 font-semibold">C · Tek-elle</th>
+            </tr>
+          </thead>
+          <tbody class="text-slate-700">
+            <tr class="border-b border-slate-100">
+              <td class="py-2 pr-4">Hızlı tap</td>
+              <td class="text-center">⭐⭐⭐</td>
+              <td class="text-center">⭐⭐</td>
+              <td class="text-center">⭐⭐</td>
+            </tr>
+            <tr class="border-b border-slate-100">
+              <td class="py-2 pr-4">Büyük ekransız oynanabilir</td>
+              <td class="text-center text-red-500">✗</td>
+              <td class="text-center text-emerald-500">✓</td>
+              <td class="text-center text-emerald-500">✓</td>
+            </tr>
+            <tr class="border-b border-slate-100">
+              <td class="py-2 pr-4">Uzun cevap metni desteği</td>
+              <td class="text-center text-slate-400">N/A</td>
+              <td class="text-center">⭐⭐</td>
+              <td class="text-center">⭐⭐⭐</td>
+            </tr>
+            <tr class="border-b border-slate-100">
+              <td class="py-2 pr-4">Tek-elle erişim</td>
+              <td class="text-center">⭐⭐</td>
+              <td class="text-center">⭐⭐</td>
+              <td class="text-center">⭐⭐⭐</td>
+            </tr>
+            <tr class="border-b border-slate-100">
+              <td class="py-2 pr-4">"Oyun" hissi (drama)</td>
+              <td class="text-center">⭐⭐⭐</td>
+              <td class="text-center">⭐⭐</td>
+              <td class="text-center">⭐</td>
+            </tr>
+            <tr class="border-b border-slate-100">
+              <td class="py-2 pr-4">Skor + soru sayacı görünürlüğü</td>
+              <td class="text-center">⭐</td>
+              <td class="text-center">⭐⭐⭐</td>
+              <td class="text-center">⭐⭐</td>
+            </tr>
+            <tr>
+              <td class="py-2 pr-4">Renk körü erişilebilirlik</td>
+              <td class="text-center">⭐⭐⭐</td>
+              <td class="text-center">⭐⭐⭐</td>
+              <td class="text-center">⭐⭐</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-4 text-sm text-slate-600"><strong>Not:</strong> Hibrit de mümkün — örn. "Kısa cevaplar için A, uzun cevaplar için C'ye otomatik geçiş" gibi adaptive layout. Ama MVP'de tek karar net daha iyi.</p>
+    </div>
+
+  </div>
+
+</body>
+</html>

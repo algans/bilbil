@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bilbil — Public (Landing 2 varyant + PIN giriş)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .display { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .display-mega { font-family: 'Inter', sans-serif; font-weight: 900; letter-spacing: -0.04em; }
+    .browser-frame { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+    .phone-frame { width: 320px; height: 640px; }
+    @keyframes float-up { 0% { transform: translateY(0); opacity: 1 } 100% { transform: translateY(-30px); opacity: 0 } }
+    .float-bubble { animation: float-up 3s ease-out infinite; }
+  </style>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      brand: { DEFAULT: '#7C3AED', dark: '#6D28D9', deep: '#4C1D95', light: '#A78BFA' },
+      accent: { DEFAULT: '#F59E0B', dark: '#D97706' },
+      'a-red': '#EF4444', 'a-blue': '#3B82F6', 'a-yellow': '#F59E0B', 'a-green': '#10B981',
+    }}}}
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-900">
+
+  <!-- Header -->
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="flex items-center gap-3 mb-2">
+      <a href="index.html" class="text-sm text-brand hover:underline">← Hub</a>
+    </div>
+    <h1 class="display text-3xl md:text-4xl mb-2">Public · Landing (2 Varyant) + PIN Giriş</h1>
+    <p class="text-slate-600 max-w-3xl">İlk izlenim ekranları. Landing en kritik — ürünün varlık nedenini saniyeler içinde anlatır. <strong>Hero centric</strong> (uzun anlatı) vs <strong>Demo centric</strong> (yaşayan örnek) iki farklı yaklaşım. PIN girişi tek pas.</p>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 pb-20 space-y-12">
+
+    <!-- =========================================== -->
+    <!-- 1. LANDING — VARIANT A: Hero Centric -->
+    <!-- =========================================== -->
+    <div>
+      <div class="mb-3 flex items-baseline gap-3">
+        <span class="text-xs font-bold text-brand bg-brand/10 px-2 py-1 rounded">1A</span>
+        <h2 class="text-xl font-bold">Landing · Hero Centric (Öneri)</h2>
+        <span class="text-xs text-slate-500">Klasik SaaS, çift CTA</span>
+      </div>
+      <p class="text-sm text-slate-600 mb-4">Headline + subheadline + iki eşit CTA (Quiz Oluştur / PIN ile Katıl). Aşağıda "Nasıl Çalışır" 3 adımlı şerit. Sade, mesaj odaklı.</p>
+      <div class="rounded-xl overflow-hidden browser-frame bg-white">
+        <!-- Top nav -->
+        <header class="border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-brand text-white font-bold flex items-center justify-center">B</div>
+            <span class="font-bold">Bilbil</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <a class="text-sm text-slate-600 hover:text-slate-900 px-3 py-1.5">Giriş Yap</a>
+            <a class="bg-brand text-white text-sm font-medium px-4 py-1.5 rounded-md hover:bg-brand-dark">Kayıt Ol</a>
+          </div>
+        </header>
+
+        <!-- Hero -->
+        <section class="px-6 py-16 md:py-24 text-center bg-gradient-to-b from-white to-violet-50">
+          <span class="inline-flex items-center gap-2 bg-brand/10 text-brand text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-6">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+            Türkçe · Anonim katılım · Ücretsiz başla
+          </span>
+          <h1 class="display-mega text-5xl md:text-7xl leading-tight max-w-4xl mx-auto mb-6">Sınıf, ekip ve etkinlikler için <span class="text-brand">canlı quiz</span></h1>
+          <p class="text-lg text-slate-600 max-w-2xl mx-auto mb-10">Bilbil ile saniyeler içinde quiz oluştur. 6 haneli PIN paylaş, 50 oyuncuya kadar herkes telefondan katılır. Hız + bilgi = puan.</p>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+            <a class="w-full sm:w-auto bg-brand text-white font-bold uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-lg shadow-brand/30 hover:scale-105 transition">Quiz Oluştur</a>
+            <a class="w-full sm:w-auto bg-white text-slate-900 border-2 border-slate-200 font-bold uppercase tracking-wider px-6 py-3.5 rounded-xl hover:border-brand hover:text-brand transition">PIN ile Katıl</a>
+          </div>
+        </section>
+
+        <!-- How it works -->
+        <section class="px-6 py-12 border-t border-slate-200">
+          <h2 class="display text-2xl text-center mb-10">Nasıl Çalışır?</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div class="text-center">
+              <div class="w-16 h-16 rounded-2xl bg-a-red/10 text-a-red flex items-center justify-center mx-auto mb-4 display text-2xl">1</div>
+              <h3 class="font-semibold text-lg mb-1">Quiz oluştur</h3>
+              <p class="text-sm text-slate-600">4 şıklı sorular ekle, sırasını ayarla, yayınla.</p>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 rounded-2xl bg-a-blue/10 text-a-blue flex items-center justify-center mx-auto mb-4 display text-2xl">2</div>
+              <h3 class="font-semibold text-lg mb-1">Oyuncuları davet et</h3>
+              <p class="text-sm text-slate-600">PIN'i paylaş, oyuncular kayıt olmadan katılır.</p>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 rounded-2xl bg-a-green/10 text-a-green flex items-center justify-center mx-auto mb-4 display text-2xl">3</div>
+              <h3 class="font-semibold text-lg mb-1">Canlı oyna</h3>
+              <p class="text-sm text-slate-600">Sorular telefonda, leaderboard büyük ekranda.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="px-6 py-6 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+          <span>© 2026 Bilbil</span>
+          <div class="flex gap-4">
+            <a class="hover:text-slate-900">Gizlilik</a>
+            <a class="hover:text-slate-900">KVKK</a>
+            <a class="hover:text-slate-900">İletişim</a>
+          </div>
+        </footer>
+      </div>
+      <div class="mt-3 text-xs text-slate-600 space-y-1">
+        <p><strong class="text-emerald-700">+</strong> Saniyeler içinde ne olduğunu anlatır (headline + subheadline)</p>
+        <p><strong class="text-emerald-700">+</strong> İki eşit CTA — host vs player ayrımı net</p>
+        <p><strong class="text-amber-700">~</strong> Görsel demo yok, hayal gücüne kalır</p>
+      </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- 1. LANDING — VARIANT B: Demo Centric -->
+    <!-- =========================================== -->
+    <div>
+      <div class="mb-3 flex items-baseline gap-3">
+        <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-1 rounded">1B</span>
+        <h2 class="text-xl font-bold">Landing · Demo Centric</h2>
+        <span class="text-xs text-slate-500">Sol metin, sağ canlı telefon mockup</span>
+      </div>
+      <p class="text-sm text-slate-600 mb-4">Headline + canlı telefon mockup'ı yan yana. Mockup oyun ekranını gösterir — kullanıcı bir saniyede ne yaptığımızı görür. "Show, don't tell."</p>
+      <div class="rounded-xl overflow-hidden browser-frame bg-white">
+        <!-- Top nav -->
+        <header class="border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-brand text-white font-bold flex items-center justify-center">B</div>
+            <span class="font-bold">Bilbil</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <a class="text-sm text-slate-600 hover:text-slate-900 px-3 py-1.5">Giriş Yap</a>
+            <a class="bg-brand text-white text-sm font-medium px-4 py-1.5 rounded-md hover:bg-brand-dark">Kayıt Ol</a>
+          </div>
+        </header>
+
+        <!-- Split hero -->
+        <section class="px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-gradient-to-br from-violet-50 via-white to-amber-50">
+          <!-- Left: copy -->
+          <div>
+            <span class="inline-flex items-center gap-2 bg-brand/10 text-brand text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-5">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+              Yeni · Türkçe canlı quiz
+            </span>
+            <h1 class="display-mega text-5xl md:text-6xl leading-tight mb-5">Bilgini <span class="text-brand">hızla</span> sına</h1>
+            <p class="text-lg text-slate-600 mb-8">PIN ile katıl, telefondan cevapla. Hız + doğruluk = puan. 50 oyuncuya kadar canlı oyun.</p>
+            <div class="flex flex-col sm:flex-row gap-3 mb-6">
+              <a class="bg-brand text-white font-bold uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-lg shadow-brand/30 hover:scale-105 transition text-center">Quiz Oluştur</a>
+              <div class="bg-white border-2 border-slate-200 rounded-xl px-4 py-2 flex items-center gap-2">
+                <input class="flex-1 bg-transparent font-mono text-lg font-bold focus:outline-none placeholder:text-slate-400" placeholder="PIN gir" maxlength="6">
+                <button class="bg-accent text-slate-900 font-bold px-4 py-2 rounded-lg hover:scale-105 transition">→</button>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 text-sm text-slate-500">
+              <span class="flex items-center gap-1"><svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>Ücretsiz</span>
+              <span class="flex items-center gap-1"><svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>Anonim katılım</span>
+              <span class="flex items-center gap-1"><svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>Türkçe</span>
+            </div>
+          </div>
+
+          <!-- Right: phone mockup showing player question -->
+          <div class="flex justify-center">
+            <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame relative">
+              <!-- Floating bubbles around phone for energy -->
+              <div class="absolute -top-2 -left-4 w-6 h-6 rounded-full bg-a-red float-bubble" style="animation-delay: 0s"></div>
+              <div class="absolute top-12 -right-6 w-4 h-4 rounded-full bg-a-blue float-bubble" style="animation-delay: 0.5s"></div>
+              <div class="absolute -bottom-2 left-12 w-5 h-5 rounded-full bg-a-yellow float-bubble" style="animation-delay: 1s"></div>
+              <div class="absolute bottom-20 -right-4 w-4 h-4 rounded-full bg-a-green float-bubble" style="animation-delay: 1.5s"></div>
+
+              <div class="bg-white rounded-[28px] overflow-hidden h-full flex flex-col">
+                <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+                <div class="px-3 pt-2 pb-2 flex items-center justify-between">
+                  <div class="flex items-center gap-1.5">
+                    <div class="relative w-9 h-9">
+                      <svg class="w-9 h-9 -rotate-90" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="15" fill="none" stroke="#e2e8f0" stroke-width="3"/>
+                        <circle cx="18" cy="18" r="15" fill="none" stroke="#7C3AED" stroke-width="3" stroke-dasharray="94" stroke-dashoffset="33" stroke-linecap="round"/>
+                      </svg>
+                      <span class="absolute inset-0 flex items-center justify-center text-xs font-bold">13</span>
+                    </div>
+                    <p class="text-xs font-bold">3/10</p>
+                  </div>
+                  <p class="text-xs font-bold text-brand">1.240</p>
+                </div>
+                <div class="px-3 py-2"><p class="display text-sm leading-snug">Türkiye'nin en uzun nehri?</p></div>
+                <div class="flex-1 grid grid-cols-2 gap-1.5 p-2">
+                  <div class="bg-a-red rounded-lg flex flex-col items-center justify-center gap-0.5 text-white text-xs font-bold">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white"><path d="M12 3 L22 21 L2 21 Z"/></svg>
+                    <span>Kızılırmak</span>
+                  </div>
+                  <div class="bg-a-blue rounded-lg flex flex-col items-center justify-center gap-0.5 text-white text-xs font-bold">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white"><path d="M12 2 L22 12 L12 22 L2 12 Z"/></svg>
+                    <span>Sakarya</span>
+                  </div>
+                  <div class="bg-a-yellow rounded-lg flex flex-col items-center justify-center gap-0.5 text-white text-xs font-bold">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="9"/></svg>
+                    <span>Yeşilırmak</span>
+                  </div>
+                  <div class="bg-a-green rounded-lg flex flex-col items-center justify-center gap-0.5 text-white text-xs font-bold">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+                    <span>Fırat</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- How it works (compact) -->
+        <section class="px-6 py-12 border-t border-slate-200 bg-slate-50">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto text-center">
+            <div>
+              <div class="text-2xl font-black text-a-red mb-1">1.</div>
+              <p class="font-semibold mb-1">Quiz oluştur</p>
+              <p class="text-xs text-slate-600">Birkaç dakikada sorular hazır</p>
+            </div>
+            <div>
+              <div class="text-2xl font-black text-a-blue mb-1">2.</div>
+              <p class="font-semibold mb-1">PIN paylaş</p>
+              <p class="text-xs text-slate-600">Oyuncular kayıt olmadan girer</p>
+            </div>
+            <div>
+              <div class="text-2xl font-black text-a-green mb-1">3.</div>
+              <p class="font-semibold mb-1">Canlı oyna</p>
+              <p class="text-xs text-slate-600">Hız + bilgi = lider sıralaması</p>
+            </div>
+          </div>
+        </section>
+
+        <footer class="px-6 py-6 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+          <span>© 2026 Bilbil</span>
+          <div class="flex gap-4"><a class="hover:text-slate-900">Gizlilik</a><a class="hover:text-slate-900">KVKK</a><a class="hover:text-slate-900">İletişim</a></div>
+        </footer>
+      </div>
+      <div class="mt-3 text-xs text-slate-600 space-y-1">
+        <p><strong class="text-emerald-700">+</strong> Görsel demo → kullanıcı saniyeler içinde ürünü "görür"</p>
+        <p><strong class="text-emerald-700">+</strong> PIN inputu hero'da → player için 1 tıklama tasarrufu</p>
+        <p><strong class="text-emerald-700">+</strong> Trust badges (Ücretsiz, Anonim, Türkçe) — barrier düşürür</p>
+        <p><strong class="text-amber-700">~</strong> Mockup içeriğini production'da güncel tutmak iş</p>
+      </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- 2. PIN ENTRY -->
+    <!-- =========================================== -->
+    <div>
+      <div class="mb-3 flex items-baseline gap-3">
+        <span class="text-xs font-bold text-brand bg-brand/10 px-2 py-1 rounded">2</span>
+        <h2 class="text-xl font-bold">PIN Giriş · /play</h2>
+        <span class="text-xs text-slate-500">mobile-first, dev numpad</span>
+      </div>
+      <p class="text-sm text-slate-600 mb-4">Tek görev: 6 haneli PIN'i hızlıca girmek. Numpad mobilde otomatik açılır (inputmode="numeric"). Yanlış PIN'de inline hata.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        <!-- Mobile mockup -->
+        <div>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Mobile (birincil)</p>
+          <div class="bg-black rounded-[36px] p-3 shadow-2xl phone-frame mx-auto">
+            <div class="bg-white rounded-[28px] overflow-hidden h-full flex flex-col">
+              <div class="h-7 flex items-center justify-center"><div class="w-20 h-5 bg-black rounded-full"></div></div>
+              <!-- Top -->
+              <div class="px-5 pt-3 pb-2 flex items-center gap-2">
+                <a class="text-slate-400 text-2xl">←</a>
+                <div class="flex items-center gap-1.5 ml-1">
+                  <div class="w-6 h-6 rounded bg-brand flex items-center justify-center text-white font-bold text-xs">B</div>
+                  <span class="font-bold text-sm">Bilbil</span>
+                </div>
+              </div>
+              <!-- Body -->
+              <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+                <p class="display text-3xl mb-1">Oyun PIN'i</p>
+                <p class="text-sm text-slate-500 mb-8">Host'un büyük ekranda gösterdiği 6 haneli numarayı gir</p>
+                <input type="text" inputmode="numeric" maxlength="6" class="w-full text-center text-5xl font-black border-2 border-slate-200 rounded-2xl py-5 focus:border-brand focus:outline-none tracking-[0.3em] tabular-nums font-mono" placeholder="······" value="738291">
+                <p class="text-xs text-slate-400 mt-2">6 hane numerik</p>
+              </div>
+              <!-- CTA -->
+              <div class="px-5 pb-8">
+                <button class="w-full bg-brand text-white font-bold uppercase tracking-wider py-4 rounded-2xl shadow-lg shadow-brand/30 active:scale-95 transition">Devam →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop variant -->
+        <div>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Desktop / Tablet</p>
+          <div class="rounded-xl overflow-hidden browser-frame bg-white">
+            <header class="border-b border-slate-200 px-5 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded bg-brand text-white font-bold flex items-center justify-center text-sm">B</div>
+                <span class="font-bold text-sm">Bilbil</span>
+              </div>
+            </header>
+            <div class="px-12 py-20 text-center bg-gradient-to-b from-white to-violet-50">
+              <p class="display text-4xl mb-2">Oyun PIN'i gir</p>
+              <p class="text-slate-500 mb-10">Host'un büyük ekranda gösterdiği 6 haneli numara</p>
+              <input type="text" inputmode="numeric" maxlength="6" class="w-full max-w-md mx-auto block text-center text-6xl md:text-7xl font-black border-2 border-slate-200 rounded-2xl py-6 focus:border-brand focus:outline-none tracking-[0.3em] tabular-nums font-mono" value="738291">
+              <button class="bg-brand text-white font-bold uppercase tracking-wider px-12 py-4 rounded-xl shadow-lg shadow-brand/30 mt-6 hover:scale-105 transition">Devam →</button>
+              <p class="text-xs text-slate-400 mt-4">PIN'i bilmiyorsan host'a sor</p>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-2 italic">Geçersiz PIN durumunda <a href="03-player-live-flow.html" class="text-brand hover:underline">28d Error State</a> görüntülenir</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final notes -->
+    <div class="rounded-xl bg-gradient-to-br from-brand to-brand-dark text-white p-6 mt-12">
+      <h3 class="display text-xl mb-3">🎉 28/28 Tasarım Tamamlandı</h3>
+      <p class="text-white/90 text-sm mb-4">Bilbil'in tüm user-facing ekranları design system'e uyumlu, üretime hazır mockup'lar olarak elinizde. Faz 0'a (project setup) geçince bu tasarım dili Tailwind config + shadcn/ui komponentleriyle koda dönüşecek.</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+        <div class="bg-white/10 rounded-lg py-3">
+          <p class="display text-2xl">8</p>
+          <p class="text-xs text-white/70">Player</p>
+        </div>
+        <div class="bg-white/10 rounded-lg py-3">
+          <p class="display text-2xl">6</p>
+          <p class="text-xs text-white/70">Host Live</p>
+        </div>
+        <div class="bg-white/10 rounded-lg py-3">
+          <p class="display text-2xl">7</p>
+          <p class="text-xs text-white/70">Dashboard</p>
+        </div>
+        <div class="bg-white/10 rounded-lg py-3">
+          <p class="display text-2xl">7</p>
+          <p class="text-xs text-white/70">Auth + Public</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

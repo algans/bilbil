@@ -1,0 +1,119 @@
+// Bilbil — Veri Modeli (PLAN.md Bölüm "Veri Modeli")
+// Live game state in-memory, oyun bittiğinde DB'ye yazılır.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Quiz oluşturup oyun başlatan kullanıcılar (host'lar)
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String
+  emailVerifiedAt DateTime?
+  displayName     String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  quizzes      Quiz[]
+  gameSessions GameSession[]
+
+  @@map("users")
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  hostId      String
+  host        User     @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  questions Question[]
+  sessions  GameSession[]
+
+  @@index([hostId])
+  @@map("quizzes")
+}
+
+model Question {
+  id           String @id @default(cuid())
+  quizId       String
+  quiz         Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  prompt       String
+  order        Int
+  timeLimitSec Int    @default(20)
+
+  options QuestionOption[]
+
+  @@unique([quizId, order])
+  @@index([quizId])
+  @@map("questions")
+}
+
+model QuestionOption {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text       String
+  isCorrect  Boolean
+  position   Int // 0-3 (kırmızı üçgen / mavi elmas / sarı daire / yeşil kare — sabit sıralama)
+
+  @@map("question_options")
+}
+
+model GameSession {
+  id        String    @id @default(cuid())
+  pin       String    @unique // 6 hane numerik
+  quizId    String
+  quiz      Quiz      @relation(fields: [quizId], references: [id])
+  hostId    String
+  host      User      @relation(fields: [hostId], references: [id])
+  status    String // "lobby" | "in_progress" | "ended" | "abandoned"
+  startedAt DateTime?
+  endedAt   DateTime?
+  createdAt DateTime  @default(now())
+
+  results PlayerResult[]
+  answers PlayerAnswer[]
+
+  @@index([pin])
+  @@index([hostId])
+  @@map("game_sessions")
+}
+
+model PlayerResult {
+  id         String      @id @default(cuid())
+  sessionId  String
+  session    GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  nickname   String
+  finalScore Int
+  finalRank  Int
+
+  @@unique([sessionId, nickname])
+  @@map("player_results")
+}
+
+model PlayerAnswer {
+  id            String      @id @default(cuid())
+  sessionId     String
+  session       GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  questionId    String
+  nickname      String
+  optionId      String? // null = timeout, cevap yok
+  answeredAtMs  Int // soru başlangıcından milisaniye
+  pointsAwarded Int
+  isCorrect     Boolean
+  createdAt     DateTime    @default(now())
+
+  @@index([sessionId, nickname])
+  @@index([sessionId, questionId])
+  @@map("player_answers")
+}

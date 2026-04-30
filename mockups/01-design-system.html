@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bilbil — Design System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .display { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#7C3AED', dark: '#6D28D9', light: '#A78BFA' },
+            accent: { DEFAULT: '#F59E0B', dark: '#D97706' },
+            'answer-red': '#EF4444',
+            'answer-blue': '#3B82F6',
+            'answer-yellow': '#F59E0B',
+            'answer-green': '#10B981',
+          },
+          fontFamily: { sans: ['Inter', 'system-ui'] }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <div class="max-w-6xl mx-auto p-6 md:p-12">
+
+    <!-- Header -->
+    <header class="mb-12">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-brand flex items-center justify-center text-white font-bold text-lg">B</div>
+        <div>
+          <h1 class="display text-3xl md:text-4xl">Bilbil — Design System v0.1</h1>
+          <p class="text-slate-500 text-sm">Mor brand + Amber accent · 4 sabit cevap rengi · Inter</p>
+        </div>
+      </div>
+      <p class="text-slate-600 max-w-2xl">Bu sayfa diğer mockup'ların referansı. Tüm renkler, tipografi ve primitive komponent dilini buradan türetir.</p>
+    </header>
+
+    <!-- Renkler -->
+    <section class="mb-14">
+      <h2 class="display text-xl mb-4 border-b border-slate-200 pb-2">🎨 Renkler</h2>
+
+      <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3 mt-6">Marka</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+        <div>
+          <div class="aspect-square bg-brand rounded-xl shadow-sm"></div>
+          <p class="mt-2 text-sm font-semibold">Brand</p>
+          <p class="text-xs text-slate-500 font-mono">#7C3AED</p>
+        </div>
+        <div>
+          <div class="aspect-square bg-brand-dark rounded-xl shadow-sm"></div>
+          <p class="mt-2 text-sm font-semibold">Brand Dark</p>
+          <p class="text-xs text-slate-500 font-mono">#6D28D9</p>
+        </div>
+        <div>
+          <div class="aspect-square bg-accent rounded-xl shadow-sm"></div>
+          <p class="mt-2 text-sm font-semibold">Accent</p>
+          <p class="text-xs text-slate-500 font-mono">#F59E0B</p>
+        </div>
+        <div>
+          <div class="aspect-square bg-slate-900 rounded-xl shadow-sm"></div>
+          <p class="mt-2 text-sm font-semibold">Ink</p>
+          <p class="text-xs text-slate-500 font-mono">slate-900</p>
+        </div>
+      </div>
+
+      <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3 mt-8">Cevap Renkleri (sabit sıralama, tüm ekranlarda aynı)</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div>
+          <div class="aspect-square bg-answer-red rounded-2xl shadow-sm flex items-center justify-center">
+            <!-- icon: triangle -->
+            <svg class="w-16 h-16" viewBox="0 0 24 24" fill="white"><path d="M12 3 L22 21 L2 21 Z"/></svg>
+          </div>
+          <p class="mt-2 text-sm font-semibold">Şık 1 · Üçgen</p>
+          <p class="text-xs text-slate-500 font-mono">#EF4444</p>
+        </div>
+        <div>
+          <div class="aspect-square bg-answer-blue rounded-2xl shadow-sm flex items-center justify-center">
+            <!-- icon: diamond -->
+            <svg class="w-16 h-16" viewBox="0 0 24 24" fill="white"><path d="M12 2 L22 12 L12 22 L2 12 Z"/></svg>
+          </div>
+          <p class="mt-2 text-sm font-semibold">Şık 2 · Elmas</p>
+          <p class="text-xs text-slate-500 font-mono">#3B82F6</p>
+        </div>
+        <div>
+          <div class="aspect-square bg-answer-yellow rounded-2xl shadow-sm flex items-center justify-center">
+            <!-- icon: circle -->
+            <svg class="w-16 h-16" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="9"/></svg>
+          </div>
+          <p class="mt-2 text-sm font-semibold">Şık 3 · Daire</p>
+          <p class="text-xs text-slate-500 font-mono">#F59E0B</p>
+        </div>
+        <div>
+          <div class="aspect-square bg-answer-green rounded-2xl shadow-sm flex items-center justify-center">
+            <!-- icon: square -->
+            <svg class="w-16 h-16" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+          </div>
+          <p class="mt-2 text-sm font-semibold">Şık 4 · Kare</p>
+          <p class="text-xs text-slate-500 font-mono">#10B981</p>
+        </div>
+      </div>
+
+      <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3 mt-8">Nötr (slate ölçeği)</h3>
+      <div class="grid grid-cols-5 md:grid-cols-10 gap-1">
+        <div class="aspect-square bg-white border border-slate-200 rounded"></div>
+        <div class="aspect-square bg-slate-50 rounded"></div>
+        <div class="aspect-square bg-slate-100 rounded"></div>
+        <div class="aspect-square bg-slate-200 rounded"></div>
+        <div class="aspect-square bg-slate-300 rounded"></div>
+        <div class="aspect-square bg-slate-400 rounded"></div>
+        <div class="aspect-square bg-slate-500 rounded"></div>
+        <div class="aspect-square bg-slate-600 rounded"></div>
+        <div class="aspect-square bg-slate-700 rounded"></div>
+        <div class="aspect-square bg-slate-900 rounded"></div>
+      </div>
+    </section>
+
+    <!-- Tipografi -->
+    <section class="mb-14">
+      <h2 class="display text-xl mb-4 border-b border-slate-200 pb-2">✏️ Tipografi</h2>
+      <div class="space-y-5">
+        <div>
+          <p class="display text-5xl md:text-6xl">Türkiye'nin başkenti?</p>
+          <p class="text-xs text-slate-500 mt-1 font-mono">display · 5xl-6xl · 800 · -0.02em — Soru metni (mobile/tablet)</p>
+        </div>
+        <div>
+          <h3 class="text-3xl font-bold">Quiz'lerim</h3>
+          <p class="text-xs text-slate-500 mt-1 font-mono">3xl · 700 — Sayfa başlıkları</p>
+        </div>
+        <div>
+          <h4 class="text-xl font-semibold">Türkiye Coğrafyası</h4>
+          <p class="text-xs text-slate-500 mt-1 font-mono">xl · 600 — Kart başlıkları</p>
+        </div>
+        <div>
+          <p class="text-base">Bilbil ile öğretmenler ve eğitmenler kendi quiz'lerini oluşturur, öğrenciler PIN ile katılır.</p>
+          <p class="text-xs text-slate-500 mt-1 font-mono">base · 400 — Body</p>
+        </div>
+        <div>
+          <p class="text-sm text-slate-600">12 soru · Son oynanma 3 gün önce</p>
+          <p class="text-xs text-slate-500 mt-1 font-mono">sm · text-slate-600 — Yardımcı metin</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Buttons -->
+    <section class="mb-14">
+      <h2 class="display text-xl mb-4 border-b border-slate-200 pb-2">🔘 Butonlar</h2>
+
+      <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Clean (Host paneli)</h3>
+      <div class="flex flex-wrap gap-2 mb-8">
+        <button class="bg-brand text-white px-4 py-2 rounded-md font-medium hover:bg-brand-dark transition focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2">Primary</button>
+        <button class="bg-white text-slate-900 border border-slate-300 px-4 py-2 rounded-md font-medium hover:bg-slate-50 transition">Outline</button>
+        <button class="text-brand px-4 py-2 font-medium hover:bg-brand/5 rounded-md transition">Ghost</button>
+        <button class="bg-red-600 text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 transition">Sil (tehlikeli)</button>
+        <button class="bg-slate-200 text-slate-400 px-4 py-2 rounded-md font-medium cursor-not-allowed">Disabled</button>
+      </div>
+
+      <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Vibrant (Game ekranları)</h3>
+      <div class="flex flex-wrap gap-3 items-center">
+        <button class="bg-brand text-white px-8 py-4 rounded-2xl font-bold uppercase tracking-wider shadow-lg shadow-brand/30 hover:scale-105 active:scale-95 transition">Oyunu Başlat</button>
+        <button class="bg-accent text-slate-900 px-8 py-4 rounded-2xl font-bold uppercase tracking-wider shadow-lg shadow-accent/30 hover:scale-105 active:scale-95 transition">Sonraki Soru</button>
+        <button class="bg-white text-slate-900 border-2 border-white/40 backdrop-blur px-8 py-4 rounded-2xl font-bold uppercase tracking-wider shadow-lg hover:scale-105 active:scale-95 transition">Devam Et</button>
+      </div>
+    </section>
+
+    <!-- Form -->
+    <section class="mb-14">
+      <h2 class="display text-xl mb-4 border-b border-slate-200 pb-2">📝 Form Elemanları</h2>
+      <div class="grid md:grid-cols-2 gap-6 max-w-3xl">
+        <div class="space-y-1">
+          <label class="text-sm font-medium">E-posta</label>
+          <input type="email" class="w-full border border-slate-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent" placeholder="ornek@bilbil.app">
+          <p class="text-xs text-slate-500">Hesabını doğrulamak için kullanılacak</p>
+        </div>
+        <div class="space-y-1">
+          <label class="text-sm font-medium text-red-600">E-posta (hata)</label>
+          <input type="email" class="w-full border border-red-500 rounded-md px-3 py-2 bg-red-50" value="ornek">
+          <p class="text-xs text-red-600">Geçerli bir e-posta adresi gir</p>
+        </div>
+        <div class="space-y-1">
+          <label class="text-sm font-medium">Quiz başlığı</label>
+          <input type="text" class="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-brand" value="Türkiye Coğrafyası">
+        </div>
+        <div class="space-y-1">
+          <label class="text-sm font-medium">Soru süresi</label>
+          <select class="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-brand">
+            <option>10 saniye</option>
+            <option selected>20 saniye</option>
+            <option>30 saniye</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cards -->
+    <section class="mb-14">
+      <h2 class="display text-xl mb-4 border-b border-slate-200 pb-2">🃏 Kartlar</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="rounded-lg border bg-white p-5 shadow-sm hover:shadow-md transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold text-brand bg-brand/10 px-2 py-0.5 rounded">12 soru</span>
+            <button class="text-slate-400 hover:text-slate-700">⋯</button>
+          </div>
+          <h3 class="font-semibold mb-1">Türkiye Coğrafyası</h3>
+          <p class="text-sm text-slate-500 mb-4">Son oynanma 3 gün önce · 24 oyuncu</p>
+          <button class="w-full bg-brand text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-brand-dark transition">Oyunu Başlat</button>
+        </div>
+        <div class="rounded-lg border bg-white p-5 shadow-sm">
+          <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">Taslak</span>
+          <h3 class="font-semibold mb-1 mt-2">90'lar Pop Müzik</h3>
+          <p class="text-sm text-slate-500 mb-4">Henüz oynanmadı · 8 soru</p>
+          <button class="w-full bg-white text-slate-900 border border-slate-300 px-4 py-2 rounded-md text-sm font-medium">Düzenle</button>
+        </div>
+        <div class="rounded-lg border-2 border-dashed border-slate-300 bg-white/50 p-5 flex flex-col items-center justify-center text-center">
+          <div class="text-3xl mb-2 text-slate-400">+</div>
+          <p class="text-sm font-medium text-slate-700">Yeni Quiz</p>
+          <p class="text-xs text-slate-500">Sıfırdan oluştur</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cevap butonları -->
+    <section class="mb-14">
+      <h2 class="display text-xl mb-4 border-b border-slate-200 pb-2">🎮 Cevap Butonları (Player mobile)</h2>
+      <p class="text-sm text-slate-600 mb-4">Sabit sıralama · renk + şekil ikili kodlama (renk körü erişilebilirlik) · ≥ 44px tap hedefi · scale-95 active feedback</p>
+      <div class="grid grid-cols-2 gap-3 max-w-md">
+        <button class="aspect-[5/3] bg-answer-red rounded-2xl text-white font-bold flex items-center justify-center shadow-lg active:scale-95 transition">
+          <svg class="w-12 h-12" viewBox="0 0 24 24" fill="white"><path d="M12 3 L22 21 L2 21 Z"/></svg>
+        </button>
+        <button class="aspect-[5/3] bg-answer-blue rounded-2xl text-white font-bold flex items-center justify-center shadow-lg active:scale-95 transition">
+          <svg class="w-12 h-12" viewBox="0 0 24 24" fill="white"><path d="M12 2 L22 12 L12 22 L2 12 Z"/></svg>
+        </button>
+        <button class="aspect-[5/3] bg-answer-yellow rounded-2xl text-white font-bold flex items-center justify-center shadow-lg active:scale-95 transition">
+          <svg class="w-12 h-12" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="9"/></svg>
+        </button>
+        <button class="aspect-[5/3] bg-answer-green rounded-2xl text-white font-bold flex items-center justify-center shadow-lg active:scale-95 transition">
+          <svg class="w-12 h-12" viewBox="0 0 24 24" fill="white"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Badges -->
+    <section class="mb-14">
+      <h2 class="display text-xl mb-4 border-b border-slate-200 pb-2">🏷️ Rozetler</h2>
+      <div class="flex flex-wrap gap-2">
+        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-semibold">Doğru</span>
+        <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-semibold">Yanlış</span>
+        <span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-xs font-semibold">Beklemede</span>
+        <span class="bg-brand/10 text-brand px-2 py-0.5 rounded text-xs font-semibold">Yeni</span>
+        <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-semibold">Taslak</span>
+      </div>
+    </section>
+
+    <!-- Motion principles -->
+    <section class="mb-14">
+      <h2 class="display text-xl mb-4 border-b border-slate-200 pb-2">🎬 Motion Prensipleri</h2>
+      <div class="grid md:grid-cols-2 gap-4 text-sm">
+        <div class="rounded-lg border bg-white p-4">
+          <h4 class="font-semibold mb-1">Soru geçişi</h4>
+          <p class="text-slate-600">slide-up + fade · 320ms · ease-out</p>
+        </div>
+        <div class="rounded-lg border bg-white p-4">
+          <h4 class="font-semibold mb-1">Doğru cevap reveal</h4>
+          <p class="text-slate-600">yeşil pulse + spring checkmark · 600ms</p>
+        </div>
+        <div class="rounded-lg border bg-white p-4">
+          <h4 class="font-semibold mb-1">Yanlış cevap</h4>
+          <p class="text-slate-600">hafif shake (4px x 3) + kırmızı flash · 400ms</p>
+        </div>
+        <div class="rounded-lg border bg-white p-4">
+          <h4 class="font-semibold mb-1">Podium reveal</h4>
+          <p class="text-slate-600">3.→2.→1. sıralı pop-in · spring · konfeti</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-center text-sm text-slate-400 py-8 border-t border-slate-200">
+      Bilbil Design System · Bu döküman canlı (revize edilebilir) — implementasyonda Tailwind config ile sabitlenecek
+    </footer>
+
+  </div>
+</body>
+</html>
