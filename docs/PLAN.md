@@ -39,7 +39,7 @@ visibility (paylaşım yok), live mode (async/homework yok).
 
 | Katman | Tercih |
 |---|---|
-| Frontend framework | Next.js 15 (App Router) + React 19 |
+| Frontend framework | Next.js 16 (App Router, src/, Turbopack) + React 19 |
 | Dil | TypeScript (strict mode) |
 | Styling | Tailwind CSS v4 + shadcn/ui |
 | Animasyon | Framer Motion |
@@ -231,21 +231,29 @@ bilbil/
 
 Her faz **bağımsız çalışan** bir milestone. Faz sonunda commit + review.
 
-### Faz 0: Setup (1-2 gün)
-- `npx create-next-app@latest` + TypeScript + Tailwind + ESLint
-- shadcn/ui init + temel komponentler (Button, Input, Form, Dialog, Card)
-- Prisma init + lokal Postgres docker-compose
-- Auth.js v5 skeleton
-- `server.ts` custom Next.js + Socket.IO hello-world
-- Vitest + Playwright config
-- ESLint + Prettier + Husky pre-commit hook
-- GitHub Actions: lint + typecheck + test
-- README başlangıcı
+### Faz 0: Setup (1-2 gün) — ✅ **TAMAMLANDI** (commit `e6e533d`)
+- ✅ `npx create-next-app@latest` + TypeScript + Tailwind + ESLint + App Router + src/
+- ✅ shadcn/ui init + Button komponenti (diğerleri ihtiyaç oldukça)
+- ✅ Prisma 6 + lokal Postgres docker-compose (port 5435 — 5433 başka container'da)
+- ✅ Initial migration uygulandı (7 model)
+- ✅ Auth.js v5 skeleton (Credentials provider — Faz 1'de doldurulacak)
+- ✅ `server.ts` custom Next.js + Socket.IO ping/pong (test edildi)
+- ✅ Vitest config + smoke test (2/2 pass)
+- ✅ Playwright config + e2e smoke test
+- ✅ ESLint + Prettier + Husky pre-commit + lint-staged
+- ✅ GitHub Actions: lint + format:check + typecheck + test + build
+- ✅ Tailwind v4 @theme tokens (brand mor + amber + 4 cevap rengi)
+- ✅ README + .env.example
+- ✅ **Bonus:** `scripts/dev.sh` lokal lifecycle yöneticisi (start/stop/status/logs/clean)
 
-**Çıktı:** `npm run dev` → `http://localhost:3000`'da landing page,
-Socket.IO ping-pong test endpoint'i çalışıyor.
+**Smoke test sonucu:**
+- `./scripts/dev.sh start` → ~22s'de http://localhost:3000 hazır
+- HTTP 200 (47ms) + Socket.IO listening
+- `npm run typecheck` → 0 errors
+- `npm test` → 2/2 pass
+- `npm run lint` → 0 errors, 1 minor warning (auth.ts unused param — Faz 1'de doldurulacak)
 
-### Faz 1: Auth + Quiz CRUD (1 hafta)
+### Faz 1: Auth + Quiz CRUD (1 hafta) — 🟡 **SIRADAKİ**
 - Email + password registration (bcrypt hash, email verification token)
 - Login + session
 - Email verification flow (Resend ile)
