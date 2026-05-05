@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
 
-// Faz 0 smoke test — ana sayfa yükleniyor mu?
-test("ana sayfa yükleniyor", async ({ page }) => {
+// Smoke test — landing sayfasının ana mesajları gözüksün.
+test("landing yükleniyor (mockup #1B)", async ({ page }) => {
   await page.goto("/");
-  // Next.js default landing veya bizim landing — şimdilik sayfa hata vermeden yüklensin
-  await expect(page.locator("body")).toBeVisible();
+  await expect(page.getByText("Bilgini")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Quiz Oluştur" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Giriş Yap/ })).toBeVisible();
 });

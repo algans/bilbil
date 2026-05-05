@@ -253,25 +253,38 @@ Her faz **bağımsız çalışan** bir milestone. Faz sonunda commit + review.
 - `npm test` → 2/2 pass
 - `npm run lint` → 0 errors, 1 minor warning (auth.ts unused param — Faz 1'de doldurulacak)
 
-### Faz 1: Auth + Quiz CRUD (1 hafta) — 🟡 **SIRADAKİ**
-- Email + password registration (bcrypt hash, email verification token)
-- Login + session
-- Email verification flow (Resend ile)
-- Password reset flow
-- Auth middleware (protected routes)
-- Quiz oluşturma formu (drag-handle ile soru sıralama, dynamic question rows)
-- Quiz list dashboard (kart grid)
-- Quiz edit, delete, preview
-- Validation: min 1 soru, exactly 1 doğru cevap per soru
+### Faz 1: Auth + Quiz CRUD (1 hafta) — ✅ **TAMAMLANDI** (2026-05-05)
 
-**Kritik dosyalar:** `src/lib/auth.ts`, `src/app/(auth)/`, `src/app/(host)/quizzes/`,
-`src/components/quiz/QuizForm.tsx`
+**Onaylanan kararlar:**
+- Auth: Auth.js v5 + Credentials + JWT (PrismaAdapter kullanılmadı; database session yerine JWT token).
+- Email: Faz 1'de mock (`tmp/emails/` altına JSON yazar + console'a basar). Resend entegrasyonu Faz 5'te.
+- Form: React Hook Form değil, native `<form>` + Server Actions + `useActionState` tercih edildi (Next.js 16 idiomatic, daha hafif).
+- Drag-drop: `@dnd-kit/core` + `@dnd-kit/sortable` (klavye + dokunmatik destekli, kendi kendine yetiyor).
+- Quiz Creation: Mockup'taki Varyant A (long form) implemente edildi.
+- Şifre kuralları: 8+ karakter, 1+ harf, 1+ rakam. Strength meter (4 segmentli bar, mockup #4 birebir) — uzunluk + karakter çeşitliliğine bakar.
+- Validation: Min 1 soru, tam 4 şık per soru, tam 1 doğru cevap; tüm quiz alanları Zod ile sınırda doğrulanıyor.
 
-**Test:** `tests/e2e/auth-flow.spec.ts`, `tests/e2e/quiz-crud.spec.ts`
+**Eklenen modeller (Prisma migration `20260505172653_add_verification_and_reset_tokens`):**
+- `EmailVerificationToken` — 24 saat TTL, kullanıcı kayıt olunca üretilir, doğrulama sonrası tüm kullanıcı token'ları silinir.
+- `PasswordResetToken` — 1 saat TTL, `consumedAt` ile tek kullanım.
+- `QuestionOption` üzerine `@@unique([questionId, position])` constraint eklendi.
 
-**Çıktı:** Host kendi quiz'lerini oluşturabiliyor, listeleyebiliyor, düzenleyebiliyor.
+**Yapılan ekranlar (mockup birebir):**
+- Landing `/` (mockup #1B Demo Centric — sol metin + sağ telefon mockup'ı + 4 cevap rengi).
+- `/login`, `/register`, `/forgot-password`, `/reset-password/[token]`, `/verify-email/[token]`, `/verify-email/sent` (mockup #6 birebir, 7a/7b dahil).
+- Host navbar (mockup #14), `/dashboard` empty + filled state (mockup #8a/#8b), QuizCard.
+- `/quizzes/new` (mockup #9 Varyant A — drag-drop, 4 sabit cevap rengi), `/quizzes/[id]` preview (mockup #10), `/quizzes/[id]/edit` (mockup #11 + danger zone delete).
 
-### Faz 2: Live Game Skeleton (1 hafta)
+**Test sonucu:**
+- Vitest unit: 4 dosya, 34/34 pass (validation + tokens).
+- Playwright e2e: 3 dosya, 9/9 pass (auth flow + quiz CRUD + landing smoke).
+- `npm run typecheck` 0 errors, `npm run lint` 0 errors, `npm run build` başarılı.
+
+**Açık not:** Next.js 16 deprecation warning: `middleware.ts` → `proxy.ts` rename önerisi. Auth.js v5'in `proxy.ts` desteği henüz net değil; Faz 5 polish'inde adreslenecek.
+
+**"Oyun Başlat" butonu disabled** (mockup'ta belirgin "Faz 2'de açılacak" tooltip'i var) — Faz 2'de aktif olacak.
+
+### Faz 2: Live Game Skeleton (1 hafta) — 🟡 **SIRADAKİ**
 - "Yeni oyun başlat" butonu → `host:create_session` event → PIN üretimi
 - 🎯 **USER WRITES:** `src/lib/game/pin-generator.ts` (collision avoidance)
 - 🎯 **USER WRITES:** `src/lib/game/validators.ts` (nickname rules)
@@ -387,16 +400,32 @@ Her faz sonunda yapılacak adımlar:
 
 ---
 
-## İş Tarzı
+## İş Tarzı (Faz Giriş / Çıkış Akışı)
 
-Her faz şu döngüyle ilerler:
+Bu akış AGENTS.md'de detaylı tarif edildi. Özet:
 
-1. **Brief:** Ben (Claude) faz başında neyi yapacağımızı özetlerim
-2. **Implementation:** Önce iskelet kod, sonra detay; siz review edersiniz
-3. **User contribution:** İşaretli yerlerde (scoring, validators vs) siz 5-10 satır yazarsınız
-4. **Test:** Birlikte test çalıştırırız, hatalar varsa düzeltiriz
-5. **Commit:** Faz tamamlandığında descriptive commit message ile commit
-6. **Review:** Faz sonu kısa retrospective: ne öğrendik, sonraki fazda ne dikkat?
+### Faz Girişi
+1. **Brief** — agent mevcut durumu özetler, fazın kapsamını ve alt parçalara bölünmesini sunar.
+2. **Onay** — kullanıcı kapsamı onaylar veya değiştirir. Otonom mod açıksa agent makul varsayımlarla devam eder.
+3. **USER WRITES blokları** — fazın o noktasında stub + test bırakıp kullanıcının yazmasını bekler.
+
+### Faz Çalışması
+- Mockup birebir uyum (mockups/ klasörü kaynaktır).
+- TDD: validation/util/business logic için. UI komponentleri için sadece e2e test yeterli.
+- Tek dosya yarattıktan sonra `typecheck` → erken hata yakalama.
+
+### Faz Çıkışı (zorunlu)
+1. **Lokal smoke test** sırası:
+   - `npm run db:up` + `npm run db:migrate`
+   - `npm run typecheck` (0 errors)
+   - `npm run lint` (0 errors)
+   - `npm test` (tüm unit pass)
+   - `npm run build` (başarılı)
+   - `npm run test:e2e` (tüm Playwright pass)
+   - `./scripts/dev.sh start` + manuel rota smoke + `./scripts/dev.sh stop`
+2. **Dökümanlar senkronize**: PLAN.md, AGENTS.md, CLAUDE.md, README.md gerçek state'e güncellenir; faz `✅ TAMAMLANDI`'ya çevrilir, sonraki faz `🟡 Sıradaki`'ye geçer.
+3. **Descriptive commit** — `feat(faz-N): kısa başlık` formatında, ne yapıldı + test sonuçları + sonraki faz için açık not.
+4. **Retro** — kullanıcı isterse "ne öğrendik / sonraki fazda ne dikkat".
 
 ---
 

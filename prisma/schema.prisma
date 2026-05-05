@@ -66,7 +66,34 @@ model QuestionOption {
   isCorrect  Boolean
   position   Int // 0-3 (kırmızı üçgen / mavi elmas / sarı daire / yeşil kare — sabit sıralama)
 
+  @@unique([questionId, position])
   @@map("question_options")
+}
+
+// E-posta doğrulama token'ları (kayıt sonrası)
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  email     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+// Şifre sıfırlama token'ları
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  consumedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 model GameSession {

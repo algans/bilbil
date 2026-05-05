@@ -79,6 +79,24 @@ body {
   letter-spacing: -0.04em;
 }
 
+/* Mockup #6 ortak — auth-card shadow tarifesi */
+.auth-card {
+  box-shadow: 0 20px 60px -15px rgb(124 58 237 / 0.15);
+}
+
+/* Mockup #1B + PIN giriş telefon mockup'ı için sabit boyut */
+.phone-frame {
+  width: 320px;
+  height: 640px;
+}
+
+/* Landing'de viewport'a sığması için ölçekleyen variant.
+   Yükseklik clamp(min, viewport-h, max), genişlik 9:18 oranını korur. */
+.phone-frame-responsive {
+  width: clamp(220px, 28vh, 320px);
+  height: clamp(440px, 58vh, 640px);
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);

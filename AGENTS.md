@@ -24,9 +24,9 @@ Host email+password ile giriş yapar, 4-şıklı çoktan seçmeli quiz oluşturu
 |---|---|---|
 | Brainstorming + Plan | ✅ Tamam | docs/PLAN.md |
 | Tasarım (28 ekran HTML mockup) | ✅ Tamam | mockups/ |
-| **Faz 0: Setup** | ✅ **TAMAMLANDI** (commit `e6e533d`) | Tüm tooling kuruldu |
-| **Faz 1: Auth + Quiz CRUD** | 🟡 Sıradaki | ~1 hafta |
-| Faz 2: Live Game Skeleton | ⏳ Bekliyor | ~1 hafta |
+| **Faz 0: Setup** | ✅ TAMAMLANDI (commit `e6e533d`) | Tüm tooling kuruldu |
+| **Faz 1: Auth + Quiz CRUD** | ✅ **TAMAMLANDI** (2026-05-05) | Auth.js v5 + 5 auth ekranı + dashboard + quiz CRUD + drag-drop form |
+| **Faz 2: Live Game Skeleton** | 🟡 Sıradaki | ~1 hafta |
 | Faz 3: Question Lifecycle | ⏳ Bekliyor | ~1 hafta |
 | Faz 4: Polish + Edge Cases | ⏳ Bekliyor | ~1 hafta |
 | Faz 5: Deploy (Fly.io + Neon) | ⏳ Bekliyor | ~2-3 gün |
@@ -42,10 +42,10 @@ Host email+password ile giriş yapar, 4-şıklı çoktan seçmeli quiz oluşturu
 | Styling | **Tailwind CSS v4** + shadcn/ui | v3 değil — `tailwind.config.ts` YOK; CSS'te `@theme {}` directive ile token tanımı (`src/app/globals.css`) |
 | Real-time | Socket.IO 4.x | rooms + reconnection + fallbacks |
 | Backend | **Custom `server.ts`** (Next.js + Socket.IO entegre, tsx ile çalışır) | Vercel'e deploy EDİLEMEZ — persistent WebSocket istiyor. Hedef: Fly.io |
-| Auth | Auth.js v5 (NextAuth) | Credentials provider + bcrypt |
+| Auth | Auth.js v5 (NextAuth) | Credentials + bcrypt + JWT (PrismaAdapter YOK — JWT ile gereksiz). E-posta doğrulanmamışsa login engellenir. |
 | Database | PostgreSQL 16 (lokal docker, prod Neon) | Lokal port: **5435** (5432/5433 sıkça çakışıyor) |
 | ORM | **Prisma 6** | v7 değil — v7'de `url = env(...)` schema'dan kaldırıldı, `prisma.config.ts`'a taşındı; biz v6 kullanıyoruz |
-| Email | Resend | Faz 1'de aktif |
+| Email | **Mock** (Faz 1) → Resend (Faz 5) | Faz 1'de `tmp/emails/` altına JSON yazan mock kullanılıyor; gerçek SMTP entegrasyonu Faz 5'te |
 | Validation | Zod | Her sınırda |
 | State (client) | Zustand + TanStack Query | Faz 1+'da kurulacak |
 | State (live game) | **In-memory `Map`** (process-local) | Game state DB'de değil; oyun bittiğinde DB'ye yazılır. Process restart = canlı oyun kayıp (kabul edilen MVP trade-off) |
@@ -119,22 +119,48 @@ bilbil/
 ├── scripts/dev.sh                # Lokal lifecycle yöneticisi (start/stop/status/logs/clean)
 ├── src/
 │   ├── app/                      # Next.js App Router
-│   │   ├── (public)/             # / · /play · /play/[pin]
-│   │   ├── (auth)/               # /login · /register · /forgot-password · /reset-password · /verify-email
-│   │   ├── (host)/               # /dashboard · /quizzes/* · /host/[sessionId] · /history/*
-│   │   ├── api/                  # API routes
-│   │   ├── globals.css           # Tailwind v4 @theme + brand tokens
-│   │   ├── layout.tsx
-│   │   └── page.tsx
+│   │   ├── page.tsx              # / — Landing (mockup #1B Demo Centric)
+│   │   ├── (auth)/
+│   │   │   ├── layout.tsx
+│   │   │   ├── login/
+│   │   │   ├── register/
+│   │   │   ├── forgot-password/
+│   │   │   ├── reset-password/[token]/
+│   │   │   └── verify-email/{[token]/, sent/}
+│   │   ├── (host)/
+│   │   │   ├── layout.tsx        # Auth gate + Navbar (mockup #14)
+│   │   │   ├── dashboard/        # Mockup #8 (empty + filled)
+│   │   │   └── quizzes/{new/, [id]/{page.tsx, edit/}}
+│   │   ├── api/auth/[...nextauth]/route.ts   # Auth.js handler
+│   │   ├── globals.css           # Tailwind v4 @theme + brand tokens + .auth-card
+│   │   └── layout.tsx
 │   ├── components/
-│   │   ├── ui/                   # shadcn/ui primitives (Button, vb)
-│   │   ├── quiz/                 # QuizForm, QuestionEditor, OptionInput (Faz 1)
-│   │   ├── game/                 # QuestionDisplay, AnswerButton, Leaderboard, Podium (Faz 2-3)
-│   │   └── layout/               # Navbar, AuthGuard
+│   │   ├── ui/                   # shadcn/ui primitives (Button)
+│   │   ├── auth/                 # AuthCard, LoginForm, RegisterForm, ForgotPasswordForm,
+│   │   │                         # ResetPasswordForm, PasswordStrengthMeter, LogoBlock,
+│   │   │                         # ResendVerificationButton, form-bits (FieldError, FormBanner)
+│   │   ├── layout/               # HostNavbar (mockup #14)
+│   │   ├── dashboard/            # EmptyDashboard, QuizCard
+│   │   ├── quiz/                 # QuizForm, QuestionRow, DeleteQuizButton (drag-drop @dnd-kit)
+│   │   ├── public/               # (Faz 4-5'te genişleyecek)
+│   │   └── game/                 # QuestionDisplay, AnswerButton, Leaderboard, Podium (Faz 2-3)
 │   ├── lib/
-│   │   ├── auth.ts               # Auth.js v5 config (skeleton, Faz 1'de doldurulacak)
+│   │   ├── auth.ts               # Auth.js v5 (Credentials + JWT, EmailNotVerifiedError)
+│   │   ├── auth/
+│   │   │   ├── handlers.ts       # GET/POST re-export
+│   │   │   └── tokens.ts         # generateToken, expiresAt, TTL constants
 │   │   ├── db.ts                 # Prisma singleton (hot-reload safe)
+│   │   ├── dal.ts                # getCurrentUser, requireUser (Data Access Layer)
 │   │   ├── utils.ts              # shadcn cn() helper
+│   │   ├── email/
+│   │   │   ├── mock.ts           # Faz 1 mock email (tmp/emails/*.json)
+│   │   │   └── templates.ts      # verificationEmail, passwordResetEmail
+│   │   ├── validation/
+│   │   │   ├── auth.ts           # registerSchema, loginSchema, passwordStrength, vb
+│   │   │   └── quiz.ts           # quizFormSchema (4-şık + 1-doğru kuralı)
+│   │   ├── actions/
+│   │   │   ├── auth.ts           # register/login/forgot/reset/verify/logout server actions
+│   │   │   └── quiz.ts           # createQuiz/updateQuiz/deleteQuiz/listQuizzes/getQuiz
 │   │   ├── socket-server.ts      # Server-side Socket.IO handlers (Faz 2)
 │   │   ├── socket-client.ts      # Client wrapper (Faz 2)
 │   │   └── game/                 # Game logic (Faz 2-3)
@@ -144,8 +170,9 @@ bilbil/
 │   │       ├── leaderboard.ts    # 🎯 USER WRITES — tie-break
 │   │       └── state-machine.ts  # In-memory GameSession Manager
 │   ├── hooks/                    # useGameSocket, useGameState (Faz 2)
-│   ├── types/                    # Paylaşılan TS tipleri
-│   └── middleware.ts             # Auth gate
+│   ├── types/
+│   │   └── next-auth.d.ts        # Auth.js Session/JWT type augmentation
+│   └── middleware.ts             # Auth gate (mor → /login, login → /dashboard)
 ├── tests/
 │   ├── setup.ts                  # Vitest setup
 │   ├── unit/                     # Vitest unit tests
@@ -248,6 +275,55 @@ Her birinde stub + test önceden hazır olacak; agent kullanıcıya "bu fonksiyo
 | E2E | Playwright | Kritik akışlar | auth flow, quiz CRUD, **multi-client live game** |
 
 **En kritik test:** `tests/e2e/live-game.spec.ts` — 1 host + 3 player tarayıcı context'i parallel açılır, gerçek bir oyun simüle edilir, skor/leaderboard/podium doğrulanır. (Faz 3 sonunda)
+
+---
+
+## Faz Giriş / Çıkış Akışı (Onaylanmış İş Tarzı)
+
+Her faz şu döngüyle ilerler. Agent bu adımları otonom uygular, kullanıcı her adımın çıktısını sonradan inceleyebilir.
+
+### Faz Girişi (Brief)
+1. Mevcut durumu özetle (önceki commit, hangi dosyalar değişti, hangi mockup ekranları açık).
+2. Bu fazın kapsamı + sıralaması (alt parçalara böl, her biri commit-edilebilir olsun).
+3. USER WRITES varsa kullanıcıyı önceden bilgilendir; fazın o noktasında stub/test bırakıp dur.
+4. Açık olmayan kararlar varsa kullanıcıdan onay al; **otonom mod**'sa makul varsayım yap ve dökümante et.
+
+### Faz Çalışması
+- Mockup'lara birebir uy — (4-renk şıklar, brand mor + amber accent, mor logo cube vs hepsi mockup'tan kopyalanmış olmalı).
+- TDD'yi validation/util/business logic için uygula. UI komponentleri için sadece e2e testle yetin.
+- Tek dosya yarattıktan sonra `typecheck` çalıştırma alışkanlığı: hata büyümeden yakala.
+
+### Faz Çıkışı (Closing)
+1. **Lokal smoke test** zorunlu sıra:
+   - `npm run db:up` (Postgres ayakta mı)
+   - `npm run db:migrate` (varsa yeni migration uygulansın)
+   - `npm run typecheck` → 0 errors
+   - `npm run lint` → 0 errors
+   - `npm test` → tüm unit testler geçsin
+   - `npm run build` → production build geçsin
+   - `npm run test:e2e` → tüm Playwright e2e geçsin
+   - `./scripts/dev.sh start` → manual smoke (rota response, mock email pipeline, DB connectivity)
+   - `./scripts/dev.sh stop` + DB temizle
+2. **Dökümanları senkronize et** (PLAN.md, AGENTS.md, CLAUDE.md, README.md):
+   - Mevcut faz `✅ TAMAMLANDI (tarih, commit hash)` → bir sonraki faz `🟡 Sıradaki`
+   - Yeni dosyalar/dependencies repo yapısı bölümünde güncellensin
+   - Faz boyunca alınan kararlar (mock email, Auth.js JWT-only, vb) "Stack ve Kritik Versiyon Notları"na yansısın
+3. **Faz commit'i** descriptive mesajla:
+   ```
+   feat(faz-N): kısa başlık
+   
+   - Yapılan büyük şeyler (~5-8 madde)
+   - Test sonuçları (X unit + Y e2e geçti)
+   - Sonraki faz için açık not (varsa)
+   ```
+4. **Retro** — ne öğrendik, sonraki fazda ne dikkat (kullanıcı isteyince).
+
+### Otonom Mod Kuralları
+Kullanıcı "tüm fazı otonom yap" derse:
+- Her açık karar için **mockup + PLAN.md** kaynak alınarak makul varsayım yap.
+- Cevap bilinmezse **muhafazakar** karar al (örn. mock email > gerçek SMTP, JWT > database session).
+- Karar gerekçesini ilgili dosyada veya AGENTS.md'de bir cümleyle dökümante et.
+- Faz çıkışında tüm smoke test'leri çalıştırmadan ve dökümanları senkronize etmeden commit ATMA.
 
 ---
 

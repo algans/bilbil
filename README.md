@@ -10,7 +10,9 @@ Host kendi quiz'ini hazırlar, oyun başlatır, 6 haneli PIN paylaşır. Oyuncul
 - **Tailwind CSS v4** + shadcn/ui (CSS-first `@theme` directive)
 - **Custom server.ts** — Next.js + Socket.IO entegre (gerçek zamanlı oyun için)
 - **PostgreSQL 16** (lokal docker, prod Neon) + **Prisma 6**
-- **Auth.js v5** (Credentials provider + bcrypt)
+- **Auth.js v5** (Credentials provider + bcrypt + JWT session)
+- **@dnd-kit** (drag-drop, klavye + dokunmatik destekli)
+- **Mock email** (Faz 1, `tmp/emails/` altına JSON yazar — Faz 5'te Resend ile değişir)
 - **Vitest** (unit) + **Playwright** (e2e, multi-client)
 - **ESLint** + **Prettier** + **Husky** + **lint-staged**
 - **GitHub Actions** CI
@@ -27,6 +29,17 @@ Host kendi quiz'ini hazırlar, oyun başlatır, 6 haneli PIN paylaşır. Oyuncul
 ```
 
 İlk kurulumda `.env` dosyası `.env.example`'dan otomatik oluşturulur. **`AUTH_SECRET`'ı production öncesi değiştirmeyi unutma:** `openssl rand -base64 32`.
+
+### Faz 1 mock email akışı
+
+Geliştirme sırasında gerçek SMTP yerine **mock gönderici** kullanılıyor (Resend entegrasyonu Faz 5'te). Kayıt olduğunda doğrulama maili `tmp/emails/*.json` olarak yazılır + console'da basılır:
+
+```bash
+# En son gönderilen maili oku ve verify URL'ini al
+ls -t tmp/emails/ | head -1 | xargs -I{} cat tmp/emails/{} | jq .text
+```
+
+Veya `./scripts/dev.sh logs` ile dev server log'undaki mailleri canlı izleyebilirsin.
 
 **Manuel akış (script kullanmadan):**
 
@@ -89,10 +102,21 @@ bilbil/
 │   │   ├── (host)/            # /dashboard · /quizzes/* · /host/* · /history/*
 │   │   ├── api/               # API routes
 │   │   └── globals.css        # Tailwind v4 @theme + brand tokens
-│   ├── components/ui/         # shadcn/ui primitives
+│   ├── components/
+│   │   ├── ui/                # shadcn/ui primitives
+│   │   ├── auth/              # Login/Register/Forgot/Reset/Verify form'ları (Faz 1)
+│   │   ├── layout/            # HostNavbar (mockup #14)
+│   │   ├── dashboard/         # QuizCard, EmptyDashboard
+│   │   └── quiz/              # QuizForm, QuestionRow, DeleteQuizButton (Faz 1)
+│   ├── middleware.ts          # Auth gate
 │   └── lib/
-│       ├── auth.ts            # Auth.js v5 config
+│       ├── auth.ts            # Auth.js v5 (Credentials + JWT)
+│       ├── auth/tokens.ts     # E-posta + reset token helpers
+│       ├── dal.ts             # getCurrentUser, requireUser
 │       ├── db.ts              # Prisma singleton
+│       ├── email/             # Mock email + templates (Faz 1)
+│       ├── validation/        # Zod şemaları (auth + quiz)
+│       ├── actions/           # Server actions (auth + quiz)
 │       └── game/              # Faz 2-3'te: scoring, state-machine, validators
 ├── tests/
 │   ├── unit/                  # Vitest
@@ -109,9 +133,9 @@ bilbil/
 
 | Faz | Süre | İçerik | Durum |
 |---|---|---|---|
-| **0** | 1-2 gün | Setup (Next.js + Tailwind + Prisma + Auth.js + Socket.IO + tests + CI) | ✅ **Tamamlandı** (`e6e533d`) |
-| **1** | 1 hafta | Auth + Quiz CRUD | 🟡 Sıradaki |
-| **2** | 1 hafta | Live Game Skeleton (PIN + lobby + reconnect) | ⏳ |
+| **0** | 1-2 gün | Setup (Next.js + Tailwind + Prisma + Auth.js + Socket.IO + tests + CI) | ✅ Tamamlandı (`e6e533d`) |
+| **1** | 1 hafta | Auth + Quiz CRUD (5 auth ekranı, dashboard, drag-drop quiz form, e2e + unit testler) | ✅ **Tamamlandı** (2026-05-05) |
+| **2** | 1 hafta | Live Game Skeleton (PIN + lobby + reconnect) | 🟡 Sıradaki |
 | **3** | 1 hafta | Question Lifecycle (timer + scoring + leaderboard + persist) | ⏳ |
 | **4** | 1 hafta | Polish + edge cases + e2e tests | ⏳ |
 | **5** | 2-3 gün | Deploy (Fly.io + Neon) | ⏳ |

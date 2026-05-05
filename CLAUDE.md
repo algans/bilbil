@@ -24,22 +24,31 @@
 
 ## İş Tarzı (kritik)
 
-Her implementation faz'ı şu döngüyle ilerler:
+İki mod var:
 
-1. **Brief** — Faz başında "şunu yapacağız, şu dosyaları yaratacağız" özeti
-2. **Implementation** — Önce iskelet, sonra detay; ara ara kullanıcıya göster
-3. **USER WRITES** — İşaretli yerlerde (scoring, validators, pin-gen, leaderboard tie-break) kullanıcı 5-10 satır yazar
-4. **Test** — Birlikte çalıştır, hata varsa düzelt
-5. **Commit** — Faz tamamlanınca descriptive commit (Co-Authored-By: Claude tag'iyle)
-6. **Retro** — Kısa "ne öğrendik" özeti
+### Mod A — Etkileşimli (default)
 
-**Neden:** Kullanıcı tech bilgisini geliştirmek istiyor, sadece ürün değil. "Hızlı bitirmek" değil "anlayarak bitirmek" öncelikli. Toplu teslimde sürpriz/ret riski yüksek; faz faz onaylı ilerleme her aşamada hizalanmayı sağlıyor.
+1. **Brief** — Faz başında "şunu yapacağız, şu dosyaları yaratacağız" özeti, onay al.
+2. **Implementation** — Önce iskelet, sonra detay; ara ara kullanıcıya göster.
+3. **USER WRITES** — İşaretli yerlerde (scoring, validators, pin-gen, leaderboard tie-break) kullanıcı 5-10 satır yazar.
+4. **Test** — Birlikte çalıştır, hata varsa düzelt.
+5. **Commit** — Faz tamamlanınca descriptive commit.
+6. **Retro** — Kısa "ne öğrendik" özeti.
 
-**Uygulama:**
-- Yeni bir faza başlarken brief mesajı gönder, onay al.
-- Her büyük dosya yaratımı sonrası kısa açıklama ver, soru sor.
-- USER WRITES dosyalarını TODO/stub ile bırak — implement etme, kullanıcıya yazdır.
-- Birden fazla dosyayı paralel oluşturma; lineer ve takip edilebilir kal.
+### Mod B — Otonom
+
+Kullanıcı "tüm fazı otonom yap", "ben bilgisayardan ayrılıyorum, bittiğinde commit at" gibi explicit talep ederse:
+
+- Açık kararlar için **mockup + PLAN.md** kaynak alınarak makul varsayım yap.
+- Şüpheli durumda muhafazakar karar al (mock > real, JWT > database session, vb.).
+- Karar gerekçesini ilgili dosyada bir cümle yorum olarak veya AGENTS.md'de "Stack ve Kritik Versiyon Notları"nda dökümante et.
+- Faz çıkışında **AGENTS.md "Faz Giriş / Çıkış Akışı"** bölümündeki tüm kontrolleri çalıştırmadan commit ATMA:
+  - typecheck + lint + unit + build + e2e + manuel rota smoke
+  - Dökümanlar (PLAN.md, AGENTS.md, CLAUDE.md, README.md) gerçek state'e senkron
+  - Memory dosyalarındaki faz durumu güncellenmeli
+- Her büyük adımda kısa update yaz (kullanıcı sonradan oturum geçmişini okuyacak).
+
+**Neden:** Kullanıcı tech bilgisini geliştirmek istiyor, sadece ürün değil. Etkileşimli mod öğrenme için, otonom mod momentum kaybetmemek için. Hangi mod aktifse onun kurallarına sadık kal — yarı yolda mod değiştirme.
 
 ## USER WRITES Protokolü
 
@@ -68,9 +77,9 @@ Persistent memory: `/Users/seferalgan/.claude/projects/-Users-seferalgan-claude-
 
 Mevcut memory dosyaları:
 - `MEMORY.md` — index
-- `bilbil_project.md` — proje bağlamı + faz durumu (Faz 0 ✅ commit `e6e533d`)
+- `bilbil_project.md` — proje bağlamı + faz durumu (Faz 0 ✅ + Faz 1 ✅ — 2026-05-05)
 - `user_profile.md` — Türkçe, başlangıç-orta TS, multi-choice tercih
-- `feedback_phase_review.md` — faz faz brief→implement→review→commit döngüsü
+- `feedback_phase_review.md` — faz faz brief→implement→review→commit döngüsü (etkileşimli + otonom mod)
 
 **Ne zaman güncelleyeceksin:**
 - Bir faz tamamlandığında → `bilbil_project.md`'de fazı ✅ olarak işaretle, commit hash'i ekle.
