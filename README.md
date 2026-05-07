@@ -144,9 +144,9 @@ bilbil/
 | **0** | 1-2 gün | Setup (Next.js + Tailwind + Prisma + Auth.js + Socket.IO + tests + CI) | ✅ Tamamlandı (`e6e533d`) |
 | **1** | 1 hafta | Auth + Quiz CRUD (5 auth ekranı, dashboard, drag-drop quiz form, e2e + unit testler) | ✅ Tamamlandı (2026-05-05) |
 | **2** | 1 hafta | Live Game Skeleton (PIN üretimi, host büyük ekran, player join, multi-client e2e) | ✅ **Tamamlandı** (2026-05-07) |
-| **3** | 1 hafta | Question Lifecycle (timer + scoring + leaderboard + persist + history) | ✅ **Tamamlandı** (2026-05-07) |
-| **4** | 1 hafta | Polish + edge cases + e2e tests | 🟡 Sıradaki |
-| **5** | 2-3 gün | Deploy (Fly.io + Neon) | ⏳ |
+| **3** | 1 hafta | Question Lifecycle (timer + scoring + leaderboard + persist + history) | ✅ Tamamlandı (2026-05-07) |
+| **4** | 1-2 hafta | UI polish (P0 bug fix + Framer Motion + error states + a11y + observability) | ✅ Tamamlandı (2026-05-07) |
+| **5** | 2-3 gün | Deploy (Fly.io + Neon) | 🟡 **Sıradaki** |
 
 Detay için [docs/PLAN.md](docs/PLAN.md).
 

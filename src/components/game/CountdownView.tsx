@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface Props {
   /** Server "soru ne zaman açılacak" timestamp (ms epoch). */
@@ -16,6 +17,7 @@ interface Props {
 
 /**
  * 3-2-1 countdown ekranı. Server "opensAtMs" timestamp'iyle senkron çalışır.
+ * Her saniye değişiminde scale + fade animasyonu (Framer Motion).
  * Host'ta büyük dramatic görünüm, player'da kompakt.
  */
 export function CountdownView({
@@ -35,32 +37,45 @@ export function CountdownView({
   const remainingMs = Math.max(0, opensAtMs - now);
   const remainingSec = Math.ceil(remainingMs / 1000);
   const display = remainingSec > 0 ? remainingSec : "Hazır!";
-  void countdownSec; // toplam süreyi şu an UI'da kullanmıyoruz
+  void countdownSec;
 
-  if (variant === "player") {
-    return (
-      <div className="flex min-h-dvh flex-col items-center justify-center bg-gradient-to-br from-violet-50 via-white to-violet-50 p-6 text-center">
-        <p className="mb-3 text-sm tracking-[0.3em] text-slate-500 uppercase">
-          Soru {questionIndex + 1} / {totalQuestions}
-        </p>
-        <p className="mb-6 text-sm text-slate-600">Hazır ol!</p>
-        <div className="display-mega text-brand text-9xl">{display}</div>
-      </div>
-    );
-  }
+  const isPlayer = variant === "player";
+  const numberClass = isPlayer
+    ? "display-mega text-brand text-9xl"
+    : "display-mega text-accent text-[clamp(8rem,30vw,20rem)] leading-none";
+  const numberStyle = isPlayer ? undefined : { textShadow: "0 0 40px rgba(245,158,11,0.5)" };
+
+  const wrapperClass = isPlayer
+    ? "flex min-h-dvh flex-col items-center justify-center bg-gradient-to-br from-violet-50 via-white to-violet-50 p-6 text-center"
+    : "from-brand-deep via-brand-dark to-brand flex min-h-dvh flex-col items-center justify-center bg-gradient-to-br p-12 text-center text-white";
 
   return (
-    <div className="from-brand-deep via-brand-dark to-brand flex min-h-dvh flex-col items-center justify-center bg-gradient-to-br p-12 text-center text-white">
-      <p className="mb-3 text-sm tracking-[0.3em] text-white/70 uppercase">
+    <div className={wrapperClass}>
+      <p
+        className={`mb-3 text-sm tracking-[0.3em] uppercase ${
+          isPlayer ? "text-slate-500" : "text-white/70"
+        }`}
+      >
         Soru {questionIndex + 1} / {totalQuestions}
       </p>
-      <p className="mb-8 text-2xl font-bold text-white/80">Hazır ol!</p>
-      <div
-        className="display-mega text-accent text-[clamp(8rem,30vw,20rem)] leading-none"
-        style={{ textShadow: "0 0 40px rgba(245,158,11,0.5)" }}
+      <p
+        className={`mb-${isPlayer ? "6" : "8"} ${isPlayer ? "text-sm text-slate-600" : "text-2xl font-bold text-white/80"}`}
       >
-        {display}
-      </div>
+        Hazır ol!
+      </p>
+      <AnimatePresence mode="popLayout">
+        <motion.div
+          key={String(display)}
+          initial={{ scale: 0.4, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 1.4, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          className={numberClass}
+          style={numberStyle}
+        >
+          {display}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

@@ -15,11 +15,12 @@
   --color-accent: #f59e0b;
   --color-accent-dark: #d97706;
 
-  /* 4 Sabit Cevap Rengi (sıralama kalıcı: kırmızı/mavi/sarı/yeşil) */
-  --color-answer-red: #ef4444;
-  --color-answer-blue: #3b82f6;
-  --color-answer-yellow: #f59e0b;
-  --color-answer-green: #10b981;
+  /* 4 Sabit Cevap Rengi (sıralama kalıcı: kırmızı/mavi/sarı/yeşil)
+   * Token ismi mockup'larla birebir: bg-a-red, bg-a-blue, bg-a-yellow, bg-a-green */
+  --color-a-red: #ef4444;
+  --color-a-blue: #3b82f6;
+  --color-a-yellow: #f59e0b;
+  --color-a-green: #10b981;
 
   /* Display font (büyük başlıklar, soru metinleri) */
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -82,6 +83,50 @@ body {
 /* Mockup #6 ortak — auth-card shadow tarifesi */
 .auth-card {
   box-shadow: 0 20px 60px -15px rgb(124 58 237 / 0.15);
+}
+
+/* Konfeti (mockup #19 podium) */
+@keyframes confetti-fall {
+  from {
+    transform: translateY(-50px) rotate(0);
+  }
+  to {
+    transform: translateY(110vh) rotate(540deg);
+  }
+}
+.confetti-piece {
+  animation: confetti-fall 3s linear infinite;
+}
+
+/* Lobby pulse (mockup #15 host lobby + #22 player waiting) */
+@keyframes pulse-ring {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+.pulse-ring {
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+/* Slide-in (soru/leaderboard giriş animasyonu — mockup #16-18) */
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.slide-in-up {
+  animation: slide-in-up 0.5s ease-out backwards;
 }
 
 /* Mockup #1B + PIN giriş telefon mockup'ı için sabit boyut */
@@ -183,5 +228,28 @@ body {
   }
   html {
     @apply font-sans;
+  }
+
+  /* A11y — keyboard kullanıcıları için belirgin focus ring.
+   * `:focus-visible` → fare tıklamasında değil, sadece klavyeyle navigate edenlerde. */
+  *:focus-visible {
+    outline: 2px solid #7c3aed;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Reduced motion preferansı — animasyonları azalt */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    .confetti-piece {
+      display: none;
+    }
   }
 }

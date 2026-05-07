@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { LeaderboardPayload } from "@/lib/socket-events";
 
 interface HostProps {
@@ -56,12 +57,15 @@ function HostLeaderboard({ leaderboard, onAdvance }: HostProps) {
             "bg-gradient-to-r from-orange-400 to-orange-500 text-orange-950",
           ];
           return (
-            <div
+            <motion.div
               key={entry.nickname}
               className={`flex items-center gap-3 rounded-xl px-4 py-3 shadow md:gap-4 md:px-5 ${
                 isTop3 ? podiumStyles[idx] : "bg-white/10"
               }`}
               data-testid={`leaderboard-entry-${entry.rank}`}
+              initial={{ opacity: 0, x: -24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.06, duration: 0.35, ease: "easeOut" }}
             >
               <span
                 className={`display ${isTop3 ? "text-2xl md:text-3xl" : "text-xl"} w-8 md:w-10`}
@@ -85,7 +89,7 @@ function HostLeaderboard({ leaderboard, onAdvance }: HostProps) {
               <span className={`display ${isTop3 ? "text-xl md:text-2xl" : "text-lg md:text-xl"}`}>
                 {entry.totalScore.toLocaleString("tr-TR")}
               </span>
-            </div>
+            </motion.div>
           );
         })}
       </div>

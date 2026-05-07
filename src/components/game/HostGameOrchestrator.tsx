@@ -18,6 +18,8 @@ import { HostQuestionView } from "./HostQuestionView";
 import { RevealView } from "./RevealView";
 import { LeaderboardView } from "./LeaderboardView";
 import { PodiumView } from "./PodiumView";
+import { ConnectionBanner } from "./ConnectionBanner";
+import { SessionAbandonedView } from "./SessionAbandonedView";
 
 interface Props {
   pin: string;
@@ -25,8 +27,9 @@ interface Props {
   questionCount: number;
 }
 
-type Phase = "lobby" | "countdown" | "question" | "reveal" | "leaderboard" | "podium";
+type Phase = "lobby" | "countdown" | "question" | "reveal" | "leaderboard" | "podium" | "abandoned";
 type ConnState = "connecting" | "connected" | "error";
+type AbandonReason = "host_gone" | "lobby_idle" | "cancelled";
 
 export function HostGameOrchestrator({ pin, quizTitle, questionCount }: Props) {
   const [phase, setPhase] = useState<Phase>("lobby");
@@ -41,6 +44,7 @@ export function HostGameOrchestrator({ pin, quizTitle, questionCount }: Props) {
   const [reveal, setReveal] = useState<RevealPayload | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardPayload | null>(null);
   const [podium, setPodium] = useState<PodiumPayload | null>(null);
+  const [abandonReason, setAbandonReason] = useState<AbandonReason>("host_gone");
 
   useEffect(() => {
     const socket = getSocket();
@@ -70,7 +74,10 @@ export function HostGameOrchestrator({ pin, quizTitle, questionCount }: Props) {
     });
     socket.on("lobby:player_joined", ({ players: ps }) => setPlayers(ps));
     socket.on("lobby:player_left", ({ players: ps }) => setPlayers(ps));
-    socket.on("session:abandoned", () => setErrorMsg("Oyun sonlandı"));
+    socket.on("session:abandoned", (p) => {
+      setAbandonReason(p.reason);
+      setPhase("abandoned");
+    });
 
     socket.on("game:countdown", (p) => {
       setCountdown(p);
@@ -129,35 +136,60 @@ export function HostGameOrchestrator({ pin, quizTitle, questionCount }: Props) {
     socket.emit("host:next_question", { pin }, () => {});
   }, [pin]);
 
+  if (phase === "abandoned") {
+    return (
+      <SessionAbandonedView
+        variant="host"
+        reason={abandonReason}
+        ctaHref="/dashboard"
+        ctaLabel="Dashboard"
+      />
+    );
+  }
+
   if (phase === "countdown" && countdown) {
     return (
-      <CountdownView
-        opensAtMs={countdown.opensAtMs}
-        countdownSec={countdown.countdownSec}
-        questionIndex={countdown.questionIndex}
-        totalQuestions={countdown.totalQuestions}
-        variant="host"
-      />
+      <>
+        <ConnectionBanner state={connState} message={errorMsg} />
+        <CountdownView
+          opensAtMs={countdown.opensAtMs}
+          countdownSec={countdown.countdownSec}
+          questionIndex={countdown.questionIndex}
+          totalQuestions={countdown.totalQuestions}
+          variant="host"
+        />
+      </>
     );
   }
 
   if (phase === "question" && question) {
     return (
-      <HostQuestionView
-        question={question}
-        answeredCount={answeredCount}
-        totalPlayers={players.length}
-      />
+      <>
+        <ConnectionBanner state={connState} message={errorMsg} />
+        <HostQuestionView
+          question={question}
+          answeredCount={answeredCount}
+          totalPlayers={players.length}
+        />
+      </>
     );
   }
 
   if (phase === "reveal" && reveal) {
-    return <RevealView variant="host" reveal={reveal} onAdvance={handleAdvanceFromReveal} />;
+    return (
+      <>
+        <ConnectionBanner state={connState} message={errorMsg} />
+        <RevealView variant="host" reveal={reveal} onAdvance={handleAdvanceFromReveal} />
+      </>
+    );
   }
 
   if (phase === "leaderboard" && leaderboard) {
     return (
-      <LeaderboardView variant="host" leaderboard={leaderboard} onAdvance={handleNextQuestion} />
+      <>
+        <ConnectionBanner state={connState} message={errorMsg} />
+        <LeaderboardView variant="host" leaderboard={leaderboard} onAdvance={handleNextQuestion} />
+      </>
     );
   }
 
@@ -167,16 +199,19 @@ export function HostGameOrchestrator({ pin, quizTitle, questionCount }: Props) {
 
   // Lobby (default)
   return (
-    <HostLobby
-      pin={pin}
-      quizTitle={quizTitle}
-      questionCount={questionCount}
-      players={players}
-      connState={connState}
-      errorMsg={errorMsg}
-      onStartGame={handleStartGame}
-      startDisabled={connState !== "connected" || players.length === 0 || questionCount === 0}
-      startError={startError}
-    />
+    <>
+      <ConnectionBanner state={connState} message={errorMsg} />
+      <HostLobby
+        pin={pin}
+        quizTitle={quizTitle}
+        questionCount={questionCount}
+        players={players}
+        connState={connState}
+        errorMsg={errorMsg}
+        onStartGame={handleStartGame}
+        startDisabled={connState !== "connected" || players.length === 0 || questionCount === 0}
+        startError={startError}
+      />
+    </>
   );
 }

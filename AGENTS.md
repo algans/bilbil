@@ -27,9 +27,9 @@ Host email+password ile giriş yapar, 4-şıklı çoktan seçmeli quiz oluşturu
 | **Faz 0: Setup** | ✅ TAMAMLANDI (commit `e6e533d`) | Tüm tooling kuruldu |
 | **Faz 1: Auth + Quiz CRUD** | ✅ TAMAMLANDI (2026-05-05) | Auth.js v5 + 5 auth ekranı + dashboard + quiz CRUD + drag-drop form |
 | **Faz 2: Live Game Skeleton** | ✅ TAMAMLANDI (2026-05-07) | PIN üretimi + Socket.IO lobby + host büyük ekran + player join akışı + reconnect |
-| **Faz 3: Question Lifecycle** | ✅ **TAMAMLANDI** (2026-05-07) | Server-side timer + countdown + question/reveal/leaderboard/podium + scoring + DB persist + history |
-| Faz 4: Polish + Edge Cases | 🟡 Sıradaki | ~1 hafta |
-| Faz 5: Deploy (Fly.io + Neon) | ⏳ Bekliyor | ~2-3 gün |
+| **Faz 3: Question Lifecycle** | ✅ TAMAMLANDI (2026-05-07) | Server-side timer + countdown + question/reveal/leaderboard/podium + scoring + DB persist + history |
+| **Faz 4: Polish + Edge Cases** | ✅ **TAMAMLANDI** (2026-05-07, otonom mod) | P0 fix + Framer Motion + error states + rate limit + Sentry skeleton + /api/health + a11y |
+| Faz 5: Deploy (Fly.io + Neon) | 🟡 Sıradaki | ~2-3 gün |
 
 ---
 
@@ -272,6 +272,19 @@ Aşağıdaki dosyalarda implementasyon **doğrudan agent tarafından yapılmaz**
 | `src/lib/game/leaderboard.ts` | 3 | ~10 | Tie-break: ortalama yanıt süresi (düşük=üstte) | ✅ Faz 3 (otonom) |
 
 Her birinde stub + test önceden hazır olacak; agent kullanıcıya "bu fonksiyonu sen yaz" diye işaret eder, devamını implement etmez.
+
+---
+
+## Faz 4 — Bilinen Açık Noktalar (canlı test 2026-05-07)
+
+Faz 3 sonrası Cloudflare tunnel ile canlı test yapıldığında ortaya çıkan UI audit bulguları. Detaylı task listesi: [docs/PLAN.md → Faz 4](docs/PLAN.md).
+
+**P0 — KRİTİK (oyun oynanamaz):**
+1. **`globals.css` 4 cevap rengi token isimleri** — `--color-answer-red/...` ile tanımlı; component'ler ve mockup'lar `bg-a-red/...` kullanıyor. Tailwind v4 mismatch → buton bg transparent → beyaz zeminde beyaz text → soru/cevap görünmüyor. Fix: token'ları `--color-a-red/blue/yellow/green` olarak rename.
+2. **`confetti-piece` keyframes eksik** — PodiumView class'ı kullanıyor ama mockup'taki inline `<style>` globals.css'e taşınmamış.
+3. **`NEXT_PUBLIC_APP_URL` Cloudflare URL'iyle uyumsuz** — mock email verify link'leri lokal kalıyor.
+
+**P1-P5:** Framer Motion, error states (host gone, full session, network down), reconnect UX, rate limiting, Sentry, Lighthouse mobile ≥85, a11y, bundle optimization, test genişletme. PLAN.md'de Sub-4a..Sub-4h olarak detaylı.
 
 ---
 

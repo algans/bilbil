@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { TimerRing } from "./TimerRing";
 import { AnswerShapeIcon } from "./AnswerShapeIcon";
 import { styleForPosition } from "@/lib/game/answer-style";
@@ -47,18 +48,29 @@ export function HostQuestionView({ question, answeredCount, totalPlayers }: Prop
         </div>
       </div>
 
-      {/* Question */}
-      <div className="flex flex-1 items-center justify-center px-4 text-center md:px-12">
-        <p className="display-mega text-[clamp(2rem,5vw,4rem)] leading-tight">{question.prompt}</p>
-      </div>
+      {/* Question — overflow scroll for very long prompts */}
+      <motion.div
+        key={question.questionId}
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="flex flex-1 items-center justify-center overflow-y-auto px-4 py-2 text-center md:px-12"
+      >
+        <p className="display-mega text-[clamp(1.75rem,4.5vw,3.5rem)] leading-tight">
+          {question.prompt}
+        </p>
+      </motion.div>
 
-      {/* 4 options grid */}
-      <div className="mt-6 grid grid-cols-2 gap-3 md:gap-4">
-        {question.options.map((opt) => {
+      {/* 4 options grid — staggered */}
+      <div className="mt-4 grid grid-cols-2 gap-3 md:mt-6 md:gap-4">
+        {question.options.map((opt, idx) => {
           const style = styleForPosition(opt.position);
           return (
-            <div
+            <motion.div
               key={opt.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 + idx * 0.06, ease: "easeOut" }}
               className={`${style.bgClass} flex items-center gap-3 rounded-2xl px-4 py-4 shadow-lg md:gap-4 md:px-6`}
             >
               <AnswerShapeIcon
@@ -66,7 +78,7 @@ export function HostQuestionView({ question, answeredCount, totalPlayers }: Prop
                 className="h-8 w-8 flex-shrink-0 md:h-12 md:w-12"
               />
               <span className="display text-xl md:text-3xl">{opt.text}</span>
-            </div>
+            </motion.div>
           );
         })}
       </div>

@@ -43,12 +43,22 @@ export function TimerRing({
   const ratio = totalMs > 0 ? remainingMs / totalMs : 0;
   const dashOffset = CIRCUMFERENCE * (1 - ratio);
 
+  // Son 5sn → amber, son 3sn → kırmızı (urgency cue)
+  const dynamicStroke = remainingSec <= 3 ? "#EF4444" : remainingSec <= 5 ? "#F59E0B" : strokeColor;
+  const isUrgent = remainingSec <= 3 && remainingSec > 0;
+
   useEffect(() => {
     if (remainingMs <= 0 && onExpire) onExpire();
   }, [remainingMs, onExpire]);
 
   return (
-    <div className="relative" style={{ width: size, height: size }}>
+    <div
+      className={`relative ${isUrgent ? "animate-pulse" : ""}`}
+      style={{ width: size, height: size }}
+      role="timer"
+      aria-live="polite"
+      aria-label={`Kalan süre: ${remainingSec} saniye`}
+    >
       <svg className="-rotate-90" width={size} height={size} viewBox="0 0 36 36" aria-hidden="true">
         <circle cx="18" cy="18" r={RADIUS} fill="none" stroke={trackColor} strokeWidth="3" />
         <circle
@@ -56,12 +66,14 @@ export function TimerRing({
           cy="18"
           r={RADIUS}
           fill="none"
-          stroke={strokeColor}
+          stroke={dynamicStroke}
           strokeWidth="3"
           strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={dashOffset}
           strokeLinecap="round"
-          style={{ transition: "stroke-dashoffset 200ms linear" }}
+          style={{
+            transition: "stroke-dashoffset 200ms linear, stroke 300ms ease",
+          }}
         />
       </svg>
       <span className={`absolute inset-0 flex items-center justify-center ${numberClass}`}>

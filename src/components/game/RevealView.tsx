@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { AnswerShapeIcon } from "./AnswerShapeIcon";
 import { styleForPosition } from "@/lib/game/answer-style";
 import type { RevealPayload } from "@/lib/socket-events";
@@ -146,7 +147,10 @@ function PlayerReveal({ reveal, nickname, totalScore }: PlayerProps) {
       </div>
 
       {myAnswer && (
-        <div
+        <motion.div
+          initial={{ scale: 0.85, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 220, damping: 16 }}
           className={`mx-4 my-2 rounded-2xl p-5 text-center text-white ${
             isCorrect
               ? "bg-gradient-to-br from-emerald-500 to-emerald-600"
@@ -166,7 +170,7 @@ function PlayerReveal({ reveal, nickname, totalScore }: PlayerProps) {
                 ? "Bu sefer cevap veremedin"
                 : "Bir dahaki sefere!"}
           </p>
-        </div>
+        </motion.div>
       )}
 
       <div className="mt-auto grid grid-cols-2 gap-2.5 p-4">

@@ -4,6 +4,7 @@
 // useActionState ile kullanıldığı için imza: (prevState, formData) => state
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { db } from "@/lib/db";
@@ -22,6 +23,7 @@ import {
   VERIFICATION_TOKEN_TTL_MS,
   RESET_TOKEN_TTL_MS,
 } from "@/lib/auth/tokens";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type ActionState =
   | undefined
@@ -35,10 +37,36 @@ export type ActionState =
       errors?: Record<string, string[]>;
     };
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+/**
+ * Runtime'da request origin'ini hesapla — proxy/tunnel arkasında doğru URL üretmek için.
+ * Cloudflare tunnel + Vercel + Fly.io her birinde `x-forwarded-proto`/`host` header'ları gelir.
+ * Env fallback (`NEXT_PUBLIC_APP_URL`) sadece header yoksa devreye girer.
+ */
+async function getRequestOrigin(): Promise<string> {
+  const h = await headers();
+  const host = h.get("host");
+  if (host) {
+    const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+    return `${proto}://${host}`;
+  }
+  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+}
+
+/** İstek yapan IP'yi header'lardan çıkar. Proxy/tunnel arkasında x-forwarded-for öncelikli. */
+async function getClientIp(): Promise<string> {
+  const h = await headers();
+  const forwarded = h.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0]!.trim();
+  return h.get("x-real-ip") ?? "unknown";
+}
 
 // ---------------- REGISTER ----------------
 export async function registerAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const ip = await getClientIp();
+  if (!rateLimit({ key: `register:${ip}`, limit: 5, windowMs: 60_000 })) {
+    return { ok: false, message: "Çok fazla deneme yaptın. Lütfen biraz bekle." };
+  }
+
   const parsed = registerSchema.safeParse({
     displayName: formData.get("displayName"),
     email: formData.get("email"),
@@ -72,6 +100,11 @@ export async function registerAction(_prev: ActionState, formData: FormData): Pr
 
 // ---------------- LOGIN ----------------
 export async function loginAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const ip = await getClientIp();
+  if (!rateLimit({ key: `login:${ip}`, limit: 10, windowMs: 60_000 })) {
+    return { ok: false, message: "Çok fazla deneme yaptın. Lütfen biraz bekle." };
+  }
+
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -133,7 +166,7 @@ export async function requestPasswordResetAction(
     await db.passwordResetToken.create({
       data: { userId: user.id, token, expiresAt: expiresAt(RESET_TOKEN_TTL_MS) },
     });
-    const resetUrl = `${APP_URL}/reset-password/${token}`;
+    const resetUrl = `${await getRequestOrigin()}/reset-password/${token}`;
     const tmpl = passwordResetEmail({ displayName: user.displayName, resetUrl });
     await sendEmail({ to: user.email, ...tmpl });
   }
@@ -227,7 +260,7 @@ async function sendVerificationLink(userId: string, email: string, displayName: 
   await db.emailVerificationToken.create({
     data: { userId, email, token, expiresAt: expiresAt(VERIFICATION_TOKEN_TTL_MS) },
   });
-  const verifyUrl = `${APP_URL}/verify-email/${token}`;
+  const verifyUrl = `${await getRequestOrigin()}/verify-email/${token}`;
   const tmpl = verificationEmail({ displayName, verifyUrl });
   await sendEmail({ to: email, ...tmpl });
 }

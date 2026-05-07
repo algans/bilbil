@@ -374,17 +374,102 @@ Her faz **bağımsız çalışan** bir milestone. Faz sonunda commit + review.
 
 **Açık not (Faz 4'e taşınan):** Soru-soru analytics UI (cevap dağılımı, en zorlu soru), Framer Motion animasyonları, host disconnect/reconnect mid-game UX, error states (network down, full session, vb), Lighthouse mobile > 85.
 
-### Faz 4: Polish + Edge Cases (1 hafta)
-- Framer Motion animasyonları (soru geçişi slide, podium reveal, leaderboard pop)
-- Host büyük ekran modu (TV/projeksiyon için font scale, contrast)
-- Error states: network down banner, host gone, session expired, full session (50 cap)
-- Rate limiting (auth endpoints, create-session)
-- Lighthouse mobile > 85
-- Accessibility pass (keyboard nav, aria labels)
-- Sentry entegrasyonu
-- Tüm e2e testlerin yeşil olması
+### Faz 4: Polish + Edge Cases (1-2 hafta) — ✅ **TAMAMLANDI** (2026-05-07, otonom mod)
 
-**Çıktı:** Production-ready görünümde, kararlı uygulama.
+**Faz 3 sonrası canlı test (Cloudflare tunnel)** ile ortaya çıkan UI audit bulguları + mevcut polish kapsamı birleştirildi. Sub-4a..Sub-4h olarak 8 alt-faza bölünüp sırayla yürütüldü.
+
+**Sub-4a (P0 bug fix):** `globals.css` token rename `--color-a-red/blue/yellow/green` → 4 cevap rengi class'ları artık üretiliyor (text görünüyor). Konfeti + slide-in + pulse-ring keyframes eklendi. Mock email URL'i runtime'da `headers()` ile request origin'inden hesaplanıyor (Cloudflare/Fly.io/Vercel uyumlu).
+**Sub-4b (Animasyon):** Framer Motion 12 entegre. Countdown sayı pop, soru slide-in, butonlar staggered, podium 3→2→1 sıralı pop, leaderboard staggered, reveal banner pop, timer ring son 5sn amber → 3sn kırmızı geçişi.
+**Sub-4c (Responsive):** Soru overflow scroll, mobile font scale, Tailwind clamp gözden geçirildi. Quiz form zaten mobil dikey.
+**Sub-4d (Error states):** `ConnectionBanner` (network) + `SessionAbandonedView` (host_gone/lobby_idle/cancelled) — host ve player varyantlı. Orchestrator'lara phase olarak entegre.
+**Sub-4e (Robustness):** `src/lib/rate-limit.ts` in-memory sliding window (auth register 5/dk, login 10/dk; production'da aktif, dev'de bypass). Server.ts startup'ta orphan `in_progress` session cleanup → DB'ye `abandoned`. `.env.example` güncellendi (AUTH_SECRET uyarısı + Sentry DSN + tunnel notu).
+**Sub-4f (Observability):** `src/lib/observability.ts` (Sentry skeleton — DSN yoksa console.error) + `src/app/api/health/route.ts` (DB ping + uptime + version, Fly.io probe için).
+**Sub-4g (A11y):** Global `:focus-visible` ring (mor brand), `prefers-reduced-motion` keyframes/animasyon disable, TimerRing `aria-live` + `role="timer"`. Inter `latin-ext` subset zaten Türkçe destekli.
+**Sub-4h (Test):** rate-limit unit (4/4), /api/health smoke e2e.
+
+**Test sonucu:**
+- Vitest unit: 10 dosya, **110/110** pass.
+- Playwright e2e: 5 dosya, **15/15** pass.
+- typecheck/lint 0 errors, build başarılı.
+
+**Açık not (Faz 5'e taşınan):** Soru-soru analytics (history detail genişletmesi), Sentry gerçek SDK entegrasyonu, Lighthouse mobile ölçüm, structured logger (Pino), bundle splitting (Socket.IO sadece game route'larında), CI'da e2e koşumu.
+
+Faz 4'ün kapsamı **Faz 3 sonrası canlı test (2026-05-07)** ile ortaya çıkan UI audit bulgularıyla genişletildi. Sıralama: önce P0 kritik bug'lar (oyun oynanabilir hâle gelsin), sonra polish + edge cases + observability.
+
+#### Sub-4a · P0 Kritik bug fix (yarım gün)
+
+Faz 3'te canlı test sırasında bulundu:
+
+1. **4 cevap rengi class'ları üretilmiyor** — `globals.css` token `--color-answer-red/blue/yellow/green` ile tanımlı; component ve mockup `bg-a-red/blue/yellow/green` kullanıyor. Tailwind v4 token isminden class üretiyor → mismatch. Sonuç: butonların arka planı transparent, beyaz text → **soru ve cevap görünmüyor.**
+   - Fix: token isimlerini `--color-a-red/blue/yellow/green` yap (mockup ile birebir).
+2. **Konfeti animasyonu çalışmıyor** — `PodiumView`'da `confetti-piece` class kullanılıyor ama keyframes globals.css'e taşınmamış (mockup'ta inline `<style>` blok'taydı).
+   - Fix: `confetti-fall` keyframes + `slide-in`, `pulse-ring` (mockup'tan) globals.css'e ekle.
+3. **Cloudflare tunnel testinde `NEXT_PUBLIC_APP_URL` lokal kalıyor** — mock email verify link'leri tunnel domain'ini kullanmıyor.
+   - Fix: server-side action'larda request header'larından origin'i runtime'da hesapla (env fallback'le).
+
+#### Sub-4b · Animasyon ve mikro-etkileşim (~2 gün)
+
+4. **Framer Motion entegrasyonu**:
+   - Soru geçişi: countdown → question slide-in (sağdan sola).
+   - Reveal: doğru cevap glow + scale animation, yanlışlar opacity-40 fade.
+   - Leaderboard: rank swap'larda glow, score delta `+850` sağdan slide-in.
+   - Podium: 3 → 2 → 1 sıralı pop-in (her biri 0.5sn delay).
+   - Konfeti: position random, fall + rotate (CSS keyframes + Framer kombinasyonu).
+5. **Buton mikro-etkileşimleri** — `active:scale-95` zaten var, `hover:scale-105` daha tutarlı uygula.
+6. **Timer ring renk geçişi** — son 5sn'de yeşil → amber → kırmızı.
+
+#### Sub-4c · Mobile responsive ve büyük ekran (~1 gün)
+
+7. **Quiz form mobile**: `QuestionRow` 4 şık grid mobilde dikey (1 sütun); drag-drop dokunmatik test.
+8. **Host büyük ekran TV modu**: 16:9 viewport için font scale (clamp() değerlerini gözden geçir), kontrast WCAG AA.
+9. **Soru overflow**: çok uzun soru metni için scroll/truncate stratejisi.
+10. **Player ekran landscape**: telefonu yatırınca lock-in olmasın, layout gracefully resize.
+
+#### Sub-4d · Error states + edge UX (~2 gün)
+
+11. **Network down banner** — socket disconnect olunca üstte amber banner ("Bağlantı kayboldu, yeniden bağlanılıyor...").
+12. **Host gone state (mockup #20 ABANDONED)** — host disconnect 2dk grace bittikten sonra player'a "Host bağlantısı koptu" ekranı.
+13. **Session full (50 cap)** — `/play/[pin]` join sırasında server reject → clear "Oyun dolu" mesajı.
+14. **Geçersiz PIN UX** — `?error=invalid` query yerine inline banner + animation.
+15. **Loading skeleton'ları** — server component'lerin initial render'ında blank yerine skeleton (history list, dashboard, quiz preview).
+16. **Mid-game F5 reconnect UX**:
+    - Host: page reload → server snapshot phase'e göre uygun ekran açar (test edilmeli).
+    - Player: cevap verdiyse "Cevabını verdin, bekliyorsun" UI; vermedi & timer aktif ise hâlâ cevaplayabilir.
+
+#### Sub-4e · Robustness (~1 gün)
+
+17. **Process restart cleanup** — server start'ta DB'deki orphan `in_progress` session'ları `abandoned`'e çek (script veya server bootstrap).
+18. **Persist failure handling** — DB down olsa bile podium gösterilmeli (mevcut try/catch'i logla + retry queue veya en azından kullanıcıya silent fail).
+19. **Rate limiting**:
+    - Auth endpoint'leri (login, register, forgot, reset) — IP başına 10 req/dk.
+    - `host:start_game`, `host:next_question` — host başına spam koruması.
+    - `player:join` — IP başına 30 saniyede max 5.
+20. **AUTH_SECRET production rotation** — `.env.production` template'i + secret manager talimatı.
+
+#### Sub-4f · Observability (~1 gün)
+
+21. **Sentry entegrasyonu** — server + client error capture, release tag, breadcrumbs.
+22. **Health check endpoint** `/api/health` — DB ping + Socket.IO listener kontrolü (Faz 5 deploy için kritik).
+23. **Structured logging** — `[scope] action` formatı, prod'da JSON.
+
+#### Sub-4g · A11y + performans (~1 gün)
+
+24. **Focus ring** — tüm interaktif element'lerde net görünür ring.
+25. **`aria-live` region'lar** — countdown saniyesi, "Cevap geldi" announcement'ları.
+26. **Keyboard navigation** — quiz form, lobby, host control'leri tam klavye ile kullanılabilir.
+27. **Lighthouse mobile ≥ 85** — özellikle landing + /play.
+28. **Bundle size optimization** — Socket.IO client sadece game route'larında lazy-load.
+29. **Türkçe karakter** — Inter font subset'inde ş/ğ/ı/İ/ö/ü/ç doğrulaması.
+
+#### Sub-4h · Test genişletme (~1 gün)
+
+30. **Reconnect e2e** — host F5 + player F5 mid-game.
+31. **Erken kapanış e2e** — açıkça allPlayersAnswered → reveal trigger'ı doğrulansın.
+32. **Persist failure e2e** — DB temporarily kapalıyken podium gösterimi (mock).
+33. **History detail e2e** — final leaderboard reveal görünüm testi.
+34. **Visual regression** — kritik ekranlar için Playwright screenshot diff (opsiyonel).
+
+**Çıktı:** Production-ready görünümde, kararlı, izlenebilir uygulama. Kullanıcılar gerçek bir oyunu sorunsuz oynayabilir.
 
 ### Faz 5: Deploy (2-3 gün)
 - Fly.io app config (`fly.toml`, secrets, region: fra/sin)

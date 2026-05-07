@@ -20,6 +20,8 @@ import { PlayerQuestionView } from "./PlayerQuestionView";
 import { RevealView } from "./RevealView";
 import { LeaderboardView } from "./LeaderboardView";
 import { PodiumView } from "./PodiumView";
+import { ConnectionBanner } from "./ConnectionBanner";
+import { SessionAbandonedView } from "./SessionAbandonedView";
 
 const TOKEN_STORAGE_KEY = "bilbil:playerToken";
 
@@ -28,7 +30,16 @@ interface Props {
   quizTitle: string;
 }
 
-type Phase = "nickname" | "lobby" | "countdown" | "question" | "reveal" | "leaderboard" | "podium";
+type Phase =
+  | "nickname"
+  | "lobby"
+  | "countdown"
+  | "question"
+  | "reveal"
+  | "leaderboard"
+  | "podium"
+  | "abandoned";
+type AbandonReason = "host_gone" | "lobby_idle" | "cancelled";
 
 export function PlayerGameOrchestrator({ pin, quizTitle }: Props) {
   const [phase, setPhase] = useState<Phase>("nickname");
@@ -43,6 +54,8 @@ export function PlayerGameOrchestrator({ pin, quizTitle }: Props) {
   const [reveal, setReveal] = useState<RevealPayload | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardPayload | null>(null);
   const [podium, setPodium] = useState<PodiumPayload | null>(null);
+  const [connState, setConnState] = useState<"connecting" | "connected" | "error">("connecting");
+  const [abandonReason, setAbandonReason] = useState<AbandonReason>("host_gone");
 
   const reconnectTried = useRef(false);
 
@@ -80,9 +93,15 @@ export function PlayerGameOrchestrator({ pin, quizTitle }: Props) {
     });
     socket.on("lobby:player_joined", onLobby);
     socket.on("lobby:player_left", onLobby);
-    socket.on("session:abandoned", () => {
-      setError("Oyun host tarafından kapatıldı");
-      setPhase("nickname");
+    socket.on("connect", () => setConnState("connected"));
+    socket.on("disconnect", () => setConnState("connecting"));
+
+    socket.on("session:abandoned", (p) => {
+      setAbandonReason(p.reason);
+      setPhase("abandoned");
+    });
+    socket.on("host:gone", () => {
+      // Grace period başladı — şimdilik sadece banner; abandoned event'i 2dk sonra geliyor
     });
 
     socket.on("game:countdown", (p) => {
@@ -151,9 +170,19 @@ export function PlayerGameOrchestrator({ pin, quizTitle }: Props) {
     });
   }, []);
 
-  // Render by phase
-  if (phase === "nickname" || !nickname) {
-    return (
+  // Render by phase — content variable + tek noktada banner wrap
+  let content: React.ReactNode;
+  if (phase === "abandoned") {
+    content = (
+      <SessionAbandonedView
+        variant="player"
+        reason={abandonReason}
+        ctaHref="/play"
+        ctaLabel="Yeni PIN'e Katıl"
+      />
+    );
+  } else if (phase === "nickname" || !nickname) {
+    content = (
       <PlayerNicknameForm
         pin={pin}
         quizTitle={quizTitle}
@@ -162,11 +191,9 @@ export function PlayerGameOrchestrator({ pin, quizTitle }: Props) {
         error={error}
       />
     );
-  }
-
-  if (phase === "lobby") {
+  } else if (phase === "lobby") {
     const otherPlayers = players.filter((p) => p.nickname !== nickname && p.connected);
-    return (
+    content = (
       <PlayerWaitingLobby
         pin={pin}
         quizTitle={quizTitle}
@@ -174,10 +201,8 @@ export function PlayerGameOrchestrator({ pin, quizTitle }: Props) {
         otherPlayers={otherPlayers}
       />
     );
-  }
-
-  if (phase === "countdown" && countdown) {
-    return (
+  } else if (phase === "countdown" && countdown) {
+    content = (
       <CountdownView
         opensAtMs={countdown.opensAtMs}
         countdownSec={countdown.countdownSec}
@@ -186,10 +211,8 @@ export function PlayerGameOrchestrator({ pin, quizTitle }: Props) {
         variant="player"
       />
     );
-  }
-
-  if (phase === "question" && question) {
-    return (
+  } else if (phase === "question" && question) {
+    content = (
       <PlayerQuestionView
         question={question}
         nickname={nickname}
@@ -197,16 +220,12 @@ export function PlayerGameOrchestrator({ pin, quizTitle }: Props) {
         onSubmit={handleAnswerSubmit}
       />
     );
-  }
-
-  if (phase === "reveal" && reveal) {
-    return (
+  } else if (phase === "reveal" && reveal) {
+    content = (
       <RevealView variant="player" reveal={reveal} nickname={nickname} totalScore={totalScore} />
     );
-  }
-
-  if (phase === "leaderboard" && leaderboard) {
-    return (
+  } else if (phase === "leaderboard" && leaderboard) {
+    content = (
       <LeaderboardView
         variant="player"
         leaderboard={leaderboard}
@@ -214,19 +233,23 @@ export function PlayerGameOrchestrator({ pin, quizTitle }: Props) {
         totalScore={totalScore}
       />
     );
+  } else if (phase === "podium" && podium) {
+    content = <PodiumView variant="player" podium={podium} nickname={nickname} />;
+  } else {
+    content = (
+      <PlayerWaitingLobby
+        pin={pin}
+        quizTitle={quizTitle}
+        nickname={nickname ?? ""}
+        otherPlayers={players.filter((p) => p.nickname !== nickname)}
+      />
+    );
   }
 
-  if (phase === "podium" && podium) {
-    return <PodiumView variant="player" podium={podium} nickname={nickname} />;
-  }
-
-  // Fallback: bekleme
   return (
-    <PlayerWaitingLobby
-      pin={pin}
-      quizTitle={quizTitle}
-      nickname={nickname}
-      otherPlayers={players.filter((p) => p.nickname !== nickname)}
-    />
+    <>
+      <ConnectionBanner state={connState} />
+      {content}
+    </>
   );
 }

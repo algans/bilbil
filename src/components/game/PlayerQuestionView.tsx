@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { TimerRing } from "./TimerRing";
 import { AnswerShapeIcon } from "./AnswerShapeIcon";
 import { styleForPosition } from "@/lib/game/answer-style";
@@ -48,24 +49,34 @@ export function PlayerQuestionView({ question, nickname, totalScore, onSubmit }:
         </div>
       </div>
 
-      {/* Question */}
-      <div className="px-5 py-5">
-        <p className="display text-xl leading-snug text-slate-900 sm:text-2xl">{question.prompt}</p>
-      </div>
+      {/* Question — scroll if overflows */}
+      <motion.div
+        key={question.questionId}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="max-h-[28dvh] overflow-y-auto px-5 py-5"
+      >
+        <p className="display text-lg leading-snug text-slate-900 sm:text-xl">{question.prompt}</p>
+      </motion.div>
 
-      {/* 4 button grid */}
+      {/* 4 button grid — staggered */}
       <div className="grid flex-1 grid-cols-2 content-end gap-2.5 p-4">
-        {question.options.map((opt) => {
+        {question.options.map((opt, idx) => {
           const style = styleForPosition(opt.position);
           const isSelected = selectedOptionId === opt.id;
           const isDimmed = selectedOptionId !== null && !isSelected;
           return (
-            <button
+            <motion.button
               key={opt.id}
               type="button"
               onClick={() => handleSelect(opt.id)}
               disabled={selectedOptionId !== null}
-              className={`${style.bgClass} flex min-h-[88px] flex-col items-center justify-center gap-1 rounded-2xl py-4 font-bold text-white shadow-lg transition active:scale-95 ${
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: 0.1 + idx * 0.05, ease: "easeOut" }}
+              whileTap={selectedOptionId === null ? { scale: 0.95 } : undefined}
+              className={`${style.bgClass} flex min-h-[88px] flex-col items-center justify-center gap-1 rounded-2xl py-4 font-bold text-white shadow-lg transition ${
                 isSelected ? "ring-offset-brand scale-105 ring-4 ring-white ring-offset-4" : ""
               } ${isDimmed ? "opacity-30" : ""} disabled:cursor-not-allowed`}
               data-testid={`answer-option-${opt.position}`}
@@ -73,7 +84,7 @@ export function PlayerQuestionView({ question, nickname, totalScore, onSubmit }:
             >
               <AnswerShapeIcon shape={style.shape} className="h-8 w-8" />
               <span className="px-2 text-center text-base">{opt.text}</span>
-            </button>
+            </motion.button>
           );
         })}
       </div>
