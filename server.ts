@@ -1,9 +1,16 @@
-// Bilbil — Custom Next.js + Socket.IO server
-// Faz 0: Sadece ping/pong testi. Faz 2'de gerçek game state handler'ları eklenecek.
+// Bilbil — Custom Next.js + Socket.IO server.
+// Faz 2: Lobby akışı (host:join_session, player:join, lobby:state events).
 
 import { createServer } from "node:http";
 import next from "next";
 import { Server as SocketIOServer } from "socket.io";
+import { attachSocketHandlers } from "./src/lib/socket-server";
+import type {
+  ClientToServerEvents,
+  InterServerEvents,
+  ServerToClientEvents,
+  SocketData,
+} from "./src/lib/socket-events";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -15,23 +22,16 @@ const handler = app.getRequestHandler();
 void app.prepare().then(() => {
   const httpServer = createServer(handler);
 
-  const io = new SocketIOServer(httpServer, {
+  const io = new SocketIOServer<
+    ClientToServerEvents,
+    ServerToClientEvents,
+    InterServerEvents,
+    SocketData
+  >(httpServer, {
     cors: { origin: dev ? "*" : process.env.NEXT_PUBLIC_APP_URL },
   });
 
-  // Faz 0 smoke test: ping/pong
-  io.on("connection", (socket) => {
-    console.log(`[socket] connected: ${socket.id}`);
-
-    socket.on("ping", (cb: (response: string) => void) => {
-      console.log(`[socket] ping from ${socket.id}`);
-      cb("pong");
-    });
-
-    socket.on("disconnect", () => {
-      console.log(`[socket] disconnected: ${socket.id}`);
-    });
-  });
+  attachSocketHandlers(io);
 
   httpServer
     .once("error", (err) => {

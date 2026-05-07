@@ -20,11 +20,19 @@ export async function listSentEmails(): Promise<SentEmail[]> {
     const records = await Promise.all(
       files
         .filter((f) => f.endsWith(".json"))
-        .map(
-          async (f) => JSON.parse(await fs.readFile(path.join(EMAILS_DIR, f), "utf8")) as SentEmail
-        )
+        .map(async (f): Promise<SentEmail | null> => {
+          try {
+            const raw = await fs.readFile(path.join(EMAILS_DIR, f), "utf8");
+            return JSON.parse(raw) as SentEmail;
+          } catch {
+            // Bozuk dosyaları sessizce atla (paralel yazımdan eski race artığı)
+            return null;
+          }
+        })
     );
-    return records.sort((a, b) => a.sentAt.localeCompare(b.sentAt));
+    return records
+      .filter((r): r is SentEmail => r !== null)
+      .sort((a, b) => a.sentAt.localeCompare(b.sentAt));
   } catch (e) {
     if ((e as NodeJS.ErrnoException).code === "ENOENT") return [];
     throw e;

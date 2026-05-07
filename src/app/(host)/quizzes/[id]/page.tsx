@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getQuizForCurrentUser } from "@/lib/actions/quiz";
+import { createGameSessionAction } from "@/lib/actions/game";
 
 export const metadata = { title: "Bilbil — Quiz Önizleme" };
 
@@ -40,13 +41,14 @@ export default async function QuizPreviewPage({ params }: { params: Promise<{ id
             <Row label="Toplam süre" value={`~ ${totalMinutes} dk`} />
             <Row label="Oluşturulma" value={formatDate(quiz.createdAt)} />
           </div>
-          <button
-            disabled
-            title="Oyun başlatma Faz 2'de açılacak"
-            className="bg-brand shadow-brand/30 w-full cursor-not-allowed rounded-xl py-4 font-bold tracking-wider text-white uppercase opacity-60 shadow-lg"
-          >
-            ▶ Oyunu Başlat (Faz 2)
-          </button>
+          <form action={createGameSessionAction.bind(null, quiz.id)}>
+            <button
+              type="submit"
+              className="bg-brand shadow-brand/30 hover:bg-brand-dark w-full rounded-xl py-4 font-bold tracking-wider text-white uppercase shadow-lg transition hover:scale-[1.02]"
+            >
+              ▶ Oyunu Başlat
+            </button>
+          </form>
           <Link
             href={`/quizzes/${quiz.id}/edit`}
             className="block w-full rounded-md border border-slate-300 py-2 text-center text-sm font-medium hover:bg-white"

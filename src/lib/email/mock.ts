@@ -4,6 +4,7 @@
 
 import "server-only";
 import { promises as fs } from "node:fs";
+import { randomBytes } from "node:crypto";
 import path from "node:path";
 
 export interface SentEmail {
@@ -21,7 +22,10 @@ export async function sendEmail(input: Omit<SentEmail, "sentAt">): Promise<SentE
   const record: SentEmail = { ...input, sentAt };
 
   await fs.mkdir(EMAILS_DIR, { recursive: true });
-  const filename = `${sentAt.replace(/[:.]/g, "-")}_${slugify(input.subject)}.json`;
+  // Random suffix: aynı milisaniyede iki kayıt olursa dosya adı çakışmasın
+  // (Playwright'ta paralel test'ler bunu tetikledi).
+  const suffix = randomBytes(3).toString("hex");
+  const filename = `${sentAt.replace(/[:.]/g, "-")}_${suffix}_${slugify(input.subject)}.json`;
   await fs.writeFile(path.join(EMAILS_DIR, filename), JSON.stringify(record, null, 2), "utf8");
 
   // Console'da göster ki manuel test sırasında link kopyalanabilsin

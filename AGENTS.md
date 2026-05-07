@@ -25,9 +25,9 @@ Host email+password ile giriş yapar, 4-şıklı çoktan seçmeli quiz oluşturu
 | Brainstorming + Plan | ✅ Tamam | docs/PLAN.md |
 | Tasarım (28 ekran HTML mockup) | ✅ Tamam | mockups/ |
 | **Faz 0: Setup** | ✅ TAMAMLANDI (commit `e6e533d`) | Tüm tooling kuruldu |
-| **Faz 1: Auth + Quiz CRUD** | ✅ **TAMAMLANDI** (2026-05-05) | Auth.js v5 + 5 auth ekranı + dashboard + quiz CRUD + drag-drop form |
-| **Faz 2: Live Game Skeleton** | 🟡 Sıradaki | ~1 hafta |
-| Faz 3: Question Lifecycle | ⏳ Bekliyor | ~1 hafta |
+| **Faz 1: Auth + Quiz CRUD** | ✅ TAMAMLANDI (2026-05-05) | Auth.js v5 + 5 auth ekranı + dashboard + quiz CRUD + drag-drop form |
+| **Faz 2: Live Game Skeleton** | ✅ **TAMAMLANDI** (2026-05-07) | PIN üretimi + Socket.IO lobby + host büyük ekran + player join akışı + reconnect |
+| Faz 3: Question Lifecycle | 🟡 Sıradaki | ~1 hafta |
 | Faz 4: Polish + Edge Cases | ⏳ Bekliyor | ~1 hafta |
 | Faz 5: Deploy (Fly.io + Neon) | ⏳ Bekliyor | ~2-3 gün |
 
@@ -48,7 +48,7 @@ Host email+password ile giriş yapar, 4-şıklı çoktan seçmeli quiz oluşturu
 | Email | **Mock** (Faz 1) → Resend (Faz 5) | Faz 1'de `tmp/emails/` altına JSON yazan mock kullanılıyor; gerçek SMTP entegrasyonu Faz 5'te |
 | Validation | Zod | Her sınırda |
 | State (client) | Zustand + TanStack Query | Faz 1+'da kurulacak |
-| State (live game) | **In-memory `Map`** (process-local) | Game state DB'de değil; oyun bittiğinde DB'ye yazılır. Process restart = canlı oyun kayıp (kabul edilen MVP trade-off) |
+| State (live game) | **`GameSessionManager` class** (in-memory, process-local, `globalThis` singleton) | Game state DB'de değil; oyun bittiğinde DB'ye yazılır. Process restart = canlı oyun kayıp (kabul edilen MVP trade-off). Faz 5+'da Redis adapter'a taşınabilir. |
 | Test (unit) | Vitest + happy-dom + Testing Library | `tests/unit/` |
 | Test (e2e) | Playwright | `tests/e2e/` — multi-client live game senaryosu Faz 3'te kritik |
 | CI/CD | GitHub Actions | `.github/workflows/ci.yml` (lint + format + typecheck + test + build) |
@@ -130,7 +130,11 @@ bilbil/
 │   │   ├── (host)/
 │   │   │   ├── layout.tsx        # Auth gate + Navbar (mockup #14)
 │   │   │   ├── dashboard/        # Mockup #8 (empty + filled)
-│   │   │   └── quizzes/{new/, [id]/{page.tsx, edit/}}
+│   │   │   ├── quizzes/{new/, [id]/{page.tsx, edit/}}
+│   │   │   └── host/[pin]/       # Live host lobby (mockup #15)
+│   │   ├── play/                 # Public — PIN entry + nickname (mockup #2, #21-22)
+│   │   │   ├── page.tsx
+│   │   │   └── [pin]/page.tsx
 │   │   ├── api/auth/[...nextauth]/route.ts   # Auth.js handler
 │   │   ├── globals.css           # Tailwind v4 @theme + brand tokens + .auth-card
 │   │   └── layout.tsx
@@ -143,7 +147,8 @@ bilbil/
 │   │   ├── dashboard/            # EmptyDashboard, QuizCard
 │   │   ├── quiz/                 # QuizForm, QuestionRow, DeleteQuizButton (drag-drop @dnd-kit)
 │   │   ├── public/               # (Faz 4-5'te genişleyecek)
-│   │   └── game/                 # QuestionDisplay, AnswerButton, Leaderboard, Podium (Faz 2-3)
+│   │   └── game/                 # HostLobby (Faz 2), PlayerJoinFlow (Faz 2),
+│   │                             # QuestionDisplay/AnswerButton/Leaderboard/Podium (Faz 3)
 │   ├── lib/
 │   │   ├── auth.ts               # Auth.js v5 (Credentials + JWT, EmailNotVerifiedError)
 │   │   ├── auth/
@@ -160,15 +165,17 @@ bilbil/
 │   │   │   └── quiz.ts           # quizFormSchema (4-şık + 1-doğru kuralı)
 │   │   ├── actions/
 │   │   │   ├── auth.ts           # register/login/forgot/reset/verify/logout server actions
-│   │   │   └── quiz.ts           # createQuiz/updateQuiz/deleteQuiz/listQuizzes/getQuiz
+│   │   │   ├── quiz.ts           # createQuiz/updateQuiz/deleteQuiz/listQuizzes/getQuiz
+│   │   │   └── game.ts           # createGameSession/cancelGameSession (Faz 2)
+│   │   ├── socket-events.ts      # Server↔Client tip sözleşmesi (Faz 2)
 │   │   ├── socket-server.ts      # Server-side Socket.IO handlers (Faz 2)
 │   │   ├── socket-client.ts      # Client wrapper (Faz 2)
-│   │   └── game/                 # Game logic (Faz 2-3)
-│   │       ├── scoring.ts        # 🎯 USER WRITES — puanlama formülü
-│   │       ├── pin-generator.ts  # 🎯 USER WRITES — collision avoidance
-│   │       ├── validators.ts     # 🎯 USER WRITES — nickname + quiz rules
-│   │       ├── leaderboard.ts    # 🎯 USER WRITES — tie-break
-│   │       └── state-machine.ts  # In-memory GameSession Manager
+│   │   └── game/                 # Game logic
+│   │       ├── pin-generator.ts  # ✅ Faz 2 (6-hane numerik, collision retry)
+│   │       ├── validators.ts     # ✅ Faz 2 (nickname rules + suggestion)
+│   │       ├── state-machine.ts  # ✅ Faz 2 (GameSessionManager class)
+│   │       ├── scoring.ts        # 🎯 USER WRITES — Faz 3 (puanlama formülü)
+│   │       └── leaderboard.ts    # 🎯 USER WRITES — Faz 3 (tie-break)
 │   ├── hooks/                    # useGameSocket, useGameState (Faz 2)
 │   ├── types/
 │   │   └── next-auth.d.ts        # Auth.js Session/JWT type augmentation
@@ -253,12 +260,12 @@ bilbil/
 
 Aşağıdaki dosyalarda implementasyon **doğrudan agent tarafından yapılmaz**. Stub fonksiyon + test dosyası önceden hazırlanır, kullanıcı 5-10 satır kod yazar (business judgment kararları içerir):
 
-| Dosya | Faz | ~satır | Karar tipi |
-|---|---|---|---|
-| `src/lib/game/scoring.ts` | 3 | ~10 | Doğru/hız puanlama formülü (3 yaklaşım açıklı) |
-| `src/lib/game/pin-generator.ts` | 2 | ~15 | Çakışma önleme stratejisi (DB lookup vs in-memory cache) |
-| `src/lib/game/validators.ts` | 2 | ~20 | Nickname kuralları + quiz validity |
-| `src/lib/game/leaderboard.ts` | 3 | ~10 | Eşit skorda tie-break |
+| Dosya | Faz | ~satır | Karar tipi | Durum |
+|---|---|---|---|---|
+| `src/lib/game/pin-generator.ts` | 2 | ~15 | Çakışma önleme stratejisi | ✅ Faz 2'de otonom mod kararıyla agent yazdı |
+| `src/lib/game/validators.ts` | 2 | ~20 | Nickname kuralları + duplication suggestion | ✅ Faz 2'de otonom mod kararıyla agent yazdı |
+| `src/lib/game/scoring.ts` | 3 | ~10 | Doğru/hız puanlama formülü (3 yaklaşım açıklı) | ⏳ Faz 3'te |
+| `src/lib/game/leaderboard.ts` | 3 | ~10 | Eşit skorda tie-break | ⏳ Faz 3'te |
 
 Her birinde stub + test önceden hazır olacak; agent kullanıcıya "bu fonksiyonu sen yaz" diye işaret eder, devamını implement etmez.
 

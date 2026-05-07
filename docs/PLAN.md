@@ -284,26 +284,46 @@ Her faz **bağımsız çalışan** bir milestone. Faz sonunda commit + review.
 
 **"Oyun Başlat" butonu disabled** (mockup'ta belirgin "Faz 2'de açılacak" tooltip'i var) — Faz 2'de aktif olacak.
 
-### Faz 2: Live Game Skeleton (1 hafta) — 🟡 **SIRADAKİ**
-- "Yeni oyun başlat" butonu → `host:create_session` event → PIN üretimi
-- 🎯 **USER WRITES:** `src/lib/game/pin-generator.ts` (collision avoidance)
-- 🎯 **USER WRITES:** `src/lib/game/validators.ts` (nickname rules)
-- In-memory GameSession Manager (`src/lib/game/state-machine.ts`)
-- Socket.IO room kurulumu (1 room per PIN)
-- Host büyük ekran lobby UI: PIN gösterimi + oyuncu listesi
-- Player join: `/play` PIN giriş → `/play/[pin]` nickname → lobby
-- `playerToken` ile reconnect mekanizması
-- Host disconnect detection (2 dk timeout)
+### Faz 2: Live Game Skeleton (1 hafta) — ✅ **TAMAMLANDI** (2026-05-07, otonom mod)
 
-**Kritik dosyalar:** `server.ts`, `src/lib/socket-server.ts`,
-`src/app/(public)/play/`, `src/app/(host)/host/[sessionId]/page.tsx`,
-`src/hooks/useGameSocket.ts`
+**Onaylanan kararlar (Faz 2 girişinde):**
+- Kapsam: Sadece lobby (mockup #15) Faz 2'de; soru ekranları (#16-20) Faz 3'te.
+- PIN: 6-hane numerik. Çakışma kabul edilmez — retry on collision (10 deneme limit).
+- Reconnect: Faz 2'de tam (sessionStorage'da `playerToken`).
+- Player limit: hard cap 50, fazlası reddedilir.
+- Lobby idle timeout: 30 dk → abandoned.
+- Host disconnect grace: 2 dk → abandoned.
+- USER WRITES: agent yazdı (otonom mod), kullanıcı sonradan inceleyebilir.
 
-**Test:** Multi-client lobby join (Playwright 2 context: host + player)
+**Yapılan ekranlar (mockup birebir):**
+- `/host/[pin]` — Host Lobby büyük ekran (mockup #15: mor gradient, devasa PIN, oyuncu pill listesi, bağlantı durumu)
+- `/play` — Mobile-first PIN entry (mockup #2)
+- `/play/[pin]` — Nickname (mockup #21) + Lobby Waiting state (mockup #22, pulsing dot + diğer oyuncular)
+- Quiz preview "Oyun Başlat" butonu artık aktif → server action → PIN üretimi → `/host/[pin]`
 
-**Çıktı:** Host oyun başlatıyor, oyuncular PIN ile katılıyor, lobby güncel.
+**Game logic dosyaları (USER WRITES'ları otonom yazıldı):**
+- `src/lib/game/pin-generator.ts` — `generateUniquePin(isPinTaken, maxAttempts)` callback ile DB+in-memory uniqueness garantisi
+- `src/lib/game/validators.ts` — `validateNickname` (2-20 char, Türkçe, küfür filtresi: "eşek", "yaramaz") + `suggestUniqueNickname` (`Ayşe → Ayşe_2`)
+- `src/lib/game/state-machine.ts` — `GameSessionManager` class (sessions/players/socket index'leri, host disconnect grace + lobby idle cleanup)
 
-### Faz 3: Question Lifecycle (1 hafta)
+**Socket.IO altyapısı:**
+- `socket-events.ts` — Server↔Client tip sözleşmesi (typed Socket<T>)
+- `socket-server.ts` — `host:join_session`, `player:join`, `player:reconnect` handler'ları + `lobby:state`/`lobby:player_joined`/`session:abandoned`/`host:gone` broadcast'ları
+- `socket-client.ts` — Singleton wrapper, autoConnect + reconnection
+- `server.ts` — Faz 0 ping/pong yerine `attachSocketHandlers(io)` çağrısı
+
+**Test sonucu:**
+- Vitest unit: 7 dosya, 76/76 pass (auth-validation + quiz-validation + tokens + pin-generator + validators + state-machine + smoke).
+- Playwright e2e: 4 dosya, 13/13 pass (auth-flow + quiz-crud + lobby-flow + landing smoke).
+- Lobby e2e senaryoları: host quiz başlatır + 2 player katılır + nickname duplication ("Zeynep" → "Zeynep_2") + küfür filter + geçersiz PIN.
+- typecheck/lint 0 errors, build başarılı.
+
+**Açık not (Faz 3'e taşınan):** "Oyunu Başlat →" butonu lobby'de hâlâ disabled (Faz 3 question lifecycle açar). Cancel/abandon flow'u şu an tarayıcı kapatmaya bağlı; explicit "İptal" butonu da `/dashboard`'a link olarak var ama backend'de session abandoned'a çekilmiyor — Faz 3 polish'inde adreslenir.
+
+**Yeni dependency:** `socket.io-client` (zaten Faz 0'da `socket.io` server tarafı vardı).
+
+### Faz 3: Question Lifecycle (1 hafta) — 🟡 **SIRADAKİ**
+
 - Question open with server-side timer
 - Player answer submission + ack
 - 🎯 **USER WRITES:** `src/lib/game/scoring.ts` (formül seçimi: A/B/C)
