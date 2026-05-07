@@ -77,7 +77,7 @@ Persistent memory: `/Users/seferalgan/.claude/projects/-Users-seferalgan-claude-
 
 Mevcut memory dosyaları:
 - `MEMORY.md` — index
-- `bilbil_project.md` — proje bağlamı + faz durumu (Faz 0 ✅ + Faz 1 ✅ — 2026-05-05)
+- `bilbil_project.md` — proje bağlamı + faz durumu (Faz 0 ✅ + Faz 1 ✅ + Faz 2 ✅ — son güncelleme 2026-05-07)
 - `user_profile.md` — Türkçe, başlangıç-orta TS, multi-choice tercih
 - `feedback_phase_review.md` — faz faz brief→implement→review→commit döngüsü (etkileşimli + otonom mod)
 

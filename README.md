@@ -107,7 +107,8 @@ bilbil/
 │   │   ├── auth/              # Login/Register/Forgot/Reset/Verify form'ları (Faz 1)
 │   │   ├── layout/            # HostNavbar (mockup #14)
 │   │   ├── dashboard/         # QuizCard, EmptyDashboard
-│   │   └── quiz/              # QuizForm, QuestionRow, DeleteQuizButton (Faz 1)
+│   │   ├── quiz/              # QuizForm, QuestionRow, DeleteQuizButton (Faz 1)
+│   │   └── game/              # HostLobby (mockup #15), PlayerJoinFlow (mockup #21-22) — Faz 2
 │   ├── middleware.ts          # Auth gate
 │   └── lib/
 │       ├── auth.ts            # Auth.js v5 (Credentials + JWT)
@@ -116,11 +117,18 @@ bilbil/
 │       ├── db.ts              # Prisma singleton
 │       ├── email/             # Mock email + templates (Faz 1)
 │       ├── validation/        # Zod şemaları (auth + quiz)
-│       ├── actions/           # Server actions (auth + quiz)
-│       └── game/              # Faz 2-3'te: scoring, state-machine, validators
+│       ├── actions/           # Server actions (auth + quiz + game — Faz 2)
+│       ├── socket-events.ts   # Socket.IO Server↔Client tip sözleşmesi (Faz 2)
+│       ├── socket-server.ts   # Socket.IO server handler'ları (Faz 2)
+│       ├── socket-client.ts   # Socket.IO client wrapper (Faz 2)
+│       └── game/              # pin-generator, validators, state-machine (Faz 2);
+│                              # scoring, leaderboard (Faz 3 — USER WRITES)
 ├── tests/
 │   ├── unit/                  # Vitest
 │   └── e2e/                   # Playwright (multi-client live game)
+│       ├── cleanup-test-data.ts   # @bilbil.test domain'li fixture temizleyici (Faz 2)
+│       ├── global-setup.ts        # Suite başında temizler
+│       └── global-teardown.ts     # Suite sonunda temizler
 ├── docs/
 │   ├── PLAN.md                # MVP planı
 │   └── DESIGN_PROMPT.md       # Tasarım sistemi
