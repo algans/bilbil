@@ -22,9 +22,11 @@
   --color-a-yellow: #f59e0b;
   --color-a-green: #10b981;
 
-  /* Display font (büyük başlıklar, soru metinleri) */
-  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Display font (büyük başlıklar, soru metinleri).
+   * KRİTİK: next/font (layout.tsx) Inter'i `--font-inter` CSS variable'ında yüklüyor.
+   * Önce o yüklü font'u kullan, sonra sistem Inter'ine, sonra fallback'e düş. */
+  --font-display: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -85,20 +87,20 @@ body {
   box-shadow: 0 20px 60px -15px rgb(124 58 237 / 0.15);
 }
 
-/* Konfeti (mockup #19 podium) */
+/* Konfeti (mockup #19 podium / #27a player kazandı) — birebir mockup keyframes */
 @keyframes confetti-fall {
   from {
-    transform: translateY(-50px) rotate(0);
+    transform: translateY(-100px) rotate(0);
   }
   to {
-    transform: translateY(110vh) rotate(540deg);
+    transform: translateY(700px) rotate(360deg);
   }
 }
 .confetti-piece {
   animation: confetti-fall 3s linear infinite;
 }
 
-/* Lobby pulse (mockup #15 host lobby + #22 player waiting) */
+/* Lobby pulse (mockup #15 host lobby) */
 @keyframes pulse-ring {
   0%,
   100% {
@@ -112,6 +114,22 @@ body {
 }
 .pulse-ring {
   animation: pulse-ring 2s ease-in-out infinite;
+}
+
+/* Pulse-dot (mockup #22 player lobby waiting) — büyüyen dot */
+@keyframes pulse-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.5;
+  }
+}
+.pulse-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
 }
 
 /* Slide-in (soru/leaderboard giriş animasyonu — mockup #16-18) */

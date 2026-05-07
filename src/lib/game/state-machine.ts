@@ -571,18 +571,31 @@ export class GameSessionManager {
     const session = this.sessionsByPin.get(pin);
     if (!session) return null;
     const entries = this.computeLeaderboard(session);
+
+    // Son sorudan kazanılan puan (mockup #18 score delta badge için)
+    const currentQ = this.getCurrentQuestion(pin);
+    const lastQAnswers = currentQ ? session.answers.get(currentQ.id) : undefined;
+
     return {
       questionIndex: session.currentQuestionIndex,
       totalQuestions: session.questions.length,
       isLast: session.currentQuestionIndex >= session.questions.length - 1,
-      entries: entries.slice(0, limit).map((e) => ({
-        rank: e.rank,
-        nickname: e.nickname,
-        totalScore: e.totalScore,
-        averageAnswerTimeMs: Number.isFinite(e.averageAnswerTimeMs)
-          ? Math.round(e.averageAnswerTimeMs)
-          : null,
-      })),
+      entries: entries.slice(0, limit).map((e) => {
+        // PlayerToken'i bulmak için nickname → token ters lookup
+        const token = Array.from(session.players.values()).find(
+          (p) => p.nickname === e.nickname
+        )?.playerToken;
+        const scoreDelta = token ? (lastQAnswers?.get(token)?.pointsAwarded ?? 0) : 0;
+        return {
+          rank: e.rank,
+          nickname: e.nickname,
+          totalScore: e.totalScore,
+          averageAnswerTimeMs: Number.isFinite(e.averageAnswerTimeMs)
+            ? Math.round(e.averageAnswerTimeMs)
+            : null,
+          scoreDelta,
+        };
+      }),
       totalPlayers: session.players.size,
     };
   }
@@ -729,6 +742,8 @@ export interface LeaderboardEntryDTO {
   nickname: string;
   totalScore: number;
   averageAnswerTimeMs: number | null;
+  /** Bu sorudan kazanılan puan (mockup #18 score delta badge için). */
+  scoreDelta: number;
 }
 
 export interface LeaderboardDTO {

@@ -31,6 +31,9 @@ export function EmptyDashboard() {
         >
           + İlk Quiz&apos;imi Oluştur
         </Link>
+        <Link href="/quizzes/new" className="text-brand mt-3 text-xs font-medium hover:underline">
+          Ya da örnek bir quiz&apos;le başla →
+        </Link>
       </div>
     </main>
   );

@@ -1,5 +1,4 @@
-// Mockup #12 — Geçmiş Oyunlar listesi (host'un kendi oyunları).
-// Soru-soru analytics Faz 4'te. Şu an: liste + tıklayınca leaderboard reveal.
+// Mockup #12 birebir — Geçmiş Oyunlar listesi (search + filter dropdown).
 
 import Link from "next/link";
 import { db } from "@/lib/db";
@@ -9,13 +8,34 @@ export const metadata = { title: "Bilbil — Geçmiş Oyunlar" };
 
 export const dynamic = "force-dynamic";
 
-export default async function HistoryPage() {
+type StatusFilter = "all" | "ended" | "abandoned";
+
+function parseStatus(input: string | undefined): StatusFilter {
+  if (input === "ended" || input === "abandoned") return input;
+  return "all";
+}
+
+export default async function HistoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; status?: string }>;
+}) {
   const user = await requireUser();
+  const params = await searchParams;
+  const q = (params.q ?? "").trim();
+  const statusFilter = parseStatus(params.status);
 
   const sessions = await db.gameSession.findMany({
     where: {
       hostId: user.id,
-      status: { in: ["ended", "abandoned"] },
+      status: statusFilter === "all" ? { in: ["ended", "abandoned"] } : statusFilter,
+      ...(q
+        ? {
+            quiz: {
+              title: { contains: q, mode: "insensitive" },
+            },
+          }
+        : {}),
     },
     orderBy: { endedAt: "desc" },
     select: {
@@ -35,34 +55,67 @@ export default async function HistoryPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-8">
-      <div className="mb-6">
+      {/* Header — search + filter (mockup birebir) */}
+      <form
+        method="get"
+        className="mb-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between"
+      >
         <h1 className="display text-3xl">Geçmiş Oyunlar</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          {sessions.length} {sessions.length === 1 ? "oyun" : "oyun"} bulundu
-        </p>
-      </div>
+        <div className="flex items-center gap-1">
+          <input
+            type="text"
+            name="q"
+            defaultValue={q}
+            placeholder="Quiz adında ara..."
+            className="focus:border-brand w-48 rounded-md border border-slate-200 px-3 py-1.5 text-sm focus:outline-none"
+          />
+          <select
+            name="status"
+            defaultValue={statusFilter}
+            className="rounded-md border border-slate-200 px-2 py-1.5 text-sm"
+          >
+            <option value="all">Tüm oyunlar</option>
+            <option value="ended">Tamamlanan</option>
+            <option value="abandoned">Yarıda kalan</option>
+          </select>
+          <button
+            type="submit"
+            className="bg-brand rounded-md px-3 py-1.5 text-sm font-semibold text-white"
+          >
+            Ara
+          </button>
+        </div>
+      </form>
+
+      <h2 className="display mb-4 text-xl">Geçmiş Oyunlar · {sessions.length}</h2>
 
       {sessions.length === 0 ? (
         <div className="rounded-2xl border-2 border-dashed border-slate-200 p-10 text-center">
-          <p className="text-slate-500">Henüz tamamlanmış oyun yok.</p>
-          <Link
-            href="/dashboard"
-            className="text-brand mt-2 inline-block text-sm font-medium hover:underline"
-          >
-            Dashboard&apos;a dön →
-          </Link>
+          <p className="text-slate-500">
+            {q || statusFilter !== "all"
+              ? "Bu kriterlere uyan oyun bulunamadı."
+              : "Henüz tamamlanmış oyun yok."}
+          </p>
+          {!q && statusFilter === "all" && (
+            <Link
+              href="/dashboard"
+              className="text-brand mt-2 inline-block text-sm font-medium hover:underline"
+            >
+              Dashboard&apos;a dön →
+            </Link>
+          )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
           <table className="w-full text-sm">
             <thead className="border-b border-slate-200 text-xs tracking-wider text-slate-500 uppercase">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold">Quiz</th>
-                <th className="px-4 py-3 text-left font-semibold">PIN</th>
-                <th className="px-4 py-3 text-left font-semibold">Oyuncu</th>
-                <th className="px-4 py-3 text-left font-semibold">Tarih</th>
-                <th className="px-4 py-3 text-left font-semibold">Şampiyon</th>
-                <th className="px-4 py-3 text-left font-semibold">Durum</th>
+                <th className="px-4 py-2 text-left font-semibold">Quiz</th>
+                <th className="px-4 py-2 text-left font-semibold">PIN</th>
+                <th className="px-4 py-2 text-left font-semibold">Oyuncu</th>
+                <th className="px-4 py-2 text-left font-semibold">Tarih</th>
+                <th className="px-4 py-2 text-left font-semibold">Şampiyon</th>
+                <th className="px-4 py-2 text-left font-semibold">Durum</th>
                 <th className="px-4"></th>
               </tr>
             </thead>

@@ -1,7 +1,5 @@
-// Mockup #1B — Demo Centric landing, tek-viewport optimizasyonlu.
-// Outer h-dvh + overflow-hidden, içerik flex distribution ile sığar.
-// Telefon mockup'ı `--phone-h` CSS değişkeni üzerinden viewport yüksekliğine
-// göre ölçeklenir (kısa ekranlarda otomatik küçülür).
+// Mockup #1B birebir — Demo Centric landing.
+// h-dvh single viewport (kullanıcı tercihi: scroll yok). How it Works 3-kart compact grid.
 
 import Link from "next/link";
 
@@ -44,7 +42,7 @@ export default function LandingPage() {
               <span className="bg-brand h-1.5 w-1.5 rounded-full" />
               Yeni · Türkçe canlı quiz
             </span>
-            <h1 className="display-mega mb-3 text-4xl leading-tight md:text-5xl xl:text-6xl">
+            <h1 className="display-mega mb-3 text-5xl leading-tight md:text-6xl xl:text-7xl">
               Bilgini <span className="text-brand">hızla</span> sına
             </h1>
             <p className="mb-5 text-base text-slate-600 lg:text-lg">
@@ -73,14 +71,24 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How it works — kompakt tek satır şerit */}
-      <section className="border-t border-slate-200 bg-slate-50 px-6 py-3">
-        <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-x-8 gap-y-2 text-center text-sm md:gap-x-12">
-          <Step number={1} colorClass="text-answer-red" title="Quiz oluştur" />
-          <Sep />
-          <Step number={2} colorClass="text-answer-blue" title="PIN paylaş" />
-          <Sep />
-          <Step number={3} colorClass="text-answer-green" title="Canlı oyna" />
+      {/* How it Works — 3-kart compact (mockup #1B birebir) */}
+      <section className="border-t border-slate-200 bg-slate-50 px-6 py-6 md:py-8">
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 text-center md:grid-cols-3">
+          <div>
+            <div className="text-a-red mb-1 text-2xl font-black">1.</div>
+            <p className="mb-1 font-semibold">Quiz oluştur</p>
+            <p className="text-xs text-slate-600">Birkaç dakikada sorular hazır</p>
+          </div>
+          <div>
+            <div className="text-a-blue mb-1 text-2xl font-black">2.</div>
+            <p className="mb-1 font-semibold">PIN paylaş</p>
+            <p className="text-xs text-slate-600">Oyuncular kayıt olmadan girer</p>
+          </div>
+          <div>
+            <div className="text-a-green mb-1 text-2xl font-black">3.</div>
+            <p className="mb-1 font-semibold">Canlı oyna</p>
+            <p className="text-xs text-slate-600">Hız + bilgi = lider sıralaması</p>
+          </div>
         </div>
       </section>
 
@@ -109,28 +117,6 @@ function Badge({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Step({
-  number,
-  colorClass,
-  title,
-}: {
-  number: number;
-  colorClass: string;
-  title: string;
-}) {
-  return (
-    <span className="inline-flex items-center gap-2">
-      <span className={`text-lg font-black ${colorClass}`}>{number}.</span>
-      <span className="font-semibold">{title}</span>
-    </span>
-  );
-}
-
-function Sep() {
-  return <span className="hidden text-slate-300 md:inline">·</span>;
-}
-
-// PIN inputu — Faz 2'de aktif olacak, şu an /play (henüz yok) submit'i.
 function PinJoinForm() {
   return (
     <form
@@ -149,7 +135,6 @@ function PinJoinForm() {
       />
       <button
         type="submit"
-        title="PIN ile katılma Faz 2'de açılacak"
         className="bg-accent rounded-lg px-3 py-1.5 font-bold text-slate-900 transition hover:scale-105"
       >
         →
@@ -158,8 +143,7 @@ function PinJoinForm() {
   );
 }
 
-// Mockup'taki canlı oyun ekranlı telefon mockup'ı (statik).
-// Yükseklik viewport'a göre clamp'lı — kısa ekranlarda küçülür.
+// Telefon mockup'ı (mockup'taki canlı oyun ekranı statik snapshot).
 function PhoneMockup() {
   return (
     <div className="phone-frame-responsive relative rounded-[36px] bg-black p-3 shadow-2xl">
@@ -196,10 +180,10 @@ function PhoneMockup() {
           <p className="display text-sm leading-snug">Türkiye&apos;nin en uzun nehri?</p>
         </div>
         <div className="grid flex-1 grid-cols-2 gap-1.5 p-2">
-          <AnswerTile color="bg-answer-red" label="Kızılırmak" shape="triangle" />
-          <AnswerTile color="bg-answer-blue" label="Sakarya" shape="diamond" />
-          <AnswerTile color="bg-answer-yellow" label="Yeşilırmak" shape="circle" />
-          <AnswerTile color="bg-answer-green" label="Fırat" shape="square" />
+          <AnswerTile color="bg-a-red" label="Kızılırmak" shape="triangle" />
+          <AnswerTile color="bg-a-blue" label="Sakarya" shape="diamond" />
+          <AnswerTile color="bg-a-yellow" label="Yeşilırmak" shape="circle" />
+          <AnswerTile color="bg-a-green" label="Fırat" shape="square" />
         </div>
       </div>
     </div>

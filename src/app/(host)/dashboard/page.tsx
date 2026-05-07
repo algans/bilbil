@@ -39,6 +39,7 @@ export default async function DashboardPage() {
             questionCount={q._count.questions}
             sessionCount={q._count.sessions}
             updatedAt={q.updatedAt}
+            isPublished={q.isPublished}
           />
         ))}
         <Link

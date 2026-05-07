@@ -65,12 +65,12 @@ export function SessionAbandonedView({
     );
   }
 
-  // Player varyantı (light)
+  // Player varyantı — dark slate (mockup error state'leri ile uyumlu)
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-gradient-to-br from-rose-50 via-white to-amber-50 p-6 text-center">
-      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 border-amber-400 bg-amber-50">
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-6 text-center text-white">
+      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 border-amber-400 bg-amber-500/20">
         <svg
-          className="h-10 w-10 text-amber-500"
+          className="h-10 w-10 text-amber-400"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -84,8 +84,8 @@ export function SessionAbandonedView({
           />
         </svg>
       </div>
-      <p className="display mb-2 text-2xl text-slate-900">{titles[reason]}</p>
-      <p className="mb-8 text-sm text-slate-600">{subtitles[reason]}</p>
+      <p className="display-mega mb-3 text-3xl">{titles[reason]}</p>
+      <p className="mb-8 max-w-sm text-sm text-white/70">{subtitles[reason]}</p>
       <Link
         href={ctaHref}
         className="bg-brand rounded-xl px-6 py-3 font-black tracking-wider text-white uppercase shadow-lg transition hover:scale-105"

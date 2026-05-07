@@ -1,9 +1,9 @@
 // Nickname validation + duplication suggestion.
 // Karar 5: aynı oyunda dublication varsa "Ayşe_2" otomatik üret.
-// Karar 12: 2-20 char, alfanumerik + Türkçe + boşluk/_/.//- ; küfür reddet.
+// Mockup #21 birebir: 2-16 char, alfanumerik + Türkçe + boşluk/_/.//- ; küfür reddet.
 
 export const NICKNAME_MIN_LENGTH = 2;
-export const NICKNAME_MAX_LENGTH = 20;
+export const NICKNAME_MAX_LENGTH = 16;
 
 // Alfanumerik (Latin) + Türkçe + boşluk + bazı yumuşatıcı karakterler.
 // Emoji, semboller, RTL trick'leri dışlanır.

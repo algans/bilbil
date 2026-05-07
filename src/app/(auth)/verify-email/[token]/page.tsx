@@ -78,9 +78,9 @@ export default async function VerifyEmailPage({ params }: { params: Promise<{ to
       <ResendVerificationButton />
       <p className="mt-4 text-xs text-slate-500">
         Sorun devam ediyor mu?{" "}
-        <Link href="/login" className="text-brand hover:underline">
-          Giriş&apos;e dön
-        </Link>
+        <a href="mailto:destek@bilbil.app" className="text-brand hover:underline">
+          Destek
+        </a>
       </p>
     </div>
   );

@@ -13,7 +13,7 @@ interface Props {
   error: string | null;
 }
 
-export function PlayerNicknameForm({ pin, quizTitle, onSubmit, submitting, error }: Props) {
+export function PlayerNicknameForm({ pin, onSubmit, submitting, error }: Props) {
   const [value, setValue] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
@@ -38,9 +38,7 @@ export function PlayerNicknameForm({ pin, quizTitle, onSubmit, submitting, error
 
       <main className="flex flex-1 flex-col justify-center px-6">
         <p className="display mb-2 text-center text-3xl">Adın ne?</p>
-        <p className="mb-8 text-center text-sm text-slate-500">
-          Diğer oyuncular bu isimle görecek · Quiz: <strong>{quizTitle}</strong>
-        </p>
+        <p className="mb-8 text-center text-sm text-slate-500">Diğer oyuncular bu isimle görecek</p>
 
         {error && (
           <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
@@ -54,13 +52,13 @@ export function PlayerNicknameForm({ pin, quizTitle, onSubmit, submitting, error
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="Mehmet"
-            maxLength={20}
+            maxLength={16}
             minLength={2}
             required
             autoFocus
             className="focus:border-brand w-full rounded-2xl border-2 border-slate-200 py-4 text-center text-2xl font-bold focus:outline-none"
           />
-          <p className="text-center text-xs text-slate-400">2-20 karakter</p>
+          <p className="text-center text-xs text-slate-400">Maks 16 karakter</p>
           <button
             type="submit"
             disabled={submitting}

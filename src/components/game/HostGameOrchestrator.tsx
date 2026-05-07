@@ -25,13 +25,14 @@ interface Props {
   pin: string;
   quizTitle: string;
   questionCount: number;
+  sessionId: string;
 }
 
 type Phase = "lobby" | "countdown" | "question" | "reveal" | "leaderboard" | "podium" | "abandoned";
 type ConnState = "connecting" | "connected" | "error";
 type AbandonReason = "host_gone" | "lobby_idle" | "cancelled";
 
-export function HostGameOrchestrator({ pin, quizTitle, questionCount }: Props) {
+export function HostGameOrchestrator({ pin, quizTitle, questionCount, sessionId }: Props) {
   const [phase, setPhase] = useState<Phase>("lobby");
   const [players, setPlayers] = useState<LobbyPlayerDTO[]>([]);
   const [connState, setConnState] = useState<ConnState>("connecting");
@@ -194,7 +195,7 @@ export function HostGameOrchestrator({ pin, quizTitle, questionCount }: Props) {
   }
 
   if (phase === "podium" && podium) {
-    return <PodiumView variant="host" podium={podium} />;
+    return <PodiumView variant="host" podium={podium} sessionId={sessionId} />;
   }
 
   // Lobby (default)

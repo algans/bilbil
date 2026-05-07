@@ -38,6 +38,7 @@ export default async function HostLobbyPage({ params }: { params: Promise<{ pin:
       pin={session.pin}
       quizTitle={session.quiz.title}
       questionCount={session.quiz._count.questions}
+      sessionId={session.id}
     />
   );
 }

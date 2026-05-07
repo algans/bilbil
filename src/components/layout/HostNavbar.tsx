@@ -19,6 +19,10 @@ const NAV_LINKS = [
 export function HostNavbar({ user }: Props) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  // Live host game ekranı (mockup #15-19) tam ekran mor gradient hedefler.
+  // Navbar bu route'larda render edilmez.
+  if (pathname.startsWith("/host/")) return null;
   const initials = user.displayName
     .split(" ")
     .map((p) => p[0])

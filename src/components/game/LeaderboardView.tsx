@@ -89,6 +89,24 @@ function HostLeaderboard({ leaderboard, onAdvance }: HostProps) {
               <span className={`display ${isTop3 ? "text-xl md:text-2xl" : "text-lg md:text-xl"}`}>
                 {entry.totalScore.toLocaleString("tr-TR")}
               </span>
+              {/* Score delta badge — mockup #18 birebir */}
+              {entry.scoreDelta > 0 ? (
+                <span
+                  className={`rounded px-2 py-0.5 font-bold ${
+                    isTop3 ? "bg-emerald-200 text-xs text-emerald-700" : "text-xs text-emerald-300"
+                  }`}
+                >
+                  +{entry.scoreDelta}
+                </span>
+              ) : (
+                <span
+                  className={`rounded px-2 py-0.5 font-bold ${
+                    isTop3 ? "bg-rose-200 text-xs text-rose-700" : "text-xs text-rose-300"
+                  }`}
+                >
+                  0
+                </span>
+              )}
             </motion.div>
           );
         })}

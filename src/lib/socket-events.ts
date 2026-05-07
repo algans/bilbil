@@ -60,6 +60,8 @@ export interface LeaderboardEntryPayload {
   nickname: string;
   totalScore: number;
   averageAnswerTimeMs: number | null;
+  /** Bu sorudan kazanılan puan (mockup #18 score delta badge için). */
+  scoreDelta: number;
 }
 
 export interface LeaderboardPayload {

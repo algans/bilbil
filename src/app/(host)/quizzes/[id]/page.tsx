@@ -1,10 +1,10 @@
 // Mockup #10 — Quiz Önizleme. 2 sütun: meta + soru thumbnails.
-// "Oyun Başlat" butonu Faz 2'de aktif olacak — şu an disabled.
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getQuizForCurrentUser } from "@/lib/actions/quiz";
 import { createGameSessionAction } from "@/lib/actions/game";
+import { db } from "@/lib/db";
 
 export const metadata = { title: "Bilbil — Quiz Önizleme" };
 
@@ -15,6 +15,19 @@ export default async function QuizPreviewPage({ params }: { params: Promise<{ id
 
   const totalSec = quiz.questions.reduce((sum, q) => sum + q.timeLimitSec, 0);
   const totalMinutes = Math.max(1, Math.round(totalSec / 60));
+
+  // Mockup #10 ek meta: Son oynanma + Toplam oyuncu (player results count)
+  const [lastSession, totalPlayersAgg] = await Promise.all([
+    db.gameSession.findFirst({
+      where: { quizId: id, status: { in: ["ended", "abandoned"] } },
+      orderBy: { endedAt: "desc" },
+      select: { endedAt: true, createdAt: true },
+    }),
+    db.playerResult.count({
+      where: { session: { quizId: id } },
+    }),
+  ]);
+  const lastPlayed = lastSession ? (lastSession.endedAt ?? lastSession.createdAt) : null;
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
@@ -39,7 +52,8 @@ export default async function QuizPreviewPage({ params }: { params: Promise<{ id
           <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-4 text-sm">
             <Row label="Soru sayısı" value={quiz.questions.length.toString()} />
             <Row label="Toplam süre" value={`~ ${totalMinutes} dk`} />
-            <Row label="Oluşturulma" value={formatDate(quiz.createdAt)} />
+            <Row label="Son oynanma" value={lastPlayed ? formatRelative(lastPlayed) : "Hiç"} />
+            <Row label="Toplam oyuncu" value={totalPlayersAgg.toString()} />
           </div>
           <form action={createGameSessionAction.bind(null, quiz.id)}>
             <button
@@ -93,10 +107,13 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-function formatDate(d: Date): string {
-  return new Intl.DateTimeFormat("tr-TR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(d);
+function formatRelative(d: Date): string {
+  const ms = Date.now() - new Date(d).getTime();
+  const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+  if (days === 0) return "bugün";
+  if (days === 1) return "dün";
+  if (days < 7) return `${days} gün önce`;
+  if (days < 30) return `${Math.floor(days / 7)} hafta önce`;
+  if (days < 365) return `${Math.floor(days / 30)} ay önce`;
+  return `${Math.floor(days / 365)} yıl önce`;
 }

@@ -1,5 +1,6 @@
-// Mockup #8b — Quiz card. Hover'da brand kenarlık.
-// "Başlat" Faz 2'de aktif olacak — şimdilik link var ama route yok, "Önizle" yapalım.
+// Mockup #8b birebir — Quiz card.
+// Yayınlanmış quiz: brand "X soru" badge + "Başlat" CTA (preview sayfasına götürür).
+// Taslak quiz: slate "Taslak" badge + "Düzenle" CTA.
 
 import Link from "next/link";
 
@@ -9,16 +10,32 @@ interface Props {
   questionCount: number;
   sessionCount: number;
   updatedAt: Date;
+  isPublished: boolean;
 }
 
-export function QuizCard({ id, title, questionCount, sessionCount, updatedAt }: Props) {
+export function QuizCard({
+  id,
+  title,
+  questionCount,
+  sessionCount,
+  updatedAt,
+  isPublished,
+}: Props) {
   const lastUpdated = formatRelative(updatedAt);
+  const isDraft = !isPublished;
+
   return (
     <div className="group hover:border-brand/30 rounded-lg border border-slate-200 bg-white p-4 transition hover:shadow-md">
       <div className="mb-2 flex items-start justify-between">
-        <span className="bg-brand/10 text-brand rounded px-2 py-0.5 text-xs font-semibold">
-          {questionCount} soru
-        </span>
+        {isDraft ? (
+          <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-500">
+            Taslak
+          </span>
+        ) : (
+          <span className="bg-brand/10 text-brand rounded px-2 py-0.5 text-xs font-semibold">
+            {questionCount} soru
+          </span>
+        )}
         <Link
           href={`/quizzes/${id}/edit`}
           className="-mt-1 text-slate-400 transition hover:text-slate-700"
@@ -30,15 +47,28 @@ export function QuizCard({ id, title, questionCount, sessionCount, updatedAt }: 
       <Link href={`/quizzes/${id}`} className="block">
         <p className="text-sm font-semibold">{title}</p>
         <p className="mt-0.5 text-xs text-slate-500">
-          {sessionCount > 0 ? `Son: ${lastUpdated} · ${sessionCount} oyun` : "Henüz oynanmadı"}
+          {isDraft
+            ? `Henüz oynanmadı · ${questionCount} soru`
+            : sessionCount > 0
+              ? `Son: ${lastUpdated} · ${sessionCount} oyun`
+              : "Henüz oynanmadı"}
         </p>
       </Link>
-      <Link
-        href={`/quizzes/${id}`}
-        className="bg-brand mt-3 block w-full rounded py-1.5 text-center text-xs font-medium text-white"
-      >
-        Önizle
-      </Link>
+      {isDraft ? (
+        <Link
+          href={`/quizzes/${id}/edit`}
+          className="mt-3 block w-full rounded border border-slate-300 py-1.5 text-center text-xs font-medium hover:bg-slate-50"
+        >
+          Düzenle
+        </Link>
+      ) : (
+        <Link
+          href={`/quizzes/${id}`}
+          className="bg-brand hover:bg-brand-dark mt-3 block w-full rounded py-1.5 text-center text-xs font-medium text-white transition"
+        >
+          Başlat
+        </Link>
+      )}
     </div>
   );
 }
