@@ -283,6 +283,16 @@ Her birinde stub + test önceden hazır olacak; agent kullanıcıya "bu fonksiyo
 
 **En kritik test:** `tests/e2e/live-game.spec.ts` — 1 host + 3 player tarayıcı context'i parallel açılır, gerçek bir oyun simüle edilir, skor/leaderboard/podium doğrulanır. (Faz 3 sonunda)
 
+### Test verisi izolasyonu (kritik)
+
+**Lokal DB'de manuel veriler asla silinmez.** Test koşusu sadece `@bilbil.test` domain'li kayıtları temizler.
+
+- **Konvansiyon:** Tüm e2e fixture e-postaları `@bilbil.test` ile bitmek **zorunda**. `tests/e2e/helpers.ts` içindeki `uniqueEmail()` bunu otomatik garanti ediyor.
+- **Cleanup:** `tests/e2e/cleanup-test-data.ts` — Playwright `globalSetup` (suite başında) ve `globalTeardown` (suite sonunda) bu fonksiyonu çağırır.
+- **Filtre:** `email LIKE '%@bilbil.test'` — sadece test domain'i. `@gmail.com`, `@example.com` vb. manuel veriler **dokunulmaz**.
+- **Cascade:** GameSession + EmailVerificationToken + PasswordResetToken da test user ID'sine göre temizlenir; Quiz cascade User'a bağlı (Prisma schema). `tmp/emails/*.json` içinde de aynı domain filter uygulanır.
+- **Yeni test fixture eklerken** mutlaka `@bilbil.test` domain'i kullan; başka domain seçersen cleanup atlar ve DB şişer.
+
 ---
 
 ## Faz Giriş / Çıkış Akışı (Onaylanmış İş Tarzı)
