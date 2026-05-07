@@ -26,9 +26,9 @@ Host email+password ile giriş yapar, 4-şıklı çoktan seçmeli quiz oluşturu
 | Tasarım (28 ekran HTML mockup) | ✅ Tamam | mockups/ |
 | **Faz 0: Setup** | ✅ TAMAMLANDI (commit `e6e533d`) | Tüm tooling kuruldu |
 | **Faz 1: Auth + Quiz CRUD** | ✅ TAMAMLANDI (2026-05-05) | Auth.js v5 + 5 auth ekranı + dashboard + quiz CRUD + drag-drop form |
-| **Faz 2: Live Game Skeleton** | ✅ **TAMAMLANDI** (2026-05-07) | PIN üretimi + Socket.IO lobby + host büyük ekran + player join akışı + reconnect |
-| Faz 3: Question Lifecycle | 🟡 Sıradaki | ~1 hafta |
-| Faz 4: Polish + Edge Cases | ⏳ Bekliyor | ~1 hafta |
+| **Faz 2: Live Game Skeleton** | ✅ TAMAMLANDI (2026-05-07) | PIN üretimi + Socket.IO lobby + host büyük ekran + player join akışı + reconnect |
+| **Faz 3: Question Lifecycle** | ✅ **TAMAMLANDI** (2026-05-07) | Server-side timer + countdown + question/reveal/leaderboard/podium + scoring + DB persist + history |
+| Faz 4: Polish + Edge Cases | 🟡 Sıradaki | ~1 hafta |
 | Faz 5: Deploy (Fly.io + Neon) | ⏳ Bekliyor | ~2-3 gün |
 
 ---
@@ -147,8 +147,11 @@ bilbil/
 │   │   ├── dashboard/            # EmptyDashboard, QuizCard
 │   │   ├── quiz/                 # QuizForm, QuestionRow, DeleteQuizButton (drag-drop @dnd-kit)
 │   │   ├── public/               # (Faz 4-5'te genişleyecek)
-│   │   └── game/                 # HostLobby (Faz 2), PlayerJoinFlow (Faz 2),
-│   │                             # QuestionDisplay/AnswerButton/Leaderboard/Podium (Faz 3)
+│   │   └── game/                 # Faz 2: HostLobby, PlayerNicknameForm, PlayerWaitingLobby
+│   │                             # Faz 3: HostGameOrchestrator, PlayerGameOrchestrator,
+│   │                             #        CountdownView, HostQuestionView, PlayerQuestionView,
+│   │                             #        RevealView, LeaderboardView, PodiumView,
+│   │                             #        TimerRing, AnswerShapeIcon
 │   ├── lib/
 │   │   ├── auth.ts               # Auth.js v5 (Credentials + JWT, EmailNotVerifiedError)
 │   │   ├── auth/
@@ -174,8 +177,9 @@ bilbil/
 │   │       ├── pin-generator.ts  # ✅ Faz 2 (6-hane numerik, collision retry)
 │   │       ├── validators.ts     # ✅ Faz 2 (nickname rules + suggestion)
 │   │       ├── state-machine.ts  # ✅ Faz 2 (GameSessionManager class)
-│   │       ├── scoring.ts        # 🎯 USER WRITES — Faz 3 (puanlama formülü)
-│   │       └── leaderboard.ts    # 🎯 USER WRITES — Faz 3 (tie-break)
+│   │       ├── scoring.ts        # ✅ Faz 3 — formül B (hız bonuslu, max 1000)
+│   │       ├── leaderboard.ts    # ✅ Faz 3 — tie-break: ortalama yanıt süresi
+│   │       └── answer-style.ts   # ✅ Faz 3 — pos→renk+şekil eşlemesi
 │   ├── hooks/                    # useGameSocket, useGameState (Faz 2)
 │   ├── types/
 │   │   └── next-auth.d.ts        # Auth.js Session/JWT type augmentation
@@ -262,10 +266,10 @@ Aşağıdaki dosyalarda implementasyon **doğrudan agent tarafından yapılmaz**
 
 | Dosya | Faz | ~satır | Karar tipi | Durum |
 |---|---|---|---|---|
-| `src/lib/game/pin-generator.ts` | 2 | ~15 | Çakışma önleme stratejisi | ✅ Faz 2'de otonom mod kararıyla agent yazdı |
-| `src/lib/game/validators.ts` | 2 | ~20 | Nickname kuralları + duplication suggestion | ✅ Faz 2'de otonom mod kararıyla agent yazdı |
-| `src/lib/game/scoring.ts` | 3 | ~10 | Doğru/hız puanlama formülü (3 yaklaşım açıklı) | ⏳ Faz 3'te |
-| `src/lib/game/leaderboard.ts` | 3 | ~10 | Eşit skorda tie-break | ⏳ Faz 3'te |
+| `src/lib/game/pin-generator.ts` | 2 | ~15 | Çakışma önleme stratejisi | ✅ Faz 2 (otonom) |
+| `src/lib/game/validators.ts` | 2 | ~20 | Nickname kuralları + duplication suggestion | ✅ Faz 2 (otonom) |
+| `src/lib/game/scoring.ts` | 3 | ~10 | Hız bonuslu formül (B): `correct ? 500 + 500*(kalan/toplam) : 0` | ✅ Faz 3 (otonom) |
+| `src/lib/game/leaderboard.ts` | 3 | ~10 | Tie-break: ortalama yanıt süresi (düşük=üstte) | ✅ Faz 3 (otonom) |
 
 Her birinde stub + test önceden hazır olacak; agent kullanıcıya "bu fonksiyonu sen yaz" diye işaret eder, devamını implement etmez.
 

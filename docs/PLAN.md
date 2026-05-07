@@ -322,28 +322,57 @@ Her faz **bağımsız çalışan** bir milestone. Faz sonunda commit + review.
 
 **Yeni dependency:** `socket.io-client` (zaten Faz 0'da `socket.io` server tarafı vardı).
 
-### Faz 3: Question Lifecycle (1 hafta) — 🟡 **SIRADAKİ**
+### Faz 3: Question Lifecycle (1 hafta) — ✅ **TAMAMLANDI** (2026-05-07, otonom mod)
 
-- Question open with server-side timer
-- Player answer submission + ack
-- 🎯 **USER WRITES:** `src/lib/game/scoring.ts` (formül seçimi: A/B/C)
-- 🎯 **USER WRITES:** `src/lib/game/leaderboard.ts` (tie-break)
-- Question reveal: correct option highlight + per-option count bar grafiği
-- Leaderboard between questions (top 10, score delta)
-- Game end + persist to DB:
-  - `GameSession.status = "ended"`, `endedAt` set
-  - `PlayerResult` rows for all players
-  - `PlayerAnswer` rows for all answers
-- Final podium UI (top 3 animation)
-- Game history page (host'un geçmiş oyunları)
+**Onaylanan kararlar (Faz 3 girişinde):**
+- Mod: Otonom — kullanıcı USER WRITES'ları da agent yazsın diye karar verdi.
+- Scoring: **Formül B** — `correct ? 500 + 500*(kalan/toplam) : 0`. Yanlış/timeout/geç = 0. Max 1000/soru.
+- Tie-break: **Ortalama yanıt süresi** (düşük=üstte). Cevapsız soruda yanıt süresi = soru toplam süresi.
+- Question pacing: Host "Sonraki Soru" → 4sn countdown (3-2-1) → soru açılır.
+- Reveal flow: kapanış → otomatik reveal → host "Leaderboard'a Geç →" → leaderboard → host "Sonraki Soru →".
+- Cevap lock-in: player şıka basınca kilitlenir, değiştirilemez.
+- Erken kapanış: tüm oyuncular cevap verirse timer beklemeden kapanır.
+- DB persist: ended olunca tek transaction (`GameSession`+`PlayerResult[]`+`PlayerAnswer[]`).
+- Ended session in-memory TTL: 10dk (host/player podium ekranını görsün).
+- Game history: Faz 3'te liste + leaderboard reveal; soru-soru analytics Faz 4.
 
-**Kritik dosyalar:** `src/lib/game/scoring.ts`, `src/lib/game/state-machine.ts`,
-`src/components/game/QuestionDisplay.tsx`, `src/components/game/Leaderboard.tsx`,
-`src/components/game/Podium.tsx`
+**Game logic dosyaları (otonom yazıldı):**
+- `src/lib/game/scoring.ts` — `calculateScore({isCorrect, answeredAtMs, totalTimeMs})`. 7/7 unit test.
+- `src/lib/game/leaderboard.ts` — `rankPlayers(entries)` + `topN(entries, n=10)`. 7/7 unit test.
+- `src/lib/game/answer-style.ts` — pos→renk+şekil eşlemesi (kırmızı üçgen / mavi elmas / sarı daire / yeşil kare).
+- `src/lib/game/state-machine.ts` — `GameSessionManager`'a question/answer/score state + `startGame`, `openCurrentQuestion`, `recordAnswer`, `closeCurrentQuestion`, `advanceFromReveal`, `advanceToNextQuestion`, `collectFinalRecords` + DTO methodları.
 
-**Test:** Full live game e2e (1 host + 3 player), scoring unit tests
+**Socket.IO event'leri (yeni):**
+- Server→Client: `game:countdown`, `game:question_opened`, `game:answer_progress`, `game:reveal`, `game:leaderboard`, `game:final_results`.
+- Client→Server: `host:start_game`, `host:show_leaderboard`, `host:next_question`, `player:submit_answer` (ack ile).
+- `correctOptionId` soru açıkken **asla gönderilmez** (DevTools cheat'i önle).
+- Reveal/podium emit per-socket (her player kendi `myAnswer`/`myRank`'ıyla, host'a `null`).
 
-**Çıktı:** Tam çalışan minimum Kahoot loop, end-to-end.
+**Server-side timer'lar (`socket-server.ts`):**
+- `pendingTimers: Map<pin, NodeJS.Timeout>` — countdown ve question için clearable.
+- Erken kapanış: `allPlayersAnswered` → clearTimeout + `autoCloseQuestion`.
+- Reconnect snapshot: `emitSnapshotToSocket` → host/player phase'ine göre uygun event.
+
+**UI bileşenleri (mockup birebir):**
+- `CountdownView` — 3-2-1 host (mor/dramatic) + player (light) varyantları.
+- `HostQuestionView` (mockup #16) — büyük ekran mor gradient, timer ring sağda, soru ortada, 4 şık alt grid.
+- `PlayerQuestionView` (mockup #19 Varyant B) — mobile-first light, timer ring + skor üstte, 4 buton renk+şekil, lock-in.
+- `RevealView` — host (mockup #17, bar grafiği + correct ring) + player (mockup #20, doğru/yanlış banner).
+- `LeaderboardView` — host (mockup #18, top 10, podium gradient) + player (kompakt liste, kendi sırası vurgulu).
+- `PodiumView` — host (mockup #19, 1-2-3 yer + konfeti) + player (kendi rank dramatic).
+- `TimerRing` — paylaşılan SVG ring component'i.
+- `HostGameOrchestrator` + `PlayerGameOrchestrator` — phase router'lar (lobby/countdown/question/reveal/leaderboard/podium).
+
+**Yeni route'lar:**
+- `/history` — host'un kendi geçmiş oyunları (mockup #12), DB'den ended/abandoned listele.
+- `/history/[sessionId]` — final leaderboard reveal (Faz 4'te soru analytics genişler).
+
+**Test sonucu:**
+- Vitest unit: 9 dosya, **106/106** pass (yeni: scoring 7 + leaderboard 7 + state-machine extend 16).
+- Playwright e2e: 5 dosya, **14/14** pass (yeni: `live-game.spec.ts` — 1 host + 2 player full game flow + history persist).
+- typecheck/lint 0 errors, build başarılı.
+
+**Açık not (Faz 4'e taşınan):** Soru-soru analytics UI (cevap dağılımı, en zorlu soru), Framer Motion animasyonları, host disconnect/reconnect mid-game UX, error states (network down, full session, vb), Lighthouse mobile > 85.
 
 ### Faz 4: Polish + Edge Cases (1 hafta)
 - Framer Motion animasyonları (soru geçişi slide, podium reveal, leaderboard pop)

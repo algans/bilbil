@@ -1,64 +1,34 @@
 "use client";
 
-// Mockup #15 birebir — Host Lobby büyük ekran.
-// Mor dark/dramatic vibe. Devasa PIN, oyuncu listesi animated, "Oyunu Başlat" disabled (Faz 3).
+// Mockup #15 birebir — Host Lobby büyük ekran (presentation-only).
+// Socket bağlantısı HostGameOrchestrator'da yönetilir; bu component sadece görünüm.
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getSocket } from "@/lib/socket-client";
-import type { LobbyStatePayload } from "@/lib/socket-events";
+import type { LobbyPlayerDTO } from "@/lib/socket-events";
 
 interface Props {
   pin: string;
   quizTitle: string;
   questionCount: number;
+  players: LobbyPlayerDTO[];
+  connState: "connecting" | "connected" | "error";
+  errorMsg: string | null;
+  onStartGame: () => void;
+  startDisabled: boolean;
+  startError?: string | null;
 }
 
-type ConnectionState = "connecting" | "connected" | "error";
-
-export function HostLobby({ pin, quizTitle, questionCount }: Props) {
-  const [lobby, setLobby] = useState<LobbyStatePayload | null>(null);
-  const [connState, setConnState] = useState<ConnectionState>("connecting");
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  useEffect(() => {
-    const socket = getSocket();
-
-    function attach() {
-      socket.emit("host:join_session", { pin }, (ack) => {
-        if (!ack.ok) {
-          setConnState("error");
-          setErrorMsg(ack.message);
-        } else {
-          setConnState("connected");
-          setErrorMsg(null);
-        }
-      });
-    }
-
-    if (socket.connected) attach();
-    else socket.once("connect", attach);
-
-    socket.on("connect", attach);
-    socket.on("disconnect", () => setConnState("connecting"));
-    socket.on("lobby:state", (payload) => setLobby(payload));
-    socket.on("lobby:player_joined", ({ players }) => {
-      setLobby((prev) => (prev ? { ...prev, players } : prev));
-    });
-    socket.on("lobby:player_left", ({ players }) => {
-      setLobby((prev) => (prev ? { ...prev, players } : prev));
-    });
-
-    return () => {
-      socket.off("connect", attach);
-      socket.off("lobby:state");
-      socket.off("lobby:player_joined");
-      socket.off("lobby:player_left");
-      socket.off("disconnect");
-    };
-  }, [pin]);
-
-  const players = lobby?.players ?? [];
+export function HostLobby({
+  pin,
+  quizTitle,
+  questionCount,
+  players,
+  connState,
+  errorMsg,
+  onStartGame,
+  startDisabled,
+  startError,
+}: Props) {
   const playerCount = players.length;
   const formattedPin = `${pin.slice(0, 3)} ${pin.slice(3)}`;
   const appUrl =
@@ -69,7 +39,6 @@ export function HostLobby({ pin, quizTitle, questionCount }: Props) {
   return (
     <div className="min-h-[calc(100vh-3.5rem)] bg-slate-900 p-4">
       <div className="from-brand-deep via-brand-dark to-brand relative flex h-full min-h-[calc(100vh-5.5rem)] flex-col overflow-hidden rounded-2xl bg-gradient-to-br text-white shadow-2xl">
-        {/* Top bar */}
         <div className="flex items-center justify-between px-8 pt-6">
           <div className="flex items-center gap-3">
             <div className="text-brand flex h-12 w-12 items-center justify-center rounded-xl bg-white text-2xl font-black">
@@ -91,7 +60,6 @@ export function HostLobby({ pin, quizTitle, questionCount }: Props) {
           </div>
         </div>
 
-        {/* Center: PIN */}
         <div className="flex flex-1 items-center justify-center px-8">
           <div className="text-center">
             <p className="mb-2 text-sm tracking-[0.2em] text-white/60 uppercase">{appUrl}/play</p>
@@ -107,7 +75,6 @@ export function HostLobby({ pin, quizTitle, questionCount }: Props) {
           </div>
         </div>
 
-        {/* Bottom: incoming players */}
         <div className="px-8 pb-6">
           <p className="mb-3 text-xs tracking-wider text-white/60 uppercase">Katılan oyuncular</p>
           <div className="mb-4 flex min-h-[2.5rem] flex-wrap gap-2">
@@ -124,6 +91,7 @@ export function HostLobby({ pin, quizTitle, questionCount }: Props) {
                       ? "border-white/20 bg-white/15 text-white"
                       : "border-white/10 bg-white/5 text-white/50 line-through"
                   }`}
+                  data-testid={`lobby-player-${p.nickname}`}
                 >
                   {p.nickname}
                 </span>
@@ -132,11 +100,20 @@ export function HostLobby({ pin, quizTitle, questionCount }: Props) {
           </div>
           <div className="flex items-center gap-3">
             <button
-              disabled
-              title="Soru lifecycle Faz 3'te aktif olacak"
+              type="button"
+              onClick={onStartGame}
+              disabled={startDisabled}
+              title={
+                startDisabled
+                  ? playerCount === 0
+                    ? "En az 1 oyuncu gerekli"
+                    : "Oyun şu anda başlatılamaz"
+                  : undefined
+              }
+              data-testid="host-start-game"
               className="bg-accent shadow-accent/40 rounded-xl px-8 py-3 font-black tracking-wider text-slate-900 uppercase shadow-lg transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
             >
-              Oyunu Başlat → (Faz 3)
+              Oyunu Başlat →
             </button>
             <Link
               href="/dashboard"
@@ -144,6 +121,7 @@ export function HostLobby({ pin, quizTitle, questionCount }: Props) {
             >
               İptal
             </Link>
+            {startError && <p className="text-sm text-rose-300">{startError}</p>}
           </div>
         </div>
       </div>

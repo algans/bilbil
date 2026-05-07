@@ -4,9 +4,9 @@
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/dal";
-import { HostLobby } from "@/components/game/HostLobby";
+import { HostGameOrchestrator } from "@/components/game/HostGameOrchestrator";
 
-export const metadata = { title: "Bilbil — Lobby" };
+export const metadata = { title: "Bilbil — Canlı Oyun" };
 
 // Bu route /host/[pin] altında ama (host) layout grubunda HostNavbar var.
 // Lobby ekranı dramatik mor gradient ile kaplı; navbar varlığı tasarımı bozuyor.
@@ -34,7 +34,7 @@ export default async function HostLobbyPage({ params }: { params: Promise<{ pin:
   }
 
   return (
-    <HostLobby
+    <HostGameOrchestrator
       pin={session.pin}
       quizTitle={session.quiz.title}
       questionCount={session.quiz._count.questions}

@@ -3,7 +3,7 @@
 
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { PlayerJoinFlow } from "@/components/game/PlayerJoinFlow";
+import { PlayerGameOrchestrator } from "@/components/game/PlayerGameOrchestrator";
 
 export const metadata = { title: "Bilbil — Katıl" };
 
@@ -22,7 +22,7 @@ export default async function PlayerJoinPage({ params }: { params: Promise<{ pin
   if (!session) redirect("/play?error=invalid");
   if (session.status !== "lobby") redirect("/play?error=invalid");
 
-  return <PlayerJoinFlow pin={pin} quizTitle={session.quiz.title} />;
+  return <PlayerGameOrchestrator pin={pin} quizTitle={session.quiz.title} />;
 }
 
 // Bu route public — middleware'in /play'i protect etmemesi için
