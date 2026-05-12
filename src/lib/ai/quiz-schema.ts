@@ -33,7 +33,7 @@ const aiQuizSchema = z.object({
   questions: z.array(aiQuestionSchema).min(1).max(50),
 });
 
-/** LLM'in döneceği üç tipten biri — Vercel AI SDK Output.object'a verilecek schema. */
+/** Internal type-safe model — mock ve test'lerin kullandığı discriminated union. */
 export const aiResponseSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("ask"),
@@ -50,4 +50,30 @@ export const aiResponseSchema = z.discriminatedUnion("kind", [
   }),
 ]);
 
+/** OpenAI strict structured outputs schema'sı.
+ *
+ * Neden flat: OpenAI structured outputs strict mode'da `oneOf` (Zod discriminatedUnion → oneOf)
+ * yasak ve `anyOf` çok kısıtlı. Bu yüzden tüm alanları tek object'te nullable olarak tanımlıyoruz;
+ * route handler runtime'da `kind` field'ına göre normalize edip `aiResponseSchema`'ya parse ediyor.
+ */
+export const openaiOutputSchema = z.object({
+  kind: z.enum(["ask", "propose", "refuse"]).describe("Cevap tipi"),
+  text: z
+    .string()
+    .nullable()
+    .describe("Sadece kind='ask' için doldur (kullanıcıya soru); diğerlerinde null"),
+  reason: z
+    .string()
+    .nullable()
+    .describe("Sadece kind='refuse' için doldur (ret gerekçesi); diğerlerinde null"),
+  summary: z
+    .string()
+    .nullable()
+    .describe("Sadece kind='propose' için doldur (kısa özet); diğerlerinde null"),
+  quiz: aiQuizSchema
+    .nullable()
+    .describe("Sadece kind='propose' için doldur (tam quiz); diğerlerinde null"),
+});
+
 export type AIResponseParsed = z.infer<typeof aiResponseSchema>;
+export type OpenAIOutputRaw = z.infer<typeof openaiOutputSchema>;

@@ -4,7 +4,10 @@
 //
 // Output kontratı için: src/lib/ai/quiz-schema.ts (aiResponseSchema).
 
-export const MAX_USER_MESSAGES = 6;
+// Konuşma akışı limiti — uzun rafine iterasyonlara izin vermek için yüksek tutuluyor.
+// Çok agresif limit verince kullanıcı küçük "soru 3'ü kolaylaştır" tarzı düzenlemelerde tıkanıyordu.
+// Ekonomik koruma rate-limit tarafında: 20 mesaj/saat per user (route handler'da).
+export const MAX_USER_MESSAGES = 50;
 
 export function systemPrompt(userMessageCount: number): string {
   const remaining = Math.max(0, MAX_USER_MESSAGES - userMessageCount);
@@ -21,17 +24,21 @@ export function systemPrompt(userMessageCount: number): string {
 Kullanıcı ile kısa, odaklı bir sohbet yürüt. Onun istediği konuda, soru sayısında ve zorluk seviyesinde **4-şıklı çoktan seçmeli quiz** üret. Kahoot tarzı bir canlı oyun için kullanılacak.
 
 # Cevap formatı (ZORUNLU)
-Cevabın HER ZAMAN aşağıdaki üç tipten biri olmalı (structured output ile JSON dönüyorsun):
+Cevabın HER ZAMAN tek bir JSON object: { kind, text, reason, summary, quiz }.
+\`kind\` zorunlu; diğer 4 alan \`kind\` değerine göre doldurulur, geri kalanı **null** olmalı.
 
-1. **\`ask\`** — Eksik bilgi var, kullanıcıya soru sor. Tek alan: \`text\` (Türkçe, kısa, 1-2 cümle).
-   - Örn: "Hangi konuda quiz olsun? Kaç soru istiyorsun? (5-50 arası)"
+1. **\`kind: "ask"\`** — Eksik bilgi var, kullanıcıya soru sor.
+   - \`text\`: Türkçe soru, 1-2 cümle (örn: "Hangi konuda quiz olsun? Kaç soru istiyorsun?")
+   - \`reason\`, \`summary\`, \`quiz\` → **null**
 
-2. **\`propose\`** — Yeterli bilgi var, TAM quiz JSON dön. Alanlar:
+2. **\`kind: "propose"\`** — Yeterli bilgi var, TAM quiz dön.
    - \`quiz\`: tam \`{ title, description, questions[] }\` payload'ı. Aşağıdaki KURALLAR'a uymak ZORUNDA.
-   - \`summary\`: kullanıcıya gösterilecek kısa özet (örn: "10 soruluk Türkiye Coğrafyası quiz'i hazır. Kontrol et:").
+   - \`summary\`: kullanıcıya gösterilecek kısa özet (örn: "10 soruluk Türkiye Coğrafyası quiz'i hazır.")
+   - \`text\`, \`reason\` → **null**
 
-3. **\`refuse\`** — Konu quiz oluşturmayla alakasız VEYA mesaj limiti doldu. Tek alan: \`reason\` (Türkçe, nazik, 1 cümle).
-   - Örn: "Sadece quiz oluşturmana yardım edebilirim. Hangi konuda quiz yapalım?"
+3. **\`kind: "refuse"\`** — Konu quiz oluşturmayla alakasız VEYA mesaj limiti doldu.
+   - \`reason\`: Türkçe, nazik, 1 cümle (örn: "Sadece quiz oluşturmana yardım edebilirim.")
+   - \`text\`, \`summary\`, \`quiz\` → **null**
 
 # Quiz payload kuralları (propose için)
 - \`title\`: 1-120 karakter, Türkçe, açıklayıcı (örn: "Osmanlı Padişahları").

@@ -15,7 +15,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { captureError, logEvent } from "@/lib/observability";
 import { openai, AI_MODEL, isAIMockMode, isAIConfigured } from "@/lib/ai/openai";
 import { systemPrompt, MAX_USER_MESSAGES } from "@/lib/ai/system-prompt";
-import { aiResponseSchema } from "@/lib/ai/quiz-schema";
+import { aiResponseSchema, openaiOutputSchema, type AIResponseParsed } from "@/lib/ai/quiz-schema";
 import { getMockResponse } from "@/lib/ai/mock-responses";
 import type { AIChatApiError, AIChatApiResponse } from "@/lib/ai/types";
 
@@ -31,7 +31,7 @@ const requestSchema = z.object({
       })
     )
     .min(1)
-    .max(20),
+    .max(110), // ~50 user + 50 assistant + ek güvenlik payı (intro mesaj client'ta filtreleniyor)
 });
 
 function errorResponse(error: AIChatApiError["error"], message: string, status: number) {
@@ -88,13 +88,41 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { experimental_output: output } = await generateText({
+    // OpenAI strict structured outputs `oneOf`/`anyOf` reddediyor → discriminatedUnion
+    // doğrudan gönderilemiyor. Flat schema (tüm alanlar tek object'te nullable) gönderiyoruz,
+    // runtime'da `kind` field'ına göre internal discriminated union'a normalize ediyoruz.
+    const { experimental_output: raw } = await generateText({
       model: openai(AI_MODEL),
       system: systemPrompt(userMessageCount),
       messages,
-      experimental_output: Output.object({ schema: aiResponseSchema }),
+      experimental_output: Output.object({ schema: openaiOutputSchema }),
       temperature: 0.7,
     });
+
+    const normalized: AIResponseParsed =
+      raw.kind === "ask"
+        ? { kind: "ask", text: raw.text ?? "" }
+        : raw.kind === "propose"
+          ? {
+              kind: "propose",
+              quiz: raw.quiz ?? { title: "", description: null, questions: [] },
+              summary: raw.summary ?? "",
+            }
+          : { kind: "refuse", reason: raw.reason ?? "" };
+
+    const validated = aiResponseSchema.safeParse(normalized);
+    if (!validated.success) {
+      captureError(new Error("AI çıktı validation failed"), {
+        tags: { scope: "api.ai-chat.parse", userId },
+        extra: { raw, issues: validated.error.issues },
+      });
+      return errorResponse(
+        "ai_unavailable",
+        "AI cevabı beklenen formatta değil — tekrar dene.",
+        502
+      );
+    }
+    const output = validated.data;
 
     logEvent("ai", "chat", {
       userId,

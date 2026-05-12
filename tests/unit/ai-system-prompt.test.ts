@@ -44,7 +44,7 @@ describe("systemPrompt", () => {
     expect(p).toContain("Kod yazma");
   });
 
-  it("MAX_USER_MESSAGES = 6", () => {
-    expect(MAX_USER_MESSAGES).toBe(6);
+  it("MAX_USER_MESSAGES = 50", () => {
+    expect(MAX_USER_MESSAGES).toBe(50);
   });
 });
