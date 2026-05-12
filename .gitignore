@@ -59,6 +59,7 @@ next-env.d.ts
 # scripts/dev.sh runtime artifacts
 .bilbil-dev.log
 .bilbil-dev.pid
+.bilbil-prod.log
 
 # Faz 1 mock email çıktısı (Faz 5'te Resend ile değişecek)
 /tmp/

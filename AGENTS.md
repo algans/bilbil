@@ -29,6 +29,7 @@ Host email+password ile giriş yapar, 4-şıklı çoktan seçmeli quiz oluşturu
 | **Faz 2: Live Game Skeleton** | ✅ TAMAMLANDI (2026-05-07) | PIN üretimi + Socket.IO lobby + host büyük ekran + player join akışı + reconnect |
 | **Faz 3: Question Lifecycle** | ✅ TAMAMLANDI (2026-05-07) | Server-side timer + countdown + question/reveal/leaderboard/podium + scoring + DB persist + history |
 | **Faz 4: Polish + Edge Cases** | ✅ **TAMAMLANDI** (2026-05-07, otonom mod) | P0 fix + Framer Motion + error states + rate limit + Sentry skeleton + /api/health + a11y |
+| **Faz 4.5 (Bonus): AI ile Quiz Oluştur** | ✅ **TAMAMLANDI** (2026-05-12) | OpenAI gpt-4o-mini + chat modal + structured output + inline edit + 2-step approval + mock mode |
 | Faz 5: Deploy (Fly.io + Neon) | 🟡 Sıradaki | ~2-3 gün |
 
 ---
@@ -52,6 +53,7 @@ Host email+password ile giriş yapar, 4-şıklı çoktan seçmeli quiz oluşturu
 | Test (unit) | Vitest + happy-dom + Testing Library | `tests/unit/` |
 | Test (e2e) | Playwright | `tests/e2e/` — multi-client live game senaryosu Faz 3'te kritik |
 | CI/CD | GitHub Actions | `.github/workflows/ci.yml` (lint + format + typecheck + test + build) |
+| AI (Faz 4.5) | **Vercel AI SDK** (`ai`) + `@ai-sdk/openai` + model `gpt-4o-mini` | `OPENAI_API_KEY` zorunlu; yoksa AI özelliği 503 döner, manuel quiz çalışmaya devam eder. `AI_MOCK=1` env ile fixture cevap (e2e/CI için). |
 | Deploy hedefi | Fly.io (app) + Neon (db) + Resend (email) + Sentry (errors) | Tümü free tier başlangıçta |
 
 ---
@@ -136,6 +138,8 @@ bilbil/
 │   │   │   ├── page.tsx
 │   │   │   └── [pin]/page.tsx
 │   │   ├── api/auth/[...nextauth]/route.ts   # Auth.js handler
+│   │   ├── api/health/route.ts               # ✅ Faz 4 — deploy health probe
+│   │   ├── api/quiz/ai-chat/route.ts         # ✅ Faz 4.5 — AI quiz chat (POST, structured output)
 │   │   ├── globals.css           # Tailwind v4 @theme + brand tokens + .auth-card
 │   │   └── layout.tsx
 │   ├── components/
@@ -144,8 +148,9 @@ bilbil/
 │   │   │                         # ResetPasswordForm, PasswordStrengthMeter, LogoBlock,
 │   │   │                         # ResendVerificationButton, form-bits (FieldError, FormBanner)
 │   │   ├── layout/               # HostNavbar (mockup #14)
-│   │   ├── dashboard/            # EmptyDashboard, QuizCard
+│   │   ├── dashboard/            # EmptyDashboard, QuizCard, DashboardAIButton (Faz 4.5)
 │   │   ├── quiz/                 # QuizForm, QuestionRow, DeleteQuizButton (drag-drop @dnd-kit)
+│   │   │                         # Faz 4.5: AIQuizModal, AIChatBody, AIQuizProposalCard, AIConfirmDialog
 │   │   ├── public/               # (Faz 4-5'te genişleyecek)
 │   │   └── game/                 # Faz 2: HostLobby, PlayerNicknameForm, PlayerWaitingLobby
 │   │                             # Faz 3: HostGameOrchestrator, PlayerGameOrchestrator,
@@ -173,13 +178,19 @@ bilbil/
 │   │   ├── socket-events.ts      # Server↔Client tip sözleşmesi (Faz 2)
 │   │   ├── socket-server.ts      # Server-side Socket.IO handlers (Faz 2)
 │   │   ├── socket-client.ts      # Client wrapper (Faz 2)
-│   │   └── game/                 # Game logic
-│   │       ├── pin-generator.ts  # ✅ Faz 2 (6-hane numerik, collision retry)
-│   │       ├── validators.ts     # ✅ Faz 2 (nickname rules + suggestion)
-│   │       ├── state-machine.ts  # ✅ Faz 2 (GameSessionManager class)
-│   │       ├── scoring.ts        # ✅ Faz 3 — formül B (hız bonuslu, max 1000)
-│   │       ├── leaderboard.ts    # ✅ Faz 3 — tie-break: ortalama yanıt süresi
-│   │       └── answer-style.ts   # ✅ Faz 3 — pos→renk+şekil eşlemesi
+│   │   ├── game/                 # Game logic
+│   │   │   ├── pin-generator.ts  # ✅ Faz 2 (6-hane numerik, collision retry)
+│   │   │   ├── validators.ts     # ✅ Faz 2 (nickname rules + suggestion)
+│   │   │   ├── state-machine.ts  # ✅ Faz 2 (GameSessionManager class)
+│   │   │   ├── scoring.ts        # ✅ Faz 3 — formül B (hız bonuslu, max 1000)
+│   │   │   ├── leaderboard.ts    # ✅ Faz 3 — tie-break: ortalama yanıt süresi
+│   │   │   └── answer-style.ts   # ✅ Faz 3 — pos→renk+şekil eşlemesi
+│   │   └── ai/                   # ✅ Faz 4.5 — AI ile Quiz Oluştur
+│   │       ├── openai.ts         # Vercel AI SDK + OpenAI provider singleton + AI_MODEL
+│   │       ├── system-prompt.ts  # Türkçe quiz asistanı prompt'u + 5-6 mesaj limiti
+│   │       ├── quiz-schema.ts    # Zod discriminated union (ask|propose|refuse)
+│   │       ├── mock-responses.ts # AI_MOCK=1 ile deterministik fixture (e2e/CI)
+│   │       └── types.ts          # AIChatMessage, AIChatResponse, API contracts
 │   ├── hooks/                    # useGameSocket, useGameState (Faz 2)
 │   ├── types/
 │   │   └── next-auth.d.ts        # Auth.js Session/JWT type augmentation

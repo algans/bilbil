@@ -19,5 +19,8 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // AI Quiz e2e için: OpenAI key'i yok, mock fixture döner.
+    // Production'da bu env set edilmez; sadece test ortamında.
+    env: { AI_MOCK: "1" },
   },
 });

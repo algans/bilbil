@@ -1,6 +1,7 @@
 // Mockup #8a — Empty state. SVG illustration + ana CTA.
 
 import Link from "next/link";
+import { DashboardAIButton } from "@/components/dashboard/DashboardAIButton";
 
 export function EmptyDashboard() {
   return (
@@ -31,9 +32,10 @@ export function EmptyDashboard() {
         >
           + İlk Quiz&apos;imi Oluştur
         </Link>
-        <Link href="/quizzes/new" className="text-brand mt-3 text-xs font-medium hover:underline">
-          Ya da örnek bir quiz&apos;le başla →
-        </Link>
+        <div className="mt-3 flex flex-col items-center gap-1.5">
+          <DashboardAIButton variant="secondary" size="sm" />
+          <p className="text-xs text-slate-400">Sohbet ederek dakikalar içinde oluştur</p>
+        </div>
       </div>
     </main>
   );

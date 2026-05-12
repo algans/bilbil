@@ -31,7 +31,12 @@ export default nextAuthMiddleware((req) => {
   return NextResponse.next();
 });
 
-// Auth.js'in kendi config'i + statik asset'leri ve api'leri dışla.
+// Matcher tüm `_next` ve `socket.io` ve `api` endpoint'lerini dışlar.
+//
+// Önceki bug: sadece `_next/static` ve `_next/image` dışlanmıştı; `_next/webpack-hmr`
+// (Next.js HMR WebSocket) middleware'a takılıyor, Auth.js 401 dönüyor →
+// tarayıcı HMR fail nedeniyle sayfayı refresh loop'a sokuyordu (Cloudflare tunnel
+// arkasında tespit edildi). Tüm `_next` prefix'ini dışlamak çözüm.
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)"],
+  matcher: ["/((?!api|socket\\.io|_next|favicon.ico|.*\\..*).*)"],
 };

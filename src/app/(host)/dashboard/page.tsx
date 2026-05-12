@@ -4,6 +4,7 @@ import Link from "next/link";
 import { listQuizzesForCurrentUser } from "@/lib/actions/quiz";
 import { QuizCard } from "@/components/dashboard/QuizCard";
 import { EmptyDashboard } from "@/components/dashboard/EmptyDashboard";
+import { DashboardAIButton } from "@/components/dashboard/DashboardAIButton";
 
 export const metadata = { title: "Bilbil — Quiz'lerim" };
 
@@ -22,12 +23,15 @@ export default async function DashboardPage() {
             {quizzes.length} quiz · {totalGames} oyun oynandı
           </p>
         </div>
-        <Link
-          href="/quizzes/new"
-          className="bg-brand hover:bg-brand-dark rounded-md px-4 py-2 text-sm font-medium text-white shadow-sm transition"
-        >
-          + Yeni Quiz
-        </Link>
+        <div className="flex items-center gap-2">
+          <DashboardAIButton variant="secondary" size="sm" />
+          <Link
+            href="/quizzes/new"
+            className="bg-brand hover:bg-brand-dark rounded-md px-4 py-2 text-sm font-medium text-white shadow-sm transition"
+          >
+            + Yeni Quiz
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

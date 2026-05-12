@@ -13,8 +13,13 @@ export function getSocket(): GameSocket {
   if (cached && cached.connected) return cached;
   cached = io({
     autoConnect: true,
-    transports: ["websocket", "polling"],
+    // Polling önce, sonra WebSocket'e upgrade — Cloudflare tunnel / reverse proxy
+    // arkasında daha robust (WebSocket-only handshake bazı edge case'lerde fail eder).
+    transports: ["polling", "websocket"],
+    upgrade: true,
     reconnection: true,
+    reconnectionDelay: 500,
+    reconnectionDelayMax: 5000,
   });
   return cached;
 }

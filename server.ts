@@ -14,10 +14,12 @@ import type {
 } from "./src/lib/socket-events";
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
 const port = Number(process.env.PORT) || 3000;
 
-const app = next({ dev, hostname, port });
+// hostname VERMİYORUZ — Next.js gelen Host header'ını olduğu gibi kabul etsin
+// (Cloudflare tunnel: *.trycloudflare.com, Fly.io: *.fly.dev, lokal: localhost).
+// Sabit "localhost" Cloudflare tunnel arkasında 404/redirect döngülerine yol açıyordu.
+const app = next({ dev, port });
 const handler = app.getRequestHandler();
 
 /**
@@ -62,7 +64,7 @@ void app.prepare().then(async () => {
       process.exit(1);
     })
     .listen(port, () => {
-      console.log(`▸ Bilbil ready on http://${hostname}:${port}`);
+      console.log(`▸ Bilbil ready on http://localhost:${port}`);
       console.log(`▸ Socket.IO listening on same port`);
     });
 });
