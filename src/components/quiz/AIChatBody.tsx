@@ -25,7 +25,7 @@ const INITIAL_MESSAGE: DisplayMessage = {
   id: "intro",
   role: "assistant",
   content:
-    "Selam! Hangi konuda quiz yapalım? Konuyu, soru sayısını (5-50) ve zorluk seviyesini söyleyebilirsin.",
+    "Selam! Sana yeni bir quiz oluşturmakta yardım edebilirim ya da geçmiş oyunların hakkında soru cevaplayabilirim. Ne yapmak istersin?",
   variant: "ask",
 };
 
@@ -78,7 +78,7 @@ export function AIChatBody({ onClose }: AIChatBodyProps) {
           .filter((m) => m.id !== "intro")
           .map((m) => ({ role: m.role, content: m.content }));
 
-        const res = await fetch("/api/quiz/ai-chat", {
+        const res = await fetch("/api/ai/chat", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ messages: payload }),
@@ -126,7 +126,7 @@ export function AIChatBody({ onClose }: AIChatBodyProps) {
     ? "Mesaj limiti doldu"
     : proposal
       ? "Düzenleme iste (örn: '3. soruyu kolaylaştır')"
-      : "Yaz: konu, soru sayısı, zorluk...";
+      : "Mesaj yaz: quiz iste veya geçmiş oyunlar hakkında soru sor...";
 
   return (
     <div className="flex flex-1 flex-col">
@@ -198,6 +198,24 @@ export function AIChatBody({ onClose }: AIChatBodyProps) {
 
 function MessageBubble({ message }: { message: DisplayMessage }) {
   const isUser = message.role === "user";
+
+  if (message.variant === "report_answer") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className="flex justify-start"
+      >
+        <div className="bg-brand/5 border-brand/20 max-w-[85%] rounded-2xl rounded-tl-sm border px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap text-slate-900">
+          <span aria-hidden="true" className="mr-1.5">
+            📊
+          </span>
+          {message.content}
+        </div>
+      </motion.div>
+    );
+  }
 
   if (message.variant === "refuse") {
     return (
