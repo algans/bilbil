@@ -9,11 +9,12 @@ export interface AIChatMessage {
   content: string;
 }
 
-/** LLM'in döndüğü structured output — discriminated union. */
+/** LLM'in döndüğü structured output — discriminated union (client-facing). */
 export type AIChatResponse =
   | { kind: "ask"; text: string }
   | { kind: "propose"; quiz: QuizFormInput; summary: string }
-  | { kind: "refuse"; reason: string };
+  | { kind: "refuse"; reason: string }
+  | { kind: "report_answer"; answer: string };
 
 /** API route'un client'a döndüğü payload. */
 export interface AIChatApiResponse {

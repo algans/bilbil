@@ -18,7 +18,7 @@ interface DisplayMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
-  variant?: "ask" | "propose" | "refuse";
+  variant?: "ask" | "propose" | "refuse" | "report_answer";
 }
 
 const INITIAL_MESSAGE: DisplayMessage = {
@@ -103,7 +103,9 @@ export function AIChatBody({ onClose }: AIChatBodyProps) {
               ? output.text
               : output.kind === "propose"
                 ? output.summary
-                : output.reason,
+                : output.kind === "report_answer"
+                  ? output.answer
+                  : output.reason,
           variant: output.kind,
         };
         setMessages((prev) => [...prev, assistantMsg]);
