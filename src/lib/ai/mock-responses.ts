@@ -1,11 +1,12 @@
 // Mock cevap üreticisi — AI_MOCK=1 set edildiğinde OpenAI'a gitmek yerine bu kullanılır.
 // Amaç: test/e2e/CI deterministik çalışsın, OPENAI_API_KEY zorunlu olmasın.
 //
-// Davranış: son user mesajına keyword bakar:
-//   - "şiir|kod|terapi|hava" → refuse
-//   - "değiştir|kolaylaştır|güncelle" + önceki proposal varsa → propose (güncellenmiş)
-//   - "matematik|tarih|coğrafya|bilim" → propose (deterministik 5 soru)
-//   - default → ask
+// Routing (öncelik sırasıyla):
+//   1. Off-topic (şiir/kod/terapi) → refuse
+//   2. Edit intent + önceki proposal → propose (güncellenmiş)
+//   3. Quiz keyword (matematik/tarih/...) → propose
+//   4. Rapor keyword (kazandı/kim/kaç/en çok/en zor) → report_answer (fixture)
+//   5. default → ask
 
 import type { AIChatMessage } from "@/lib/ai/types";
 import type { AIResponseParsed } from "@/lib/ai/quiz-schema";
@@ -13,6 +14,7 @@ import type { AIResponseParsed } from "@/lib/ai/quiz-schema";
 const OFF_TOPIC_RE = /şiir|hikaye|kod yaz|debug|terapi|hava durumu|sevgili/i;
 const EDIT_INTENT_RE = /değiştir|kolaylaştır|zorlaştır|güncelle|yeniden|fix/i;
 const TOPIC_RE = /matematik|tarih|coğrafya|bilim|spor|sinema|edebiyat|fizik|kimya/i;
+const REPORT_RE = /kazandı|kim |kaç oyun|kaç soru|en çok|en zor|ortalama|hangi quiz|kazanan/i;
 
 function mockMathQuiz() {
   return {
@@ -87,6 +89,22 @@ function pickQuiz(topic: string) {
   return mockMathQuiz();
 }
 
+function pickReportAnswer(question: string): string {
+  if (/kim kazandı|son oyunu/i.test(question)) {
+    return "Son oyununu Mehmet 4200 puanla kazandı, ikinci sırada 3850 puanla Ayşe vardı. (mock veri)";
+  }
+  if (/en çok kazanan/i.test(question)) {
+    return "En çok kazanan oyuncun 5 galibiyetle Mehmet. Ayşe 3 galibiyetle ikinci sırada. (mock veri)";
+  }
+  if (/kaç oyun/i.test(question)) {
+    return "Bu ay toplam 12 oyun oynandı. (mock veri)";
+  }
+  if (/en zor/i.test(question)) {
+    return "En zor sorun '2. Dünya Savaşı hangi yılda başladı?' — sadece %35 doğru cevap aldı. (mock veri)";
+  }
+  return "Sonuçlar hazır. (mock veri)";
+}
+
 export function getMockResponse(messages: AIChatMessage[]): AIResponseParsed {
   const userMessages = messages.filter((m) => m.role === "user");
   const lastUser = userMessages[userMessages.length - 1]?.content ?? "";
@@ -120,8 +138,15 @@ export function getMockResponse(messages: AIChatMessage[]): AIResponseParsed {
     };
   }
 
+  if (REPORT_RE.test(lastUser)) {
+    return {
+      kind: "report_answer",
+      answer: pickReportAnswer(lastUser),
+    };
+  }
+
   return {
     kind: "ask",
-    text: "Hangi konuda quiz olsun? Kaç soru istiyorsun? (5-50 arası)",
+    text: "Hangi konuda quiz olsun? Yoksa geçmiş oyunların hakkında bir şey mi sormak istersin?",
   };
 }
