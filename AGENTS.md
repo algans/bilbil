@@ -30,7 +30,8 @@ Host email+password ile giriş yapar, 4-şıklı çoktan seçmeli quiz oluşturu
 | **Faz 3: Question Lifecycle** | ✅ TAMAMLANDI (2026-05-07) | Server-side timer + countdown + question/reveal/leaderboard/podium + scoring + DB persist + history |
 | **Faz 4: Polish + Edge Cases** | ✅ **TAMAMLANDI** (2026-05-07, otonom mod) | P0 fix + Framer Motion + error states + rate limit + Sentry skeleton + /api/health + a11y |
 | **Faz 4.5 (Bonus): AI ile Quiz Oluştur** | ✅ **TAMAMLANDI** (2026-05-12) | OpenAI gpt-4o-mini + chat modal + structured output + inline edit + 2-step approval + mock mode |
-| Faz 5: Deploy (Fly.io + Neon) | 🟡 Sıradaki | ~2-3 gün |
+| **Faz 4.6 (Bonus): AI Asistan + Raporlama** | ✅ **TAMAMLANDI** (2026-05-14) | Implicit intent (quiz/rapor) + DB şeması embedded router prompt + 2 AI çağrısı orchestration (router → SQL → summarizer) + report_answer balonu + mock keyword routing |
+| Faz 5: Deploy (Fly.io + Neon) | 🟡 Sıradaki | ~2-3 gün. **Faz 5'ten önce AI raporlama güvenlik katmanları zorunlu** (read-only role, SQL parser, allowlist) — bkz. [docs/superpowers/specs/2026-05-14-ai-asistan-rapor-design.md §7](docs/superpowers/specs/2026-05-14-ai-asistan-rapor-design.md). |
 
 ---
 
@@ -53,7 +54,7 @@ Host email+password ile giriş yapar, 4-şıklı çoktan seçmeli quiz oluşturu
 | Test (unit) | Vitest + happy-dom + Testing Library | `tests/unit/` |
 | Test (e2e) | Playwright | `tests/e2e/` — multi-client live game senaryosu Faz 3'te kritik |
 | CI/CD | GitHub Actions | `.github/workflows/ci.yml` (lint + format + typecheck + test + build) |
-| AI (Faz 4.5) | **Vercel AI SDK** (`ai`) + `@ai-sdk/openai` + model `gpt-4o-mini` | `OPENAI_API_KEY` zorunlu; yoksa AI özelliği 503 döner, manuel quiz çalışmaya devam eder. `AI_MOCK=1` env ile fixture cevap (e2e/CI için). |
+| AI (Faz 4.5/4.6) | **Vercel AI SDK** (`ai`) + `@ai-sdk/openai` + model `gpt-4o-mini` | `OPENAI_API_KEY` zorunlu; yoksa AI özelliği 503 döner. `AI_MOCK=1` ile fixture (e2e/CI). Faz 4.6: SQL raporlama `Prisma.$queryRawUnsafe` ile — **MVP: aynen çalıştırılıyor**, deploy öncesi read-only role + parser + tablo allowlist eklenecek (spec §7). |
 | Deploy hedefi | Fly.io (app) + Neon (db) + Resend (email) + Sentry (errors) | Tümü free tier başlangıçta |
 
 ---
@@ -139,7 +140,7 @@ bilbil/
 │   │   │   └── [pin]/page.tsx
 │   │   ├── api/auth/[...nextauth]/route.ts   # Auth.js handler
 │   │   ├── api/health/route.ts               # ✅ Faz 4 — deploy health probe
-│   │   ├── api/quiz/ai-chat/route.ts         # ✅ Faz 4.5 — AI quiz chat (POST, structured output)
+│   │   ├── api/ai/chat/route.ts              # ✅ Faz 4.6 — AI Asistan chat (POST, 2-call orchestration: router → SQL → summarizer)
 │   │   ├── globals.css           # Tailwind v4 @theme + brand tokens + .auth-card
 │   │   └── layout.tsx
 │   ├── components/
@@ -185,12 +186,15 @@ bilbil/
 │   │   │   ├── scoring.ts        # ✅ Faz 3 — formül B (hız bonuslu, max 1000)
 │   │   │   ├── leaderboard.ts    # ✅ Faz 3 — tie-break: ortalama yanıt süresi
 │   │   │   └── answer-style.ts   # ✅ Faz 3 — pos→renk+şekil eşlemesi
-│   │   └── ai/                   # ✅ Faz 4.5 — AI ile Quiz Oluştur
-│   │       ├── openai.ts         # Vercel AI SDK + OpenAI provider singleton + AI_MODEL
-│   │       ├── system-prompt.ts  # Türkçe quiz asistanı prompt'u + 5-6 mesaj limiti
-│   │       ├── quiz-schema.ts    # Zod discriminated union (ask|propose|refuse)
-│   │       ├── mock-responses.ts # AI_MOCK=1 ile deterministik fixture (e2e/CI)
-│   │       └── types.ts          # AIChatMessage, AIChatResponse, API contracts
+│   │   └── ai/                   # ✅ Faz 4.5 — AI ile Quiz Oluştur, ✅ Faz 4.6 — Raporlama
+│   │       ├── openai.ts             # Vercel AI SDK + OpenAI provider singleton + AI_MODEL
+│   │       ├── system-prompt.ts      # ✅ Faz 4.6 — router prompt (quiz + sql modları)
+│   │       ├── summarizer-prompt.ts  # ✅ Faz 4.6 — SQL sonucu doğal dile çevirici
+│   │       ├── db-schema-prompt.ts   # ✅ Faz 4.6 — DB şeması + 5 few-shot SQL
+│   │       ├── report-executor.ts    # ✅ Faz 4.6 — $queryRawUnsafe + 50 row cap + BigInt serialize
+│   │       ├── quiz-schema.ts        # Zod union (ask|propose|refuse|report_answer) + routerOutputSchema (sql internal)
+│   │       ├── mock-responses.ts     # AI_MOCK=1 ile fixture: quiz keyword + rapor keyword routing
+│   │       └── types.ts              # AIChatMessage, AIChatResponse, API contracts
 │   ├── hooks/                    # useGameSocket, useGameState (Faz 2)
 │   ├── types/
 │   │   └── next-auth.d.ts        # Auth.js Session/JWT type augmentation
