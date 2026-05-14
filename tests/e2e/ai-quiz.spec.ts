@@ -5,7 +5,7 @@
 import { test, expect } from "@playwright/test";
 import { uniqueEmail, registerVerifyLogin } from "./helpers";
 
-test.describe("AI ile Quiz Oluştur (mock mode)", () => {
+test.describe("AI Asistan — Quiz Oluştur (mock mode)", () => {
   test("matematik konusu → propose → onay → quiz detayına yönlenir", async ({ page }) => {
     const email = uniqueEmail("ai-host");
     await registerVerifyLogin(page, {
@@ -18,11 +18,11 @@ test.describe("AI ile Quiz Oluştur (mock mode)", () => {
     await expect(page.getByText("Henüz quiz oluşturmadın")).toBeVisible();
 
     // AI butonuna bas (empty state'teki DashboardAIButton)
-    await page.getByRole("button", { name: /AI ile Quiz Oluştur/i }).click();
+    await page.getByRole("button", { name: /AI Asistan/i }).click();
 
     // Modal açıldı
-    await expect(page.getByRole("dialog", { name: /AI ile Quiz Oluştur/i })).toBeVisible();
-    await expect(page.getByText(/Selam! Hangi konuda quiz/i)).toBeVisible();
+    await expect(page.getByRole("dialog", { name: /AI Asistan/i })).toBeVisible();
+    await expect(page.getByText(/Selam! Sana yeni bir quiz oluşturmakta/i)).toBeVisible();
 
     // Mesaj gönder — mock "matematik" keyword'ü propose döner
     await page.getByLabel("Mesajınız").fill("5 soru matematik");
@@ -55,7 +55,7 @@ test.describe("AI ile Quiz Oluştur (mock mode)", () => {
       password: "Karpuz123",
     });
 
-    await page.getByRole("button", { name: /AI ile Quiz Oluştur/i }).click();
+    await page.getByRole("button", { name: /AI Asistan/i }).click();
     await page.getByLabel("Mesajınız").fill("bana bir şiir yaz");
     await page.getByRole("button", { name: "Gönder" }).click();
 
@@ -72,10 +72,10 @@ test.describe("AI ile Quiz Oluştur (mock mode)", () => {
       password: "Karpuz123",
     });
 
-    await page.getByRole("button", { name: /AI ile Quiz Oluştur/i }).click();
-    await expect(page.getByRole("dialog", { name: /AI ile Quiz Oluştur/i })).toBeVisible();
+    await page.getByRole("button", { name: /AI Asistan/i }).click();
+    await expect(page.getByRole("dialog", { name: /AI Asistan/i })).toBeVisible();
 
     await page.keyboard.press("Escape");
-    await expect(page.getByRole("dialog", { name: /AI ile Quiz Oluştur/i })).not.toBeVisible();
+    await expect(page.getByRole("dialog", { name: /AI Asistan/i })).not.toBeVisible();
   });
 });
