@@ -1,8 +1,8 @@
 "use client";
 
-// AI Quiz Modal — Framer Motion backdrop + slide-up card.
-// Header: brand mor gradient, "✨ AI ile Quiz Oluştur"
-// Body: AIChatBody (sohbet + proposal preview)
+// AI Asistan Modal — Framer Motion backdrop + slide-up card.
+// Header: brand mor gradient, "✨ AI Asistan"
+// Body: AIChatBody (sohbet — quiz oluşturma + raporlama)
 // Tek girdi noktası: Dashboard → DashboardAIButton → bu modal.
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -61,7 +61,7 @@ export function AIQuizModal({ isOpen, onClose }: AIQuizModalProps) {
                   ✨
                 </span>
                 <h2 id="ai-quiz-modal-title" className="text-base font-semibold">
-                  AI ile Quiz Oluştur
+                  AI Asistan
                 </h2>
               </div>
               <button

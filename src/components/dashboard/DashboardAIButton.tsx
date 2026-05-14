@@ -32,7 +32,7 @@ export function DashboardAIButton({ variant = "primary", size = "sm" }: Dashboar
         className={`inline-flex items-center gap-1.5 rounded-md font-medium transition ${padding} ${textSize} ${base}`}
       >
         <span aria-hidden="true">✨</span>
-        AI ile Quiz Oluştur
+        AI Asistan
       </button>
       <AIQuizModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
