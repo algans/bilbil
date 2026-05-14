@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     // runtime'da `kind` field'ına göre internal discriminated union'a normalize ediyoruz.
     const { experimental_output: raw } = await generateText({
       model: openai(AI_MODEL),
-      system: systemPrompt(userMessageCount),
+      system: systemPrompt({ userMessageCount, hostId: userId }),
       messages,
       experimental_output: Output.object({ schema: openaiOutputSchema }),
       temperature: 0.7,
