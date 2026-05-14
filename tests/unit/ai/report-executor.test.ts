@@ -26,7 +26,7 @@ describe("executeReportSql", () => {
   });
 
   it("BigInt değerleri serialize-safe string'e çevirir", async () => {
-    (db.$queryRawUnsafe as ReturnType<typeof vi.fn>).mockResolvedValueOnce([{ games: 5n }]);
+    (db.$queryRawUnsafe as ReturnType<typeof vi.fn>).mockResolvedValueOnce([{ games: BigInt(5) }]);
     const rows = await executeReportSql("SELECT COUNT(*) AS games");
     expect(rows[0]).toEqual({ games: "5" });
   });
